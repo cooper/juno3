@@ -1,0 +1,12 @@
+Development log
+---------------
+
+juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
+increasing the version for even the smallest changes helps track errors. Only five commits are in a
+minor, and only nine minors are in a major - the minor increases for every five changes.
+
+0. April 30, 2011
+
+    0. April 30, 2011
+
+        0. April 30, 2011: Added directory finder.

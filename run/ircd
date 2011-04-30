@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+# Copyright (c) 2011, Mitchell Cooper
+
+use warnings;
+use strict;
+use feature 'say';
+
+our $run_dir;
+
+# find the running directory.
+
+BEGIN {
+
+    if ($#ARGV < 0) {
+        die "No directory specified.\n"
+    }
+
+    $run_dir = shift @ARGV;
+
+    # make sure the run directory exists.
+    if (!-d $run_dir) {
+        die "Run directory does not exist.\n"
+    }
+
+    chdir $run_dir or die "Can't access run directory.\n";
+    unshift @INC, "$run_dir/inc"
+
+}
+
+use utils qw[];
