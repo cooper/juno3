@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# Copyright (c) 2011, Mitchell Cooper
 package utils;
 
 use warnings;
@@ -29,7 +30,6 @@ sub parse_config {
         $i++;
 
         # remove prefixing and suffixing whitespace
-
         $line =~ s/\s+$//;
         $line =~ s/^\s+//;
 
@@ -40,7 +40,7 @@ sub parse_config {
         my ($block, $section);
 
         given ($word[0]) {
-            when (/^(oper|kline|dline|listen)$/) {
+            when (/^(oper|kline|dline|listen|connect)$/) {
                 $block = $word[0];
                 $section = $word[1]
             }
@@ -79,6 +79,14 @@ sub log2 {
     my $line = shift;
     my $sub = (caller 1)[3];
     say(time.($sub ? " $sub(): " : q[ ]).$line)
+}
+
+# log and exit
+
+sub fatal {
+    my $msg = shift;
+    log2($msg);
+    exit(shift ? 0 : 1)
 }
 
 1

@@ -29,4 +29,21 @@ BEGIN {
 
 use POSIX;
 
-use utils qw[];
+use utils qw[conf log2 fatal];
+
+log2('Started at '.localtime time);
+
+# parse the configuration
+utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
+
+# load the required modules
+load_requirements();
+
+sub load_requirements {
+
+    if (conf qw[enabled ipv6]) {
+        log2('Loading IO::Socket::INET6');
+        require IO::Socket::INET6;
+    }
+
+}

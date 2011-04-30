@@ -13,3 +13,5 @@ starting at 0.)
         0. April 30, 2011: Added directory finder.
         1. Finished configuration parser and fetcher functions.
         2. Fixed configuration parser.
+        3. Added load_requirements() and fatal() util.
+           user.pm is now soley for users; connection.pm will handle connections.
