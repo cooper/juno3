@@ -10,3 +10,4 @@ minor, and only nine minors are in a major - the minor increases for every five 
     0. April 30, 2011
 
         0. April 30, 2011: Added directory finder.
+        1. Finished configuration parser and fetcher functions.
