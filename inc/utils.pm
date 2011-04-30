@@ -36,15 +36,23 @@ sub parse_config {
         # ignore comments
         next if $line =~ m/^(#|\/\/)/;
 
-        my @word = split /\s+/, $line, 2;
+        my @word = split /\s+/, $line, 3;
         my ($block, $section);
 
         given ($word[0]) {
             when (/^(oper|kline|dline|listen)$/) {
-                $section = $word[1];
+                $block = $word[0];
+                $section = $word[1]
             }
             when ('*') {
-                $conf{$block}{$section}{$word[0]} = $word[1]
+
+                if (!$block or !$section) {
+                    log2("No block/section set in configuration on line $line");
+                    next
+                }
+
+                $conf{$block}{$section}{$word[1]} = $word[2]
+
             }
             default {
                 log2("Unable to parse line $i of $file: $line")
