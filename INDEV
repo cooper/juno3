@@ -26,4 +26,10 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
            Added handler to connection.pm (kinda.)
            Added send functions.
 
+        May 1, 2011
+
         5. Added basic pre-registration commands and temporary incoming data handler (without any form of flood protection.)
+
+        6. Set connection->{ready} when NICK and USER have both been verified.
+           Made the configuration parser ignore blank lines.
+           Finished outgoing buffer.

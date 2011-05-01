@@ -41,6 +41,14 @@ sub handle {
 
         when ('NICK') {
 
+            # not enough parameters
+            if (not defined $args[0]) {
+                $connection->send(':'.$utils::GV{servername}.' 461 '
+                  .($connection->{nick} ? $connection->{nick} : '*').
+                  ' NICK :Not enough parameters');
+                return
+            }
+
             # set the nick
             if (defined ( my $nick = col(shift @args) )) {
                 $connection->{nick} = $nick
@@ -59,8 +67,12 @@ sub handle {
                 $connection->{real} = col((split /\s+/, $data, 4)[3])
             }
 
-            # not enough parameter
+            # not enough parameters
             else {
+                $connection->send(':'.$utils::GV{servername}.' 461 '
+                  .($connection->{nick} ? $connection->{nick} : '*').
+                  ' USER :Not enough parameters');
+                return
             }
 
             # the user is ready if their NICK has been sent
@@ -79,12 +91,12 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        return user->new($connection)
+        user->new($connection)
     }
 
     # must be a server
     elsif (exists $connection->{name}) {
-        return server->new($connection)
+        server->new($connection)
     }
 
     

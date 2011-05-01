@@ -10,7 +10,7 @@ use base 'Exporter';
 use Exporter;
 
 our @EXPORT_OK = qw[log2 conf fatal col];
-our %conf;
+our (%conf, %GV);
 
 # parse a configuration file
 
@@ -34,12 +34,13 @@ sub parse_config {
         $line =~ s/^\s+//;
 
         # ignore comments
+        next unless $line;
         next if $line =~ m/^(#|\/\/)/;
 
         my @word = split /\s+/, $line, 3;
 
         given ($word[0]) {
-            when (/^(oper|kline|dline|listen|connect)$/) {
+            when (/^(sec|oper|kline|dline|listen|connect)$/) {
                 $block = $word[0];
                 $section = $word[1]
             }
@@ -59,6 +60,9 @@ sub parse_config {
         }
 
     }
+
+    # set some global variables
+    $utils::GV{servername} = conf('server', 'name');
 
     return 1
 

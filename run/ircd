@@ -71,9 +71,30 @@ mainloop: for (;;) {
 
     }
 
-    foreach my $socket ($select->can_write(1)) {
-        
+    foreach my $socket ($select->can_write(0)) {
+
+        # nothing to write
+        next unless exists $outbuffer{$socket};
+
+        # send the data
+        my $sent = syswrite $socket, $outbuffer{$socket}, POSIX::BUFSIZ;
+
+        if (defined $sent &&
+          $sent <= length $outbuffer{$socket}
+          || $! == POSIX::EWOULDBLOCK) {
+
+            (substr $outbuffer{$socket}, 0, $sent) = '';
+            delete $outbuffer{$socket} unless length $outbuffer{$socket}
+
+        }
+
+        # can't write to this socket, so give up and force the user to quit
+        else {
+            #conn->end
+        }
+
     }
+
 
 }
 
@@ -131,4 +152,5 @@ sub create_sockets {
 
 sub sendpeer {
     my $peer = shift;
+    $outbuffer{$peer} .= "$_\r\n" foreach @_
 }
