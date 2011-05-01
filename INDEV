@@ -33,3 +33,6 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
         6. Set connection->{ready} when NICK and USER have both been verified.
            Made the configuration parser ignore blank lines.
            Finished outgoing buffer.
+
+        7. Added user::new() and some more user.pm stuff.
+           

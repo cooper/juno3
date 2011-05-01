@@ -4,7 +4,7 @@ package utils;
 
 use warnings;
 use strict;
-use feature 'switch';
+use feature qw[switch say];
 use base 'Exporter';
 
 use Exporter;
@@ -63,6 +63,7 @@ sub parse_config {
 
     # set some global variables
     $utils::GV{servername} = conf('server', 'name');
+    $utils::GV{serverid} = conf('server', 'id');
 
     return 1
 

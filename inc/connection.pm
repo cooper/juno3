@@ -8,7 +8,7 @@ use feature 'switch';
 
 use utils qw[log2 col];
 
-our ($id, %connection) = 0;
+our ($uid, %connection) = 0;
 
 sub new {
     my ($this, $peer) = @_;
@@ -16,8 +16,7 @@ sub new {
     bless my $connection = {
         obj => $peer,
         ip => $peer->peerhost,
-        host => $peer->peerhost,
-        id => ++$id
+        host => $peer->peerhost
     }, $this;
 
     log2("Processing connection from $$connection{ip}");    
@@ -31,7 +30,8 @@ sub handle {
     # strip unwanted characters
     $data =~ s/(\n|\r|\0)//g;
 
-    if (exists $connection->{ready}) {
+    # if this peer is registered, forward the data to server or user
+    if ($connection->{ready}) {
         return #utils::lookup($connection)->handle ...
     }
 
@@ -80,17 +80,27 @@ sub handle {
 
         }
 
+        when ('SERVER') {
+        }
+
+        when ('PASS') {
+        }
+
     }
 
     return 1
 
 }
 
+# post-registration
+
 sub ready {
     my $connection = shift;
 
     # must be a user
     if (exists $connection->{nick}) {
+        $connection->{ssl} = $connection->{obj}->isa('IO::Socket::SSL');
+        $connection->{uid} = $utils::GV{serverid}.++$uid;
         user->new($connection)
     }
 
@@ -109,7 +119,6 @@ sub ready {
 }
 
 # send data to the socket
-
 sub send {
     return main::sendpeer(shift->{obj}, shift)
 }

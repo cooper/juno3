@@ -32,6 +32,8 @@ use IO::Socket;
 use IO::Select;
 
 use connection;
+use user;
+use server;
 use utils qw[conf log2 fatal];
 
 my (%listen, %inbuffer, %outbuffer, @sel);
