@@ -21,4 +21,10 @@ sub new {
 
 }
 
+# handle incoming data from *LOCAL* users.
+
+sub handle {
+    my ($user, $data) = @_;
+}
+
 1

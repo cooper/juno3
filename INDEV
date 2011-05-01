@@ -3,7 +3,7 @@ Development log
 
 juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
 increasing the version for even the smallest changes helps track errors. Only six commits are in a
-minor, and only nine minors are in a major - the minor increases for every six changes. (up to 5,
+minor, and only ten minors are in a major - the minor increases for every six changes. (up to 5,
 starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.
 
 0. April 30, 2011
@@ -35,4 +35,6 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
            Finished outgoing buffer.
 
         7. Added user::new() and some more user.pm stuff.
-           
+
+        8. Added connection::lookup() to a find a connection by its user or server object.
+           Finished connection.pm's data forwarding to user.pm or server.pm.

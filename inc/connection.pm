@@ -31,9 +31,7 @@ sub handle {
     $data =~ s/(\n|\r|\0)//g;
 
     # if this peer is registered, forward the data to server or user
-    if ($connection->{ready}) {
-        return #utils::lookup($connection)->handle ...
-    }
+    return $connection->{type}->handle($data) if $connection->{ready};
 
     my @args = split /\s+/, $data;
 
@@ -101,12 +99,12 @@ sub ready {
     if (exists $connection->{nick}) {
         $connection->{ssl} = $connection->{obj}->isa('IO::Socket::SSL');
         $connection->{uid} = $utils::GV{serverid}.++$uid;
-        user->new($connection)
+        $connection->{type} = user->new($connection)
     }
 
     # must be a server
     elsif (exists $connection->{name}) {
-        server->new($connection)
+        $connection->{type} = server->new($connection)
     }
 
     
@@ -121,6 +119,24 @@ sub ready {
 # send data to the socket
 sub send {
     return main::sendpeer(shift->{obj}, shift)
+}
+
+# find by a user or server object
+
+sub lookup {
+
+    my $obj = shift;
+
+    foreach my $conn (values %connection) {
+
+        # found a match
+        return $conn if $conn->{type} == $obj
+
+    }
+
+    # no matches
+    return
+
 }
 
 1
