@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[log2 col];
+use utils qw[log2 col conn];
 
 our ($uid, %connection) = 0;
 
@@ -40,12 +40,7 @@ sub handle {
         when ('NICK') {
 
             # not enough parameters
-            if (not defined $args[0]) {
-                $connection->send(':'.$utils::GV{servername}.' 461 '
-                  .($connection->{nick} ? $connection->{nick} : '*').
-                  ' NICK :Not enough parameters');
-                return
-            }
+            return $connection->wrong_par('NICK') if not defined $args[0];
 
             # set the nick
             if (defined ( my $nick = col(shift @args) )) {
@@ -67,10 +62,7 @@ sub handle {
 
             # not enough parameters
             else {
-                $connection->send(':'.$utils::GV{servername}.' 461 '
-                  .($connection->{nick} ? $connection->{nick} : '*').
-                  ' USER :Not enough parameters');
-                return
+                return $connection->wrong_par('USER')
             }
 
             # the user is ready if their NICK has been sent
@@ -79,9 +71,48 @@ sub handle {
         }
 
         when ('SERVER') {
+
+            # parameter check
+            return $connection->wrong_par('SERVER') if not defined $args[4];
+
+
+            $connection->{$_} = shift @args foreach qw[sid name proto ircd];
+
+            # find a matching server
+
+            if (defined ( my $addr = conn($connection->{name}, 'addr') )) {
+
+                # check for matching IPs
+
+                if ($connection->{ip} ne $addr) {
+                    $connection->done('Invalid credentials');
+                    return
+                }
+
+            }
+
+            # no such server
+
+            else {
+                $connection->done('Invalid credentials');
+                return
+            }
+
+            # if a password has been sent, it's ready
+            $connection->ready if exists $connection->{pass}
+
         }
 
         when ('PASS') {
+
+            # parameter check
+            return $connection->wrong_par('PASS') if not defined $args[0];
+
+            $connection->{pass} = shift @args;
+
+            # if a server has been sent, it's ready
+            $connection->ready if exists $connection->{name}
+
         }
 
     }
@@ -91,6 +122,14 @@ sub handle {
 }
 
 # post-registration
+
+sub wrong_par {
+    my ($connection, $cmd) = @_;
+    $connection->send(':'.$utils::GV{servername}.' 461 '
+      .($connection->{nick} ? $connection->{nick} : '*').
+      " $cmd :Not enough parameters");
+    return
+}
 
 sub ready {
     my $connection = shift;
@@ -104,6 +143,21 @@ sub ready {
 
     # must be a server
     elsif (exists $connection->{name}) {
+
+        # check for valid password.
+        my $password;
+
+        given (conn($connection->{name}, 'encryption')) {
+            when ('sha1') { $password = Digest::SHA::sha1_hex($connection->{pass}) }
+            when ('sha256') { $password = Digest::SHA::sha256_hex($connection->{pass}) }
+            when ('sha512') { $password = Digest::SHA::sha512_hex($connection->{pass}) }
+        }
+
+        if ($password ne conn($connection->{name}, 'password')) {
+            $connection->done('Invalid credentials');
+            return
+        }
+
         $connection->{type} = server->new($connection)
     }
 
@@ -136,6 +190,30 @@ sub lookup {
 
     # no matches
     return
+
+}
+
+# end a connection
+
+sub done {
+
+    my ($connection, $reason) = @_;
+
+    log2("Closing connection from $$connection{ip}: $reason");
+
+    # tell user.pm or server.pm that the connection is closed
+    $connection->{type}->quit($reason);
+
+    # remove from connection list
+    delete $connection{$connection->{obj}};
+
+    # close socket, remvoe from IO::Select
+    syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0;
+    $main::select->remove($connection->{obj});
+    $connection->{obj}->close;
+
+    undef $connection;
+    return 1
 
 }
 

@@ -9,7 +9,7 @@ use base 'Exporter';
 
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf fatal col];
+our @EXPORT_OK = qw[log2 conf fatal col conn];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -74,6 +74,12 @@ sub parse_config {
 sub conf {
     my ($sec, $key) = @_;
     return $conf{sec}{$sec}{$key} if exists $conf{sec}{$sec}{$key};
+    return
+}
+
+sub conn {
+    my ($sec, $key) = @_;
+    return $conf{connect}{$sec}{$key} if exists $conf{connect}{$sec}{$key};
     return
 }
 

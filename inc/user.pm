@@ -15,7 +15,9 @@ sub new {
 
     # create the user object
     bless my $user = {}, $class;
-    $user->{$_} = $ref->{$_} foreach qw[nick ident real ssl uid];
+    $user->{$_} = $ref->{$_} foreach qw[nick ident real host ip ssl uid];
+
+    log2("new user $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
     return $user
 
@@ -25,6 +27,9 @@ sub new {
 
 sub handle {
     my ($user, $data) = @_;
+}
+
+sub quit {
 }
 
 1

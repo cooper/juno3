@@ -38,3 +38,5 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
 
         8. Added connection::lookup() to a find a connection by its user or server object.
            Finished connection.pm's data forwarding to user.pm or server.pm.
+
+        9. Finished SERVER and PASS.

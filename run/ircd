@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir;
-our $VERSION = '0.0.8';
+our $VERSION = '0.0.9';
 
 # find the running directory.
 
@@ -67,7 +67,7 @@ mainloop: for (;;) {
 
             # can't read the data
             else {
-                #$conn->end
+                $conn->done('Connection closed')
             }
 
         }
@@ -119,6 +119,11 @@ sub load_requirements {
         log2('Loading IO::Socket::INET6');
         require IO::Socket::INET6;
         $listen_class = 'IO::Socket::INET6'
+    }
+
+    if (conf qw[enabled sha]) {
+        log2('Loading Digest::SHA');
+        require Digest::SHA
     }
 
 }
