@@ -6,17 +6,23 @@ use warnings;
 use strict;
 use feature 'switch';
 
-my $id = 0;
+use utils qw[log2 col];
+
+our ($id, %connection) = 0;
 
 sub new {
     my ($this, $peer) = @_;
+
     bless my $connection = {
         obj => $peer,
         ip => $peer->peerhost,
         host => $peer->peerhost,
         id => ++$id
     }, $this;
-    return $connection
+
+    log2("Processing connection from $$connection{ip}");    
+    $main::select->add($peer);
+    return $connection{$peer} = $connection
 }
 
 sub handle {
@@ -36,24 +42,35 @@ sub handle {
         when ('NICK') {
 
             # set the nick
-            if (defined ( my $nick = shift @args )) {
+            if (defined ( my $nick = col(shift @args) )) {
                 $connection->{nick} = $nick
             }
 
             # the user is ready if their USER info has been sent
-            if ($connection->{user}) {
-                $connection->ready
-            }
+            $connection->ready if exists $connection->{ident}
 
         }
 
         when ('USER') {
-            if (!defined $args[3]) {
-             #   $connection->
+
+            # set ident and real name
+            if (defined $args[3]) {
+                $connection->{ident} = $args[0];
+                $connection->{real} = col((split /\s+/, $data, 4)[3])
             }
+
+            # not enough parameter
+            else {
+            }
+
+            # the user is ready if their NICK has been sent
+            $connection->ready if exists $connection->{nick}
+
         }
 
     }
+
+    return 1
 
 }
 
@@ -62,18 +79,20 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        user->new($connection)
+        return user->new($connection)
     }
 
     # must be a server
     elsif (exists $connection->{name}) {
-        server->new($connection)
+        return server->new($connection)
     }
 
     
     else {
         # must be an intergalactic alien
     }
+
+    return $connection->{ready} = 1
 
 }
 

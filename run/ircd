@@ -38,7 +38,7 @@ my (%listen, %inbuffer, %outbuffer, @sel);
 my $listen_class = 'IO::Socket::INET';
 
 start();
-my $select = new IO::Select @sel;
+our $select = new IO::Select @sel;
 
 # main loop
 
@@ -55,6 +55,17 @@ mainloop: for (;;) {
 
         # incoming data
         else {
+
+            my $conn = $connection::connection{$socket};
+
+            if (sysread $socket, my $data, POSIX::BUFSIZ, 0) {
+                $conn->handle($_) foreach split "\n", $data
+            }
+
+            # can't read the data
+            else {
+                #$conn->end
+            }
 
         }
 
