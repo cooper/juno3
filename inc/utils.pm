@@ -40,9 +40,9 @@ sub parse_config {
         my @word = split /\s+/, $line, 3;
 
         given ($word[0]) {
-            when (/^(sec|oper|kline|dline|listen|connect)$/) {
-                $block = $word[0];
-                $section = $word[1]
+            when ('[') {
+                $block = $word[1];
+                $section = (split /\s+/, $word[2])[0]
             }
             when ('*') {
 

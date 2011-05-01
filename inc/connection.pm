@@ -57,7 +57,7 @@ sub handle {
             # set ident and real name
             if (defined $args[3]) {
                 $connection->{ident} = $args[0];
-                $connection->{real} = col((split /\s+/, $data, 4)[3])
+                $connection->{real} = col((split /\s+/, $data, 5)[4])
             }
 
             # not enough parameters
