@@ -9,7 +9,7 @@ use base 'Exporter';
 
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf];
+our @EXPORT_OK = qw[log2 conf fatal col];
 our %conf;
 
 # parse a configuration file
@@ -23,7 +23,7 @@ sub parse_config {
         return
     }
 
-    my $i = 0;
+    my ($i, $block, $section) = 0;
 
     while (my $line = <$fh>) {
 
@@ -37,7 +37,6 @@ sub parse_config {
         next if $line =~ m/^(#|\/\/)/;
 
         my @word = split /\s+/, $line, 3;
-        my ($block, $section);
 
         given ($word[0]) {
             when (/^(oper|kline|dline|listen|connect)$/) {
@@ -84,9 +83,18 @@ sub log2 {
 # log and exit
 
 sub fatal {
-    my $msg = shift;
-    log2($msg);
-    exit(shift ? 0 : 1)
+    my $line = shift;
+    my $sub = (caller 1)[3];
+    log2(($sub ? "$sub(): " : q..).$line);
+    exit(shift() ? 0 : 1)
+}
+
+# remove a prefixing colon
+
+sub col {
+    my $string = shift;
+    $string =~ s/^://;
+    return $string
 }
 
 1

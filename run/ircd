@@ -28,22 +28,96 @@ BEGIN {
 }
 
 use POSIX;
+use IO::Socket;
+use IO::Select;
 
+use connection;
 use utils qw[conf log2 fatal];
 
-log2('Started at '.localtime time);
+my (%listen, %inbuffer, %outbuffer, @sel);
+my $listen_class = 'IO::Socket::INET';
 
-# parse the configuration
-utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
+start();
+my $select = new IO::Select @sel;
 
-# load the required modules
-load_requirements();
+# main loop
+
+mainloop: for (;;) {
+
+    # incoming
+
+    foreach my $socket ($select->can_read(1)) {
+
+        # new connection
+        if (exists $listen{$socket}) {
+            connection->new($socket->accept)
+        }
+
+        # incoming data
+        else {
+
+        }
+
+    }
+
+    foreach my $socket ($select->can_write(1)) {
+        
+    }
+
+}
+
+sub start {
+
+    log2('Started at '.localtime time);
+
+    # parse the configuration, load the required modules, and listen
+    utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
+    load_requirements();
+    create_sockets();
+    fatal('Not listening') if $#sel < 0
+
+}
 
 sub load_requirements {
 
     if (conf qw[enabled ipv6]) {
         log2('Loading IO::Socket::INET6');
         require IO::Socket::INET6;
+        $listen_class = 'IO::Socket::INET6'
     }
 
+}
+
+sub create_sockets {
+
+    while (my ($addr, $bl) = each %{$utils::conf{listen}}) {
+
+        foreach my $port (split /\s+/, $bl->{port}) {
+
+            # create the socket and add it to the IO::Select object
+
+            my $socket = $listen_class->new(
+                LocalAddr => $addr,
+                LocalPort => $port,
+                Listen => 1,
+                ReuseAddr => 1,
+                Proto => 'tcp'
+            ) or fatal("Couldn't listen on [$addr]:$port: $!");
+
+            log2("Listening on [$addr]:$port");
+            $listen{$socket} = [$addr, $port];
+            push @sel, $socket
+
+        }
+
+    }
+
+    return 1
+
+}
+
+# send data to a peer
+
+sub sendpeer {
+    my $peer = shift;
 }

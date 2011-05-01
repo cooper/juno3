@@ -4,14 +4,24 @@ Development log
 juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
 increasing the version for even the smallest changes helps track errors. Only six commits are in a
 minor, and only nine minors are in a major - the minor increases for every six changes. (up to 5,
-starting at 0.)
+starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.
 
 0. April 30, 2011
 
     0. April 30, 2011
 
-        0. April 30, 2011: Added directory finder.
+        0. Added directory finder.
+
         1. Finished configuration parser and fetcher functions.
+
         2. Fixed configuration parser.
+
         3. Added load_requirements() and fatal() util.
            user.pm is now soley for users; connection.pm will handle connections.
+
+        4. Whoops, forgot to put fatal() in @EXPORT_OK.
+           fatal() logs the method that called it now.
+           Added create_sockets() to create listening sockets and fatal() if not listening.
+           Added main loop stuff.
+           Added handler to connection.pm (kinda.)
+           Added send functions.
