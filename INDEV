@@ -45,3 +45,7 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
 
         0. Fixed realname bug.
            Change configuration setup.
+
+        1. Fixed crash if disconnect before register.
+           Allow any drop-in replacement for IO::Socket::INET such as IO::Socket::IP or IO::Socket::INET6.
+           Finsihed flood protection and incoming buffer.

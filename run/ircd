@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir;
-our $VERSION = '0.1.0';
+our $VERSION = '0.1.1';
 
 # find the running directory.
 
@@ -29,7 +29,6 @@ BEGIN {
 }
 
 use POSIX;
-use IO::Socket;
 use IO::Select;
 
 use connection;
@@ -37,8 +36,7 @@ use user;
 use server;
 use utils qw[conf log2 fatal];
 
-my (%listen, %inbuffer, %outbuffer, @sel);
-my $listen_class = 'IO::Socket::INET';
+my (%listen, %inbuffer, %outbuffer, %timer, @sel, $listen_class);
 
 start();
 our $select = new IO::Select @sel;
@@ -49,32 +47,63 @@ mainloop: for (;;) {
 
     # incoming
 
-    foreach my $socket ($select->can_read(1)) {
+    in: foreach my $socket ($select->can_read(1)) {
+
+        my ($time, $conn) = time;
+        $timer{$socket} = 0 unless $timer{$socket};
 
         # new connection
+
         if (exists $listen{$socket}) {
-            connection->new($socket->accept)
+            connection->new($socket->accept);
+            next in
         }
 
         # incoming data
+
         else {
 
-            my $conn = $connection::connection{$socket};
+            $timer{$socket} = $time if $timer{$socket} < $time;
+            $conn = $connection::connection{$socket};
 
             if (sysread $socket, my $data, POSIX::BUFSIZ, 0) {
-                $conn->handle($_) foreach split "\n", $data
+                $inbuffer{$socket} .= $data
             }
 
             # can't read the data
+
             else {
-                $conn->done('Connection closed')
+                $conn->done('Connection closed');
+                next in
             }
 
         }
 
+        # flood check
+
+        my ($theline, $therest);
+
+        while ( ($timer{$socket}-(conf qw[flood lines]) <= $time ) &&
+          ( ($theline, $therest) = $inbuffer{$socket} =~ m/([^\n]*)\n(.*)/s) ) {
+
+            $inbuffer{$socket} = $therest;
+            $theline =~ s/\r$//;
+
+            # they're okay, so handle the data
+
+            $conn->handle($theline);
+            $timer{$socket}++
+
+        }
+
+        # they've reached their limit; force them to quit
+
+        $connection::connection{$socket}->done(conf qw[flood msg])
+        if length $inbuffer{$socket} > conf qw[flood bytes];
+
     }
 
-    foreach my $socket ($select->can_write(0)) {
+    out: foreach my $socket ($select->can_write(0)) {
 
         # nothing to write
         next unless exists $outbuffer{$socket};
@@ -92,12 +121,12 @@ mainloop: for (;;) {
         }
 
         # can't write to this socket, so give up and force the user to quit
+
         else {
-            #conn->end
+            $connection::connection{$socket}->done('Write error')
         }
 
     }
-
 
 }
 
@@ -106,6 +135,7 @@ sub start {
     log2('Started at '.localtime time);
 
     # parse the configuration, load the required modules, and listen
+
     utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
     load_requirements();
     create_sockets();
@@ -115,10 +145,14 @@ sub start {
 
 sub load_requirements {
 
-    if (conf qw[enabled ipv6]) {
-        log2('Loading IO::Socket::INET6');
-        require IO::Socket::INET6;
-        $listen_class = 'IO::Socket::INET6'
+    if (defined( my $pkg = conf qw[class normal_package] )) {
+        log2('Loading '.$pkg);
+        $pkg =~ s/::/\//g;
+        require "$pkg.pm"
+    }
+
+    if (defined( my $class = conf qw[class normal_class] )) {
+        $listen_class = $class
     }
 
     if (conf qw[enabled sha]) {
@@ -156,7 +190,7 @@ sub create_sockets {
 
 }
 
-# send data to a peer
+# add data to the outgoing buffer
 
 sub sendpeer {
     my $peer = shift;

@@ -202,7 +202,7 @@ sub done {
     log2("Closing connection from $$connection{ip}: $reason");
 
     # tell user.pm or server.pm that the connection is closed
-    $connection->{type}->quit($reason);
+    $connection->{type}->quit($reason) if $connection->{type};
 
     # remove from connection list
     delete $connection{$connection->{obj}};

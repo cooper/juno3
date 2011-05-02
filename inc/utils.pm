@@ -37,12 +37,13 @@ sub parse_config {
         next unless $line;
         next if $line =~ m/^(#|\/\/)/;
 
-        my @word = split /\s+/, $line, 3;
+        my @word = split /\s+/, $line, 4;
 
         given ($word[0]) {
             when ('[') {
                 $block = $word[1];
-                $section = (split /\s+/, $word[2])[0]
+                $block =~ s/:$//;
+                $section = $word[2]
             }
             when ('*') {
 
@@ -51,7 +52,7 @@ sub parse_config {
                     next
                 }
 
-                $conf{$block}{$section}{$word[1]} = $word[2]
+                $conf{$block}{$section}{$word[1]} = $word[3]
 
             }
             default {
