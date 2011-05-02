@@ -137,8 +137,23 @@ sub start {
     # parse the configuration, load the required modules, and listen
 
     utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
+
+    # create the main server object
+    $utils::GV{server} = server->new({
+        sid   => $utils::GV{serverid},
+        name  => $utils::GV{servername},
+        proto => 0.1,
+        ircd  => $VERSION
+    });
+
     load_requirements();
     create_sockets();
+
+    # auto server connect
+    while (my ($name, $serv) = each %{$utils::conf{connect}}) {print "lol $name\n";
+        connect_server($name) if $serv->{autoconnect}
+    }
+
     fatal('Not listening') if $#sel < 0
 
 }
@@ -160,6 +175,11 @@ sub load_requirements {
         require Digest::SHA
     }
 
+    if (conf qw[enabled md5]) {
+        log2('Loading Digest::MD5');
+        require Digest::SHA
+    }
+
 }
 
 sub create_sockets {
@@ -173,9 +193,9 @@ sub create_sockets {
             my $socket = $listen_class->new(
                 LocalAddr => $addr,
                 LocalPort => $port,
-                Listen => 1,
+                Listen    => 1,
                 ReuseAddr => 1,
-                Proto => 'tcp'
+                Proto     => 'tcp'
             ) or fatal("Couldn't listen on [$addr]:$port: $!");
 
             log2("Listening on [$addr]:$port");
@@ -195,4 +215,44 @@ sub create_sockets {
 sub sendpeer {
     my $peer = shift;
     $outbuffer{$peer} .= "$_\r\n" foreach @_
+}
+
+# connect to a server
+
+sub connect_server {
+    my $server = shift;
+
+    unless (exists $utils::conf{connect}{$server}) {
+        log2("Attempted to connect to nonexistent server: $server");
+        return
+    }
+
+    my %serv = %{$utils::conf{connect}{$server}};
+
+    # create the socket
+    my $socket = $listen_class->new(
+        PeerAddr => $serv{addr},
+        PeerPort => $serv{port},
+        Proto    => 'tcp',
+        Timeout  => 5
+    );
+
+    if (!$socket) {
+        log2("Could not connect to $server: ".($! ? $! : $@));
+        return
+    }
+
+    log2("Connection established to $server");
+
+    # add the socket to select
+    $select->add($socket);
+
+    # send server credentials.
+    sendpeer($socket,
+        "SERVER $serv{sid} $serv{name} $serv{proto} $serv{ircd}",
+        "PASS $serv{password}"
+    );
+
+    return 1
+
 }

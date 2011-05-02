@@ -40,12 +40,22 @@ sub parse_config {
         my @word = split /\s+/, $line, 4;
 
         given ($word[0]) {
+
             when ('[') {
+                if (!defined $word[3]) {
+                    log2("Syntax error on line $i of configuration $file: $line");
+                    next
+                }
                 $block = $word[1];
                 $block =~ s/:$//;
                 $section = $word[2]
             }
             when ('*') {
+
+                if (!defined $word[3]) {
+                    log2("Syntax error on line $i of configuration $file: $line");
+                    next
+                }
 
                 if (!$block or !$section) {
                     log2("No block/section set in configuration on line $line");

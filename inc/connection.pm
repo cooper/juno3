@@ -14,8 +14,8 @@ sub new {
     my ($this, $peer) = @_;
 
     bless my $connection = {
-        obj => $peer,
-        ip => $peer->peerhost,
+        obj  => $peer,
+        ip   => $peer->peerhost,
         host => $peer->peerhost
     }, $this;
 
@@ -57,7 +57,7 @@ sub handle {
             # set ident and real name
             if (defined $args[3]) {
                 $connection->{ident} = $args[0];
-                $connection->{real} = col((split /\s+/, $data, 5)[4])
+                $connection->{real}  = col((split /\s+/, $data, 5)[4])
             }
 
             # not enough parameters
@@ -136,8 +136,8 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        $connection->{ssl} = $connection->{obj}->isa('IO::Socket::SSL');
-        $connection->{uid} = $utils::GV{serverid}.++$uid;
+        $connection->{ssl}  = $connection->{obj}->isa('IO::Socket::SSL');
+        $connection->{uid}  = $utils::GV{serverid}.++$uid;
         $connection->{type} = user->new($connection)
     }
 
@@ -148,12 +148,13 @@ sub ready {
         my $password;
 
         given (conn($connection->{name}, 'encryption')) {
-            when ('sha1') { $password = Digest::SHA::sha1_hex($connection->{pass}) }
+            when ('sha1')   { $password = Digest::SHA::sha1_hex($connection->{pass})   }
             when ('sha256') { $password = Digest::SHA::sha256_hex($connection->{pass}) }
             when ('sha512') { $password = Digest::SHA::sha512_hex($connection->{pass}) }
+            when ('md5')    { $password = Digest::MD5::md5_hex($connection->{pass})    }
         }
 
-        if ($password ne conn($connection->{name}, 'password')) {
+        if ($password ne conn($connection->{name}, 'r_password')) {
             $connection->done('Invalid credentials');
             return
         }
