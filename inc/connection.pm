@@ -162,8 +162,10 @@ sub ready {
         $connection->{type} = server->new($connection);
 
         # send server credentials
-        $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
-        $connection->send('PASS '.conn($connection->{name}, 's_password'))
+        if (!$connection->{sent_creds}) {
+            $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
+            $connection->send('PASS '.conn($connection->{name}, 's_password'))
+        }
 
     }
 

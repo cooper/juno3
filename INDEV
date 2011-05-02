@@ -55,3 +55,7 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
            Added autoconnect and stuff.
 
         3. Added more linking stuff.
+
+        May 2, 2011
+
+        4. If the credentials have been sent, don't send them again.
