@@ -75,6 +75,7 @@ sub parse_config {
     # set some global variables
     $utils::GV{servername} = conf('server', 'name');
     $utils::GV{serverid} = conf('server', 'id');
+    $utils::GV{serverdesc} = conf('server', 'desc');
 
     return 1
 

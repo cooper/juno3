@@ -53,3 +53,7 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
         2. Added md5 support.
            Changed configuration some more.
            Added autoconnect and stuff.
+
+        3. Added more linking stuff.
+
+

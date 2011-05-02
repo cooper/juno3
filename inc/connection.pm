@@ -159,7 +159,12 @@ sub ready {
             return
         }
 
-        $connection->{type} = server->new($connection)
+        $connection->{type} = server->new($connection);
+
+        # send server credentials
+        $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $PROTO $VERSION :$utils::GV{serverdesc}");
+        $connection->send("PASS $serv{s_password}")
+
     }
 
     
