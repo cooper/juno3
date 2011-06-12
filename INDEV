@@ -59,3 +59,14 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
         May 2, 2011
 
         4. If the credentials have been sent, don't send them again.
+
+        5. Created server::linkage for local protocol functions.
+
+    2. June 12, 2011
+
+        0. Add trim() util.
+           Keep track of server descriptions in server.pm.
+           Configuration parser now takes literal values and has improved syntax.
+           user::mine module is for handling of local user data.
+           
+           

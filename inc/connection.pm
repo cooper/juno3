@@ -27,6 +27,8 @@ sub new {
 sub handle {
     my ($connection, $data) = @_;
 
+    $connection->{last_response} = time;
+
     # strip unwanted characters
     $data =~ s/(\n|\r|\0)//g;
 
@@ -76,11 +78,12 @@ sub handle {
             return $connection->wrong_par('SERVER') if not defined $args[4];
 
 
-            $connection->{$_} = shift @args foreach qw[sid name proto ircd];
+            $connection->{$_}   = shift @args foreach qw[sid name proto ircd];
+            $connection->{desc} = col(join ' ', @args);
 
             # find a matching server
 
-            if (defined ( my $addr = conn($connection->{name}, 'addr') )) {
+            if (defined ( my $addr = conn($connection->{name}, 'address') )) {
 
                 # check for matching IPs
 

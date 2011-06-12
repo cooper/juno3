@@ -13,15 +13,18 @@ sub new {
 
     # create the server object
     bless my $server = {}, $class;
-    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd];
+    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc];
 
-    log2("new server $$server{sid} $$server{name} $$server{proto} $$server{ircd}");
+    log2("new server $$server{sid} $$server{name} $$server{proto} $$server{ircd}: $$server{desc}");
 
     return $server
 
 }
 
 sub quit {
+}
+
+sub handle {
 }
 
 1

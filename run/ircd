@@ -5,9 +5,12 @@ use warnings;
 use strict;
 use feature 'say';
 
-our $run_dir;
-our $VERSION = '0.1.4';
-our $PROTO = '0.0.1';
+our $run_dir = '.';
+our $VERSION = '0.1.5';
+our $PROTO   = '0.0.1';
+
+use POSIX;
+use IO::Select;
 
 # find the running directory.
 
@@ -29,18 +32,17 @@ BEGIN {
 
 }
 
-use POSIX;
-use IO::Select;
-
 use connection;
 use user;
+use user::mine;
 use server;
+use server::linkage;
 use utils qw[conf log2 fatal];
 
-my (%listen, %inbuffer, %outbuffer, %timer, @sel, $listen_class);
+my (%listen, %inbuffer, %outbuffer, %timer, @sel);
+our ($select, $socket_class);
 
 start();
-our $select;
 
 # main loop
 
@@ -99,7 +101,7 @@ mainloop: for (;;) {
 
         # they've reached their limit; force them to quit
 
-        $connection::connection{$socket}->done(conf qw[flood msg])
+        $connection::connection{$socket}->done(conf qw[flood message])
         if length $inbuffer{$socket} > conf qw[flood bytes];
 
     }
@@ -143,6 +145,7 @@ sub start {
     $utils::GV{server} = server->new({
         sid   => $utils::GV{serverid},
         name  => $utils::GV{servername},
+        desc  => $utils::GV{serverdesc},
         proto => 0.1,
         ircd  => $VERSION
     });
@@ -155,7 +158,7 @@ sub start {
 
     # auto server connect
     while (my ($name, $serv) = each %{$utils::conf{connect}}) {
-        connect_server($name) if $serv->{autoconnect}
+        server::linkage::connect_server($name) if $serv->{autoconnect}
     }
 
 }
@@ -169,7 +172,7 @@ sub load_requirements {
     }
 
     if (defined( my $class = conf qw[class normal_class] )) {
-        $listen_class = $class
+        $socket_class = $class
     }
 
     if (conf qw[enabled sha]) {
@@ -188,11 +191,11 @@ sub create_sockets {
 
     while (my ($addr, $bl) = each %{$utils::conf{listen}}) {
 
-        foreach my $port (split /\s+/, $bl->{port}) {
+        foreach my $port (@{$bl->{port}}) {
 
             # create the socket and add it to the IO::Select object
 
-            my $socket = $listen_class->new(
+            my $socket = $socket_class->new(
                 LocalAddr => $addr,
                 LocalPort => $port,
                 Listen    => 1,
@@ -217,44 +220,4 @@ sub create_sockets {
 sub sendpeer {
     my $peer = shift;
     $outbuffer{$peer} .= "$_\r\n" foreach @_
-}
-
-# connect to a server
-
-sub connect_server {
-    my $server = shift;
-
-    unless (exists $utils::conf{connect}{$server}) {
-        log2("Attempted to connect to nonexistent server: $server");
-        return
-    }
-
-    my %serv = %{$utils::conf{connect}{$server}};
-
-    # create the socket
-    my $socket = $listen_class->new(
-        PeerAddr => $serv{addr},
-        PeerPort => $serv{port},
-        Proto    => 'tcp',
-        Timeout  => 5
-    );
-
-    if (!$socket) {
-        log2("Could not connect to $server: ".($! ? $! : $@));
-        return
-    }
-
-    log2("Connection established to $server");
-
-    # add the socket to select
-    connection->new($socket)->{sent_creds} = 1;
-
-    # send server credentials.
-    sendpeer($socket,
-        "SERVER $utils::GV{serverid} $utils::GV{servername} $PROTO $VERSION :$utils::GV{serverdesc}",
-        "PASS $serv{s_password}"
-    );
-
-    return 1
-
 }

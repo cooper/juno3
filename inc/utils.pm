@@ -9,7 +9,7 @@ use base 'Exporter';
 
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf fatal col conn];
+our @EXPORT_OK = qw[log2 conf fatal col conn trim];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -17,65 +17,46 @@ our (%conf, %GV);
 sub parse_config {
 
     my ($file, $fh) = shift;
-
-    if (not open $fh, '<', $file) {
-        log2("Couldn't open configuration $file: ".($@ ? $@ : $!));
-        return
-    }
-
-    my ($i, $block, $section) = 0;
-
-    while (my $line = <$fh>) {
+    open my $config, '<', $file or die "$!\n";
+    my ($i, $block, $name, $key, $val) = 0;
+    while (my $line = <$config>) {
 
         $i++;
-
-        # remove prefixing and suffixing whitespace
-        $line =~ s/\s+$//;
-        $line =~ s/^\s+//;
-
-        # ignore comments
+        $line = trim($line);
         next unless $line;
-        next if $line =~ m/^(#|\/\/)/;
+        next if $line =~ m/^#/;
 
-        my @word = split /\s+/, $line, 4;
+        # a block with a name
+        if ($line =~ m/^\[(.*):(.*)\]$/) {
+            $block = trim($1);
+            $name  = trim($2);
+        }
 
-        given ($word[0]) {
+        # a nameless block
+        elsif ($line =~ m/^\[(.*)\]$/) {
+            $block = 'sec';
+            $name  = trim($1);
+        }
 
-            when ('[') {
-                if (!defined $word[3]) {
-                    log2("Syntax error on line $i of configuration $file: $line");
-                    next
-                }
-                $block = $word[1];
-                $block =~ s/:$//;
-                $section = $word[2]
-            }
-            when ('*') {
+        # a key and value
+        elsif ($line =~ m/^(\s*)(\w*):(.*)$/ && defined $block) {
+            $key = trim($2);
+            $val = eval trim($3);
+            die "Invalid value in $file line $i: $@" if $@;
+            print "key: $key\nval: $val\n";
+            $conf{$block}{$name}{$key} = $val;
+        }
 
-                if (!defined $word[3]) {
-                    log2("Syntax error on line $i of configuration $file: $line");
-                    next
-                }
-
-                if (!$block or !$section) {
-                    log2("No block/section set in configuration on line $line");
-                    next
-                }
-
-                $conf{$block}{$section}{$word[1]} = $word[3]
-
-            }
-            default {
-                log2("Unable to parse line $i of $file: $line")
-            }
+        else {
+            die "Invalid line $i of $file\n"
         }
 
     }
 
     # set some global variables
     $utils::GV{servername} = conf('server', 'name');
-    $utils::GV{serverid} = conf('server', 'id');
-    $utils::GV{serverdesc} = conf('server', 'desc');
+    $utils::GV{serverid}   = conf('server', 'id');
+    $utils::GV{serverdesc} = conf('server', 'description');
 
     return 1
 
@@ -117,6 +98,15 @@ sub fatal {
 sub col {
     my $string = shift;
     $string =~ s/^://;
+    return $string
+}
+
+# remove leading and trailing whitespace
+
+sub trim {
+    my $string = shift;
+    $string =~ s/\s+$//;
+    $string =~ s/^\s+//;
     return $string
 }
 
