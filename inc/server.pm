@@ -25,6 +25,7 @@ sub quit {
 }
 
 sub handle {
+    server::mine::handle(@_)
 }
 
 1

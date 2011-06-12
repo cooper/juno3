@@ -76,3 +76,5 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
         2. Only send PING if there isn't a pending ping.
 
         3. Constants on and off define true and false values in the configuration.
+
+        4. server::mine contains the linking protocol handler.
