@@ -8,7 +8,7 @@ use feature 'switch';
 
 use utils qw[log2 col conn];
 
-our ($uid, %connection) = 0;
+our ($ID, %connection) = 0;
 
 sub new {
     my ($this, $peer) = @_;
@@ -29,6 +29,7 @@ sub new {
 sub handle {
     my ($connection, $data) = @_;
 
+    $connection->{ping_in_air}   = 0;
     $connection->{last_response} = time;
 
     # strip unwanted characters
@@ -142,7 +143,7 @@ sub ready {
     # must be a user
     if (exists $connection->{nick}) {
         $connection->{ssl}  = $connection->{obj}->isa('IO::Socket::SSL');
-        $connection->{uid}  = $utils::GV{serverid}.++$uid;
+        $connection->{uid}  = $utils::GV{serverid}.++$ID;
         $connection->{type} = user->new($connection)
     }
 

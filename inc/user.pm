@@ -28,6 +28,7 @@ sub handle {
 }
 
 sub quit {
+    # TODO don't forget to send QUIT to the user
 }
 
 1

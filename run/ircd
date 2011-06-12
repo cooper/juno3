@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.2.1';
+our $VERSION = '0.2.2';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -158,8 +158,9 @@ mainloop: for (;;) {
         if ((time-$conn->{last_ping}) > $freq) {
 
             # send a PING command and reset the ping time
-            $conn->send("PING :$utils::GV{servername}");
-            $conn->{last_ping} = time;
+            $conn->send("PING :$utils::GV{servername}") unless $conn->{ping_in_air};
+            $conn->{last_ping}   = time;
+            $conn->{ping_in_air} = 1;
 
             # make sure that they aren't just sitting there without registering...
             $conn->done('Registration timeout') unless $conn->{type}

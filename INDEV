@@ -73,4 +73,4 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
            Failure to respond to the first PING now leads to a registration timeout on unregistered connections.
            Added lconf() util for fetching name configuration values.
            
-           
+        2. Only send PING if there isn't a pending ping.
