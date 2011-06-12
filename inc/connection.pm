@@ -14,9 +14,11 @@ sub new {
     my ($this, $peer) = @_;
 
     bless my $connection = {
-        obj  => $peer,
-        ip   => $peer->peerhost,
-        host => $peer->peerhost
+        obj           => $peer,
+        ip            => $peer->peerhost,
+        host          => $peer->peerhost,
+        last_ping     => time,
+        last_response => time
     }, $this;
 
     log2("Processing connection from $$connection{ip}");    

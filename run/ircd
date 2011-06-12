@@ -37,7 +37,7 @@ use user;
 use user::mine;
 use server;
 use server::linkage;
-use utils qw[conf log2 fatal];
+use utils qw[conf lconf log2 fatal];
 
 my (%listen, %inbuffer, %outbuffer, %timer, @sel);
 our ($select, $socket_class);
@@ -127,6 +127,43 @@ mainloop: for (;;) {
 
         else {
             $connection::connection{$socket}->done('Write error')
+        }
+
+    }
+
+    # check for pending pings, ping timeouts, and registration timeouts
+
+    ping: foreach my $conn (values %connection::connection) {
+
+        my ($freq, $msg, $timeout); # what is the frequency/timeout/msg?
+        if (!exists $conn->{type} || $conn->{type}->isa('user')) {
+            $freq    = lconf qw/ping user frequency/;
+            $msg     = lconf qw/ping user message/;
+            $timeout = lconf qw/ping user timeout/
+        }
+        elsif ($conn->{type}->isa('server')) {
+            $freq    = lconf qw/ping server frequency/;
+            $msg     = 'Ping timeout';
+            $timeout = lconf qw/ping server timeout/
+        }
+
+        if ((time-$conn->{last_response}) >= $timeout) {
+
+            # too late; making them quit
+            $conn->done($msg);
+            next ping
+
+        }
+
+        if ((time-$conn->{last_ping}) > $freq) {
+
+            # send a PING command and reset the ping time
+            $conn->send("PING :$utils::GV{servername}");
+            $conn->{last_ping} = time;
+
+            # make sure that they aren't just sitting there without registering...
+            $conn->done('Registration timeout') unless $conn->{type}
+
         }
 
     }

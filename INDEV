@@ -68,5 +68,9 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
            Keep track of server descriptions in server.pm.
            Configuration parser now takes literal values and has improved syntax.
            user::mine module is for handling of local user data.
+
+        1. Finished ping system!
+           Failure to respond to the first PING now leads to a registration timeout on unregistered connections.
+           Added lconf() util for fetching name configuration values.
            
            

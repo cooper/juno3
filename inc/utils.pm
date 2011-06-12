@@ -9,7 +9,7 @@ use base 'Exporter';
 
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf fatal col conn trim];
+our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -43,7 +43,6 @@ sub parse_config {
             $key = trim($2);
             $val = eval trim($3);
             die "Invalid value in $file line $i: $@" if $@;
-            print "key: $key\nval: $val\n";
             $conf{$block}{$name}{$key} = $val;
         }
 
@@ -67,6 +66,12 @@ sub parse_config {
 sub conf {
     my ($sec, $key) = @_;
     return $conf{sec}{$sec}{$key} if exists $conf{sec}{$sec}{$key};
+    return
+}
+
+sub lconf { # for named blocks
+    my ($block, $sec, $key) = @_;
+    return $conf{$block}{$sec}{$key} if exists $conf{$block}{$sec}{$key};
     return
 }
 
