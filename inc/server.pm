@@ -25,6 +25,7 @@ sub new {
 
 sub quit {
     my $server = shift;
+    log2("server $$server{sid} has quit");
     delete $server{$server->{sid}};
 }
 

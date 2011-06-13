@@ -17,9 +17,9 @@ sub new {
 
     # create the user object
     bless my $user = {}, $class;
-    $user->{$_} = $ref->{$_} foreach qw[nick ident real host ip ssl uid time];
+    $user->{$_} = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server];
     $user{$user->{uid}} = $user;
-    log2("new user $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
+    log2("new user from $$user{server}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
     return $user
 

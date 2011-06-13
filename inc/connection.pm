@@ -143,9 +143,10 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        $connection->{ssl}  = $connection->{obj}->isa('IO::Socket::SSL');
-        $connection->{uid}  = $utils::GV{serverid}.++$ID;
-        $connection->{type} = user->new($connection)
+        $connection->{ssl}    = $connection->{obj}->isa('IO::Socket::SSL');
+        $connection->{uid}    = $utils::GV{serverid}.++$ID;
+        $connection->{server} = $utils::GV{serverid};
+        $connection->{type}   = user->new($connection)
     }
 
     # must be a server
@@ -187,7 +188,7 @@ sub ready {
 
 # send data to the socket
 sub send {
-    return main::sendpeer(shift->{obj}, shift)
+    return main::sendpeer(shift->{obj}, @_)
 }
 
 # find by a user or server object
@@ -226,7 +227,6 @@ sub done {
     syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0;
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
-
     undef $connection;
     return 1
 

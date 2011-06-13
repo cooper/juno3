@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.2.5';
+our $VERSION = '0.2.6';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -35,6 +35,7 @@ BEGIN {
 use connection;
 use user;
 use server;
+use user::numerics;
 use user::mine;
 use server::mine;
 use server::linkage;

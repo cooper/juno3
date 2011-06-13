@@ -7,6 +7,8 @@ minor, and only ten minors are in a major - the minor increases for every six ch
 starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.\
 revision: I'll do it however I want to
 
+TODO:
+    no multiple nicks or collisions
 
 0. April 30, 2011
 
@@ -84,3 +86,6 @@ revision: I'll do it however I want to
         June 13, 2011
 
         5. a few fixes.
+
+        6. user::numeric contains numerics.
+           Keep track of the server users are connecting from.
