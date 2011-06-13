@@ -94,3 +94,7 @@ TODO:
            added user::handlers and server::handlers for local handlers.
            keep track of servers' parents.
            other fixes.
+
+    3. June 13, 2011
+
+        0. Fixed bug where IRCd exits when attempting to write on a closed connection.

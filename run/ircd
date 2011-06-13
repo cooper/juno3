@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.2.7';
+our $VERSION = '0.3.0';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -50,7 +50,7 @@ start();
 
 # main loop
 
-mainloop: while (1) {
+mainloop: for (;;) {
 
     # incoming
 
@@ -113,7 +113,7 @@ mainloop: while (1) {
     out: foreach my $socket ($select->can_write(0)) {
 
         # nothing to write
-        next unless exists $outbuffer{$socket};
+        next out unless exists $outbuffer{$socket};
 
         # send the data
         my $sent = syswrite $socket, $outbuffer{$socket}, POSIX::BUFSIZ;
@@ -172,7 +172,6 @@ mainloop: while (1) {
         }
 
     }
-
 }
 
 sub start {

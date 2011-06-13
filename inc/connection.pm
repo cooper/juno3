@@ -225,8 +225,8 @@ sub done {
     # remove from connection list
     delete $connection{$connection->{obj}};
 
-    # close socket, remvoe from IO::Select
-    syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0;
+    # close socket, remove from IO::Select
+    syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0 unless eof $connection->{obj};
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
     undef $connection;
