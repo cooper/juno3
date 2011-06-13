@@ -146,7 +146,7 @@ sub ready {
         $connection->{ssl}    = $connection->{obj}->isa('IO::Socket::SSL');
         $connection->{uid}    = $utils::GV{serverid}.++$ID;
         $connection->{server} = $utils::GV{serverid};
-        $connection->{type}   = user->new($connection)
+        $connection->{type}   = user->new($connection);
     }
 
     # must be a server
@@ -167,7 +167,8 @@ sub ready {
             return
         }
 
-        $connection->{type} = server->new($connection);
+        $connection->{parent} = $utils::GV{serverid};
+        $connection->{type}   = server->new($connection);
 
         # send server credentials
         if (!$connection->{sent_creds}) {
@@ -181,7 +182,8 @@ sub ready {
     else {
         # must be an intergalactic alien
     }
-
+    
+    $connection->{type}->{conn} = $connection;
     return $connection->{ready} = 1
 
 }

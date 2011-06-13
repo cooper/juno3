@@ -15,7 +15,7 @@ sub new {
 
     # create the server object
     bless my $server = {}, $class;
-    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time];
+    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time parent];
     $server{$server->{sid}} = $server;
     log2("new server $$server{sid}:$$server{name} $$server{proto}-$$server{ircd} [$$server{desc}]");
 
@@ -29,8 +29,9 @@ sub quit {
     delete $server{$server->{sid}};
 }
 
-sub handle {
-    server::mine::handle(@_)
-}
+# local 
+
+sub handle {server::mine::handle(@_)}
+sub send {server::mine::send(@_)}
 
 1

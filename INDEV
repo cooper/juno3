@@ -89,3 +89,8 @@ TODO:
 
         6. user::numeric contains numerics.
            Keep track of the server users are connecting from.
+
+        7. added more functions to server::mine include send() to send data to a connected server.
+           added user::handlers and server::handlers for local handlers.
+           keep track of servers' parents.
+           other fixes.
