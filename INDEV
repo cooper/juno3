@@ -4,7 +4,9 @@ Development log
 juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
 increasing the version for even the smallest changes helps track errors. Only six commits are in a
 minor, and only ten minors are in a major - the minor increases for every six changes. (up to 5,
-starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.
+starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.\
+revision: I'll do it however I want to
+
 
 0. April 30, 2011
 
@@ -78,3 +80,7 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
         3. Constants on and off define true and false values in the configuration.
 
         4. server::mine contains the linking protocol handler.
+
+        June 13, 2011
+
+        5. a few fixes.

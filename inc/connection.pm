@@ -18,6 +18,7 @@ sub new {
         ip            => $peer->peerhost,
         host          => $peer->peerhost,
         last_ping     => time,
+        time          => time,
         last_response => time
     }, $this;
 
@@ -160,7 +161,7 @@ sub ready {
             when ('md5')    { $password = Digest::MD5::md5_hex($connection->{pass})    }
         }
 
-        if ($password ne conn($connection->{name}, 'r_password')) {
+        if ($password ne conn($connection->{name}, 'receive_password')) {
             $connection->done('Invalid credentials');
             return
         }
@@ -170,7 +171,7 @@ sub ready {
         # send server credentials
         if (!$connection->{sent_creds}) {
             $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
-            $connection->send('PASS '.conn($connection->{name}, 's_password'))
+            $connection->send('PASS '.conn($connection->{name}, 'send_password'))
         }
 
     }
