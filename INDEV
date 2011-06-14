@@ -10,6 +10,9 @@ revision: I'll do it however I want to
 TODO:
     no multiple nicks or collisions
 
+PROTOCOL:
+    :<SID> UID <uid> <ts> +<usermodes> <nick> <ident> <host> <cloak> <ip> :<GECOS>
+
 0. April 30, 2011
 
     0. April 30, 2011
@@ -100,3 +103,10 @@ TODO:
         0. Fixed bug where IRCd exits when attempting to write on a closed connection.
 
         1. $user->mine->method() and $server->mine->method() now calls methods in user::mine and server::mine from a user or server object.
+
+        2. Reverted the stupid ->mine stuff.
+           Added several shortcuts to *::mine package functions.
+             - you can, of course, call them on an object such as $server->server::mine::send()
+           Added register_handler() to server::mine - registers a CODE reference to a command handler.
+           Server now handles and sends the UID command.
+           Added server::lookup_by_id() to find a server by its SID.

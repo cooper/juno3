@@ -47,10 +47,6 @@ sub connect_server {
 
 }
 
-sub kk {
-    print "@_\n"
-}
-
 sub send_children {
     foreach my $conn (keys %connection::connection) {
         next unless $conn->{type}->isa('server');

@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.1';
+our $VERSION = '0.3.2';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -142,13 +142,13 @@ mainloop: for (;;) {
         my ($freq, $msg, $timeout); # what is the frequency/timeout/msg?
         if (!exists $conn->{type} || $conn->{type}->isa('user')) {
             $freq    = lconf qw/ping user frequency/;
-            $msg     = lconf qw/ping user message/;
-            $timeout = lconf qw/ping user timeout/
+            $timeout = lconf qw/ping user timeout/;
+            $msg     = lconf qw/ping user message/
         }
         elsif ($conn->{type}->isa('server')) {
             $freq    = lconf qw/ping server frequency/;
-            $msg     = 'Ping timeout';
-            $timeout = lconf qw/ping server timeout/
+            $timeout = lconf qw/ping server timeout/;
+            $msg     = 'Ping timeout'
         }
 
         if ((time-$conn->{last_response}) >= $timeout) {

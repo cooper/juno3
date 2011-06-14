@@ -25,11 +25,22 @@ sub new {
 
 sub quit {
     my $server = shift;
-    log2("server $$server{sid} has quit");
+    log2("server $$server{name} has quit");
     delete $server{$server->{sid}};
 }
 
-# this is for calling $server->mine
-sub mine { 'server::mine' }
+# find by SID
+sub lookup_by_id {
+    my $sid = shift;
+    return $server{$sid} if exists $server{$sid};
+    return
+}
+
+# local shortcuts
+sub handle   { server::mine::handle(@_)   }
+sub send     { server::mine::send(@_)     }
+sub sendfrom { server::mine::sendfrom(@_) }
+sub sendme   { server::mine::sendme(@_)   }
 
 1
+

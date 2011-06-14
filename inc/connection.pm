@@ -37,7 +37,7 @@ sub handle {
     $data =~ s/(\n|\r|\0)//g;
 
     # if this peer is registered, forward the data to server or user
-    return $connection->{type}->mine->handle($data) if $connection->{ready};
+    return $connection->{type}->handle($data) if $connection->{ready};
 
     my @args = split /\s+/, $data;
 
@@ -145,7 +145,8 @@ sub ready {
     if (exists $connection->{nick}) {
         $connection->{ssl}    = $connection->{obj}->isa('IO::Socket::SSL');
         $connection->{uid}    = $utils::GV{serverid}.++$ID;
-        $connection->{server} = $utils::GV{serverid};
+        $connection->{server} = server::lookup_by_id($utils::GV{serverid});
+        $connection->{cloak}  = $connection->{host};
         $connection->{type}   = user->new($connection);
     }
 
@@ -173,7 +174,8 @@ sub ready {
         # send server credentials
         if (!$connection->{sent_creds}) {
             $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
-            $connection->send('PASS '.conn($connection->{name}, 'send_password'))
+            $connection->send('PASS '.conn($connection->{name}, 'send_password'));
+            $connection->send('READY');
         }
 
     }

@@ -6,7 +6,35 @@ use warnings;
 use strict;
 use utils qw[log2];
 
-our %commands;
+our %commands = ();
+
+# register command handlers
+sub register_handler {
+    my $command = uc shift;
+
+    # does it already exist?
+    if (exists $commands{$command}) {
+        log2("attempted to register $command which already exists");
+        return
+    }
+
+    my $params = shift;
+
+    # ensure that it is CODE
+    my $ref = shift;
+    if (ref $ref ne 'CODE') {
+        log2("not a CODE reference for $command");
+        return
+    }
+
+    #success
+    $commands{$command} = {
+        code   => $ref,
+        params => $params
+    };
+    log2((caller)[0]." registered $command");
+    return 1
+}
 
 # handle local user data
 sub handle {
@@ -17,21 +45,44 @@ sub handle {
 
         # response to PINGs
         if (uc $s[0] eq 'PING') {
-            $server->mine->send('PONG'.(defined $s[1] ? qq( $s[1]) : q..));
+            $server->send('PONG'.(defined $s[1] ? qq( $s[1]) : q..));
             next
         }
 
+        # end connection
         if (uc $s[0] eq 'ERROR') {
-            $server->{conn}->done(col(join ' ', @s[1..$#s]))
+            $server->{conn}->done(col(join ' ', @s[1..$#s]));
+            return
+        }
+
+        # server is ready for BURST
+        if (uc $s[0] eq 'READY') {
+            send_burst($server);
+            next
         }
 
         my $command = uc $s[1];
 
-        if ($commands{$command}) { # an existing handler
-            $commands{$command}{'sub'}($server, @s, $line);
+        if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
+            $commands{$command}{code}($server, $line, @s);
         }
 
     }
+    return 1
+}
+
+sub send_burst {
+    my $server = shift;
+    $server->sendme('BURST');
+    # users
+    foreach my $user (values %user::user) {
+
+        # ignore users the server already knows!
+        next if $user->{server} == $server->{sid};
+
+        $server->sendfrom($user->{server}, "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}");
+    }
+    $server->sendme('ENDBURST');
     return 1
 }
 
@@ -44,6 +95,23 @@ sub send {
         return
     }
     $server->{conn}->send(@_)
+}
+
+# send data from ME
+
+sub sendme {
+    my $server = shift;
+    $server->sendfrom($utils::GV{serverid}, @_)
+}
+
+# send data from a UID or SID
+sub sendfrom {
+    my ($server, $from) = (shift, shift);
+    my @lines = ();
+    foreach my $line (@_) {
+        push @lines, ":$from $line"
+    }
+    $server->send(@lines)
 }
 
 1
