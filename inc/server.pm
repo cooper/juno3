@@ -15,7 +15,7 @@ sub new {
 
     # create the server object
     bless my $server = {}, $class;
-    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time parent];
+    $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time parent source];
     $server{$server->{sid}} = $server;
     log2("new server $$server{sid}:$$server{name} $$server{proto}-$$server{ircd} parent:$$server{parent}{name} [$$server{desc}]");
 

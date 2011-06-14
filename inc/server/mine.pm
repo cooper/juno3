@@ -75,11 +75,22 @@ sub send_burst {
     my $server = shift;
     $server->sendme('BURST');
 
+    # child servers
+    foreach my $serv (values %server::server) {
+        # the server already knows of thse
+        if ($server == $serv ||
+          $serv == $utils::GV{server} || 
+          $server->{sid} == $serv->{source}) {
+            next
+        }
+        $server->server::outgoing::sid($serv)
+    }
+
     # users
     foreach my $user (values %user::user) {
         # ignore users the server already knows!
-        next if $user->{server} == $server;
-        $server->server::outgoing::uid($user);
+        next if $user->{server} == $server || $server->{sid} == $user->{source};
+        $server->server::outgoing::uid($user)
     }
 
     $server->sendme('ENDBURST');

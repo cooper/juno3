@@ -7,6 +7,10 @@ use strict;
 use utils qw[col];
 
 my %commands = (
+    SID => {
+        params => 6,
+        code   => \&sid
+    },
     UID => {
         params => 9,
         code   => \&uid
@@ -19,12 +23,28 @@ my %commands = (
 
 server::mine::register_handler($_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
 
+sub sid {
+    my ($server, $data, @args) = @_;
+
+    my $ref        = {};
+    $ref->{$_}     = shift @args foreach qw[parent dummy sid time name proto ircd];
+    $ref->{desc}   = col(join ' ', @args);
+    $ref->{source} = $server->{sid};
+    $ref->{parent} = server::lookup_by_id(col($ref->{parent}));
+    delete $ref->{dummy};
+
+    # create a new server
+    my $serv = server->new($ref);
+    return 1
+}
+
 sub uid {
     my ($server, $data, @args) = @_;
 
-    my $ref = {};
+    my $ref        = {};
     $ref->{$_}     = shift @args foreach qw[server dummy uid time modes nick ident host cloak ip];
     $ref->{real}   = col(join ' ', @args);
+    $ref->{source} = $server->{sid};
     $ref->{server} = server::lookup_by_id(col($ref->{server}));
     delete $ref->{dummy};
     delete $ref->{modes}; # this will be an array ref later

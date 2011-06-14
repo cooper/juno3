@@ -11,6 +11,18 @@ sub quit_all {
     server::mine::sendfrom_children($connection->{type}->id, 'QUIT :'.$reason)
 }
 
+sub sid {
+    my ($server, $serv) = @_;
+    $server->sendfrom($serv->{parent}->{sid},
+      "SID $$serv{sid} $$serv{time} $$serv{name} $$serv{proto} $$serv{ircd} :$$serv{desc}")
+}
+
+sub sid_all {
+    my $serv = shift;
+    server::mine::sendfrom_children($serv->{parent}->{sid},
+      "SID $$serv{sid} $$serv{time} $$serv{name} $$serv{proto} $$serv{ircd} :$$serv{desc}")
+}
+
 sub uid {
     my ($server, $user) = @_;
     $server->sendfrom($user->{server}->{sid},

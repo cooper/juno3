@@ -9,10 +9,18 @@ revision: I'll do it however I want to
 
 TODO:
     no multiple nicks or collisions
-    SERVER
 
 PROTOCOL:
+    SERVER <sid> <name> <protocol version> <ircd version> :<description>
+    :<parent SID> SID <sid> <ts> <name> <protocol version> <ircd version> :<description>
     :<SID> UID <uid> <ts> +<usermodes> <nick> <ident> <host> <cloak> <ip> :<GECOS>
+
+SERVER 1 lol.com 0.0.1 2.3.4 :LoL
+PASS k
+:1 BURST
+:1 SID 2 1308087952 google.com 0.0.1 2.3.2 :Google server
+:2 UID 21 1308087953 + nick ident host cloak 2.2.2.2 :John Smith
+:1 ENDBURST
 
 0. April 30, 2011
 
@@ -123,3 +131,7 @@ PROTOCOL:
            Properly remove child servers, their children, their children's children, and so on when a server splits.
 
         4. Fixed a bug that sometimes leads to a crash where the local server's parent was unknown (itself).
+
+        5. Fixed several bugs in UID.
+           Added SID to share servers from server-to-server.
+           BURST no longer sends information on users and servers that the target server is already familiar with.

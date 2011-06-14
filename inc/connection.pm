@@ -17,6 +17,7 @@ sub new {
         obj           => $peer,
         ip            => $peer->peerhost,
         host          => $peer->peerhost,
+        source        => $utils::GV{serverid},
         last_ping     => time,
         time          => time,
         last_response => time
@@ -172,6 +173,7 @@ sub ready {
 
         $connection->{parent} = $utils::GV{server};
         $connection->{type}   = server->new($connection);
+        server::outgoing::sid_all($connection->{type});
 
         # send server credentials
         if (!$connection->{sent_creds}) {

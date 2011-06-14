@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.4';
+our $VERSION = '0.3.5';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -191,6 +191,7 @@ sub start {
         proto  => 0.1,
         ircd   => $VERSION,
         time   => time,
+        source => $utils::GV{serverid},
         parent => {name => 'self'}
     });
 
