@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.3';
+our $VERSION = '0.3.4';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -185,12 +185,17 @@ sub start {
 
     # create the main server object
     $utils::GV{server} = server->new({
-        sid   => $utils::GV{serverid},
-        name  => $utils::GV{servername},
-        desc  => $utils::GV{serverdesc},
-        proto => 0.1,
-        ircd  => $VERSION
+        sid    => $utils::GV{serverid},
+        name   => $utils::GV{servername},
+        desc   => $utils::GV{serverdesc},
+        proto  => 0.1,
+        ircd   => $VERSION,
+        time   => time,
+        parent => {name => 'self'}
     });
+
+    # how is this possible?!?!
+    $utils::GV{server}{parent} = $utils::GV{server};
 
     load_requirements();
     create_sockets();

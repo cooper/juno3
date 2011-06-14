@@ -145,7 +145,7 @@ sub ready {
     if (exists $connection->{nick}) {
         $connection->{ssl}    = $connection->{obj}->isa('IO::Socket::SSL');
         $connection->{uid}    = $utils::GV{serverid}.++$ID;
-        $connection->{server} = server::lookup_by_id($utils::GV{serverid});
+        $connection->{server} = $utils::GV{server};
         $connection->{cloak}  = $connection->{host};
         $connection->{type}   = user->new($connection);
         # tell my children
@@ -170,7 +170,7 @@ sub ready {
             return
         }
 
-        $connection->{parent} = server::lookup_by_id($utils::GV{serverid});
+        $connection->{parent} = $utils::GV{server};
         $connection->{type}   = server->new($connection);
 
         # send server credentials
@@ -227,7 +227,6 @@ sub done {
     $connection->{type}->quit($reason) if $connection->{type};
 
     # share this quit with the children
-    my $id = $connection->{type}->{sid} ? $connection->{type}->{sid} : $connection->{type}->{uid};
     $connection->server::outgoing::quit_all($reason);
 
     # remove from connection list

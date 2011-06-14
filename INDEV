@@ -121,3 +121,5 @@ PROTOCOL:
            Delete all users from a server when that server splits.
            Connects, quits, and bursts should be completely accurate now - the servers should always be synced with users.
            Properly remove child servers, their children, their children's children, and so on when a server splits.
+
+        4. Fixed a bug that sometimes leads to a crash where the local server's parent was unknown (itself).
