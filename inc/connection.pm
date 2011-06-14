@@ -37,7 +37,7 @@ sub handle {
     $data =~ s/(\n|\r|\0)//g;
 
     # if this peer is registered, forward the data to server or user
-    return $connection->{type}->handle($data) if $connection->{ready};
+    return $connection->{type}->mine->handle($data) if $connection->{ready};
 
     my @args = split /\s+/, $data;
 

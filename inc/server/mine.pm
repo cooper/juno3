@@ -17,7 +17,7 @@ sub handle {
 
         # response to PINGs
         if (uc $s[0] eq 'PING') {
-            $server->send('PONG'.(defined $s[1] ? qq( $s[1]) : q..));
+            $server->mine->send('PONG'.(defined $s[1] ? qq( $s[1]) : q..));
             next
         }
 

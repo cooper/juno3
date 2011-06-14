@@ -9,7 +9,7 @@ use strict;
 sub handle {
     my $user = shift;
     foreach my $line (split "\n", shift) {
-        
+
     }
 }
 

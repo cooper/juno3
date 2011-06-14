@@ -98,3 +98,5 @@ TODO:
     3. June 13, 2011
 
         0. Fixed bug where IRCd exits when attempting to write on a closed connection.
+
+        1. $user->mine->method() and $server->mine->method() now calls methods in user::mine and server::mine from a user or server object.

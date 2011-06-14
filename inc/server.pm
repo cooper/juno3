@@ -29,9 +29,7 @@ sub quit {
     delete $server{$server->{sid}};
 }
 
-# local 
-
-sub handle {server::mine::handle(@_)}
-sub send {server::mine::send(@_)}
+# this is for calling $server->mine
+sub mine { 'server::mine' }
 
 1

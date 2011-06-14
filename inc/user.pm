@@ -25,9 +25,8 @@ sub new {
 
 }
 
-sub handle {
-    user::mine::handle(@_)
-}
+# this is for calling $user->mine
+sub mine { 'user::mine' }
 
 sub quit {
     # TODO don't forget to send QUIT to the user if it's local
