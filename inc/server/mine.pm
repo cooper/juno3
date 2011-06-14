@@ -74,15 +74,32 @@ sub handle {
 sub send_burst {
     my $server = shift;
     $server->sendme('BURST');
+
     # users
     foreach my $user (values %user::user) {
-
         # ignore users the server already knows!
-        next if $user->{server} == $server->{sid};
-
-        $server->sendfrom($user->{server}, "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}");
+        next if $user->{server} == $server;
+        $server->server::outgoing::uid($user);
     }
+
     $server->sendme('ENDBURST');
+    return 1
+}
+
+# send data to all of my children
+sub send_children {
+    foreach my $server (keys %server::server) {
+        next unless $server->{conn};
+        $server->send(@_)
+    }
+    return 1
+}
+
+sub sendfrom_children {
+    foreach my $server (values %server::server) {
+        next unless $server->{conn};
+        $server->sendfrom(@_)
+    }
     return 1
 }
 

@@ -148,6 +148,8 @@ sub ready {
         $connection->{server} = server::lookup_by_id($utils::GV{serverid});
         $connection->{cloak}  = $connection->{host};
         $connection->{type}   = user->new($connection);
+        # tell my children
+        server::outgoing::uid_all($connection->{type})
     }
 
     # must be a server
@@ -168,7 +170,7 @@ sub ready {
             return
         }
 
-        $connection->{parent} = $utils::GV{serverid};
+        $connection->{parent} = server::lookup_by_id($utils::GV{serverid});
         $connection->{type}   = server->new($connection);
 
         # send server credentials
@@ -223,6 +225,10 @@ sub done {
 
     # tell user.pm or server.pm that the connection is closed
     $connection->{type}->quit($reason) if $connection->{type};
+
+    # share this quit with the children
+    my $id = $connection->{type}->{sid} ? $connection->{type}->{sid} : $connection->{type}->{uid};
+    $connection->server::outgoing::quit_all($reason);
 
     # remove from connection list
     delete $connection{$connection->{obj}};

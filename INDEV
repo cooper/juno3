@@ -9,6 +9,7 @@ revision: I'll do it however I want to
 
 TODO:
     no multiple nicks or collisions
+    SERVER
 
 PROTOCOL:
     :<SID> UID <uid> <ts> +<usermodes> <nick> <ident> <host> <cloak> <ip> :<GECOS>
@@ -110,3 +111,13 @@ PROTOCOL:
            Added register_handler() to server::mine - registers a CODE reference to a command handler.
            Server now handles and sends the UID command.
            Added server::lookup_by_id() to find a server by its SID.
+
+        June 14, 2011
+
+        3. Store server parents by object, not SID.
+           Added user::is_local() for determining if the user is on this server.
+           server::outgoing contains outgoing commands.
+           Added quit() and uid() to server::outgoing.
+           Delete all users from a server when that server splits.
+           Connects, quits, and bursts should be completely accurate now - the servers should always be synced with users.
+           Properly remove child servers, their children, their children's children, and so on when a server splits.

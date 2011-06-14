@@ -19,7 +19,7 @@ sub new {
     bless my $user = {}, $class;
     $user->{$_} = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak];
     $user{$user->{uid}} = $user;
-    log2("new user from $$user{server}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
+    log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
     return $user
 
@@ -27,12 +27,14 @@ sub new {
 
 sub quit {
     # TODO don't forget to send QUIT to the user if it's local
-    my $user = shift;
+    my ($user, $reason) = @_;
+    log2("user quit from $$user{server}{name} uid:$$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}] ($reason)");
     delete $user{$user->{uid}};
 }
 
 # lookup functions
-sub lookupbynick {
+
+sub lookup_by_nick {
     my $nick = lc shift;
     foreach my $user (values %user) {
         return $user if lc $user->{nick} eq $nick
@@ -40,8 +42,24 @@ sub lookupbynick {
     return
 }
 
+sub lookup_by_id {
+    my $uid = shift;
+    return $user{$uid} if exists $user{$uid};
+    return
+}
+
+sub is_local {
+    my $user = shift;
+    return 1 if $user->{server}->{sid} == $utils::GV{sid};
+    return
+}
+
 # local shortcuts
+
 sub handle { server::mine::handle(@_) }
 sub send   { server::mine::send(@_)   }
+
+# other
+sub id { shift->{uid} }
 
 1

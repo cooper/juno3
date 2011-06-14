@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.2';
+our $VERSION = '0.3.3';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -39,8 +39,9 @@ use user::numerics;
 use user::mine;
 use user::handlers;
 use server::mine;
-use server::handlers;
 use server::linkage;
+use server::handlers;
+use server::outgoing;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, @sel);

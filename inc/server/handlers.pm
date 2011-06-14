@@ -10,6 +10,10 @@ my %commands = (
     UID => {
         params => 9,
         code   => \&uid
+    },
+    QUIT => {
+        params => 1,
+        code   => \&quit
     }
 );
 
@@ -28,6 +32,17 @@ sub uid {
     # create a new user
     my $user = user->new($ref);
     return 1
+
+}
+
+sub quit {
+    my ($server, $data, @args) = @_;
+
+    # find the server or user
+    my $source = utils::global_lookup(col($args[0]));
+
+    # delete the server or user
+    $source->quit(col(join ' ', $args[2..$#args]));
 }
 
 1

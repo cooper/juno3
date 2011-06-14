@@ -6,7 +6,7 @@ package user::mine;
 use warnings;
 use strict;
 
-sub handle {print "@_\n";
+sub handle {
     my $user = shift;
     foreach my $line (split "\n", shift) {
 

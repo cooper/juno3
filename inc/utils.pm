@@ -109,6 +109,14 @@ sub col {
     return $string
 }
 
+# find an object by it's id (server, user, channel)
+sub global_lookup {
+    my $id = shift;
+    my $server = server::lookup_by_id($id);
+    my $user   = user::lookup_by_id($id);
+    return ($server ? $server : ( $user ? $user : undef ) )
+}
+
 # remove leading and trailing whitespace
 
 sub trim {
