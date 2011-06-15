@@ -32,6 +32,12 @@ sub quit {
     delete $user{$user->{uid}};
 }
 
+sub change_nick {
+    my ($user, $newnick) = @_;
+    log2("$$user{nick} -> $newnick");
+    $user->{nick} = $newnick
+}
+
 # lookup functions
 
 sub lookup_by_nick {

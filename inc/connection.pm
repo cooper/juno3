@@ -178,9 +178,10 @@ sub ready {
         # send server credentials
         if (!$connection->{sent_creds}) {
             $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
-            $connection->send('PASS '.conn($connection->{name}, 'send_password'));
-            $connection->send('READY');
+            $connection->send('PASS '.conn($connection->{name}, 'send_password'))
         }
+
+        $connection->send('READY');
 
     }
 

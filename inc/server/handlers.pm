@@ -49,6 +49,25 @@ sub uid {
     delete $ref->{dummy};
     delete $ref->{modes}; # this will be an array ref later
 
+    # nick collision?
+    my $used = user::lookup_by_nick($ref->{nick});
+    if ($used) {
+        log2("nick collision! $$ref{nick}");
+        if ($ref->{time} > $used->{time}) {
+            # I lose
+            $ref->{nick} = $ref->{uid}
+        }
+        elsif ($ref->{time} < $used->{time}) {
+            # you lose
+            $used->change_nick($used->{uid})
+        }
+        elsif ($ref->{time} == $used->{time}) {
+            # we both lose
+            $ref->{nick} = $ref->{uid};
+            $used->change_nick($used->{uid})
+        }
+    }
+
     # create a new user
     my $user = user->new($ref);
     return 1
