@@ -49,10 +49,22 @@ sub handle {
             # not enough parameters
             return $connection->wrong_par('NICK') if not defined $args[0];
 
-            # set the nick
-            if (defined ( my $nick = col(shift @args) )) {
-                $connection->{nick} = $nick
+            my $nick = col(shift @args);
+
+            # nick exists
+            if (user::lookup_by_nick($nick)) {
+                $connection->send(":$utils::GV{servername} 433 * $nick :Nickname is already in use.");
+                return
             }
+
+            # invalid chars
+            if (!utils::validnick($nick)) {
+                $connection->send(":$utils::GV{servername} 432 * $nick :Erroneous Nickname");
+                return
+            }
+
+            # set the nick
+            $connection->{nick} = $nick;
 
             # the user is ready if their USER info has been sent
             $connection->ready if exists $connection->{ident}
@@ -226,11 +238,13 @@ sub done {
 
     log2("Closing connection from $$connection{ip}: $reason");
 
-    # tell user.pm or server.pm that the connection is closed
-    $connection->{type}->quit($reason) if $connection->{type};
+    if ($connection->{type}) {
+        # share this quit with the children
+        $connection->server::outgoing::quit_all($reason);
 
-    # share this quit with the children
-    $connection->server::outgoing::quit_all($reason);
+        # tell user.pm or server.pm that the connection is closed
+        $connection->{type}->quit($reason)
+    }
 
     # remove from connection list
     delete $connection{$connection->{obj}};

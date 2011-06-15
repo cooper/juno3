@@ -126,4 +126,20 @@ sub trim {
     return $string
 }
 
+# check if a nickname is valid
+sub validnick {
+    my $str   = shift;
+    my $limit = conf('limit', 'nick');
+
+    # valid characters
+    return if (length $str < 1 ||
+      length $str > $limit ||
+      ($str =~ m/^\d/) ||
+      $str =~ m/[^A-Za-z-0-9-\[\]\\\`\^\|\{\}\_]/);
+
+    # success
+    return 1
+
+}
+
 1

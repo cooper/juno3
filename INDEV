@@ -132,3 +132,6 @@ PROTOCOL:
         June 15, 2011
 
         6. UID handler now determines who wins a nick collision battle.
+
+        7. Added nick check to registration.
+           Fixed a bug that occured when an unregistered connection disconnected.

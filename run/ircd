@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.6';
+our $VERSION = '0.3.7';
 our $PROTO   = '0.0.1';
 
 use POSIX;
