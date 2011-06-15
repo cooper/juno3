@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.3.7';
+our $VERSION = '0.3.8';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -44,8 +44,9 @@ use server::handlers;
 use server::outgoing;
 use utils qw[conf lconf log2 fatal];
 
-my  (%listen, %inbuffer, %outbuffer, %timer, @sel);
+my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel);
 our ($select, $socket_class);
+my  $loopid = 0;
 
 start();
 
@@ -173,6 +174,12 @@ mainloop: for (;;) {
         }
 
     }
+
+    # run through the registered loop
+    loop: while (my @loop = each %loop) {
+        $loop[1]->code($loop[0])
+    }
+
 }
 
 sub start {
@@ -268,4 +275,32 @@ sub create_sockets {
 sub sendpeer {
     my $peer = shift;
     $outbuffer{$peer} .= "$_\r\n" foreach @_
+}
+
+# register a block of code to the main loop
+sub register_loop {
+    my ($code, $name) = @_;
+    if (ref $code ne 'CODE') {
+        log2("attempted to register a loop that is not CODE");
+        return
+    }
+    my $id = ++$loopid;
+    $loop{$id} = {
+        code => $code,
+        name => $name
+    };
+    log2("registered loop $id: $name");
+    return 1
+}
+
+# delete an existing loop
+sub delete_loop {
+    my $id = shift;
+    if (exists $loop{$id}) {
+        log2("deleted loop $id ($loop{$id}{name})");
+        delete $loop{$id};
+        return 1
+    }
+    log2("attempted to delete loop $id which does not exist");
+    return
 }

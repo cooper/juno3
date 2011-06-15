@@ -135,3 +135,5 @@ PROTOCOL:
 
         7. Added nick check to registration.
            Fixed a bug that occured when an unregistered connection disconnected.
+
+        8. Added loop functions to extend the main loop.

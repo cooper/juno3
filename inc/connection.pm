@@ -138,7 +138,6 @@ sub handle {
     }
 
     return 1
-
 }
 
 # post-registration

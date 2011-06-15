@@ -50,6 +50,7 @@ sub uid {
     delete $ref->{modes}; # this will be an array ref later
 
     # nick collision?
+    # TODO send the nick change to the user if it's local!
     my $used = user::lookup_by_nick($ref->{nick});
     if ($used) {
         log2("nick collision! $$ref{nick}");
