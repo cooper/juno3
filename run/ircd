@@ -177,7 +177,7 @@ mainloop: for (;;) {
 
     # run through the registered loop
     loop: while (my @loop = each %loop) {
-        $loop[1]->code($loop[0])
+        $loop[1]->{code}($loop[0])
     }
 
 }
