@@ -66,7 +66,7 @@ sub handle {
 
         if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
             $commands{$command}{code}($server, $line, @s);
-            send_childen($server, $line) if $commands{$command}{forward}
+            send_children($server, $line) if $commands{$command}{forward}
         }
 
     }
