@@ -295,10 +295,10 @@ sub resolve_hostname {
             foreach my $rr ($packet->answer) {
                 my $resolution = $rr->ptrdname;
                 log2("checking $$connection{ip} to match $resolution");
-                my $check = $res->bgsend($resolution, 'A');
+                my $check = $res->bgsend($resolution);
 
                 # hostname-to-ip check
-                main::register_loop("hostname-to-IPv4 for $resolution", sub {
+                main::register_loop("hostname-to-IP for $resolution", sub {
                     if ($res->bgisready($check)) {
                         my $packet = $res->bgread($check);
                         undef $check;
@@ -310,7 +310,7 @@ sub resolve_hostname {
                             return
                         }
                         foreach my $rr ($packet->answer) {
-                            if (!$rr->isa('Net::DNS::RR::A')) {
+                            if (!$rr->isa('Net::DNS::RR::A') && !$rr->isa('Net::DNS::RR:AAAA')) {
                                 # this isn't an address!
                                 next
                             }
@@ -323,45 +323,19 @@ sub resolve_hostname {
                                 return 1
                             }
                         }
-                        my $check6 = $res->bgsend($resolution, 'AAAA');
-                        main::register_loop("hostname-to-IPv6 for $resolution", sub {
-                            if ($res->bgisready($check6)) {
-                                my $packet = $res->bgread($check6);
-                                undef $check6;
-                                if (!defined $packet) {
-                                    log2("there was an error resolving $resolution");
-                                    $connection->{host} = $connection->{ip};
-                                    $connection->ready if $connection->somewhat_ready;
-                                    main::delete_loop(shift);
-                                    return
-                                }
-                                foreach my $rr ($packet->answer) {
-                                    if (!$rr->isa('Net::DNS::RR::AAAA')) {
-                                        # this isn't an address!
-                                        next
-                                    }
-                                    if ($rr->address eq $connection->{ip}) {
-                                        # found a match!
-                                        $connection->{host} = $resolution;
-                                        log2("found a match: $$connection{ip} -> $resolution");
-                                        $connection->ready if $connection->somewhat_ready;
-                                        main::delete_loop(shift);
-                                        return 1
-                                    }
-                                }
-                                log2("no matches; using IP for $$connection{ip}");
-                                $connection->{host} = $connection->{ip};
-                                $connection->ready if $connection->somewhat_ready;
-                                main::delete_loop(shift)
-                            }
-                        });
+                        log2("no matches; using IP for $$connection{ip}");
+                        $connection->{host} = $connection->{ip};
+                        $connection->ready if $connection->somewhat_ready;
+                        main::delete_loop(shift);
                     } # ha
                 }); # ha!
+ 
             } # ...ha! ha!
             log2("no matches; using IP for $$connection{ip}");
             $connection->{host} = $connection->{ip};
             $connection->ready if $connection->somewhat_ready;
-            main::delete_loop(shift)
+            main::delete_loop(shift);
+            return
         } # ha
     });
     return
