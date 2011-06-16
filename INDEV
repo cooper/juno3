@@ -8,7 +8,7 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
 revision: I'll do it however I want to
 
 TODO:
-    no multiple nicks or collisions
+    bug with CNAME
 
 PROTOCOL:
     SERVER <sid> <name> <protocol version> <ircd version> :<description>
@@ -159,3 +159,5 @@ PROTOCOL:
 
         6. I almost promise that it works now.
            Fixed a small bug in quit().
+
+        7. Fixed some bugs. Hopefully it actually does work now.

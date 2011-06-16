@@ -30,7 +30,7 @@ sub parse_config {
         next if $line =~ m/^#/;
 
         # a block with a name
-        if ($line =~ m/^\[(.*):(.*)\]$/) {
+        if ($line =~ m/^\[(.*?):(.*)\]$/) {
             $block = trim($1);
             $name  = trim($2);
         }

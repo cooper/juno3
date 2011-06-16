@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.4.5';
+our $VERSION = '0.4.7';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -290,7 +290,7 @@ sub register_loop {
         log2("attempted to register a loop that is not CODE");
         return
     }
-    my $id = ++$loopid;
+    my $id = $loopid += 0.01;
     $loop{$id} = {
         code => $code,
         name => $name
