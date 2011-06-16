@@ -152,3 +152,5 @@ PROTOCOL:
         2. Fixed more bugs in the resolver.
 
         3. Hopefully these fixes will prevent thousands of nick collisions.
+
+        4. Just kidding; this should fix it.
