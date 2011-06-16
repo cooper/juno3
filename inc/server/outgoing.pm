@@ -8,7 +8,7 @@ use strict;
 
 sub quit_all {
     my ($connection, $reason) = @_;
-    server::mine::sendfrom_children($connection->{type}->id, 'QUIT :'.$reason)
+    server::mine::sendfrom_children(undef, $connection->{type}->id, 'QUIT :'.$reason)
 }
 
 sub sid {

@@ -154,3 +154,5 @@ PROTOCOL:
         3. Hopefully these fixes will prevent thousands of nick collisions.
 
         4. Just kidding; this should fix it.
+
+        5. nope, maybe this will.

@@ -101,16 +101,20 @@ sub send_burst {
 
 # send data to all of my children
 sub send_children {
+    my $ignore = shift;
     foreach my $server (values %server::server) {
         next unless $server->{conn};
+        next if defined $ignore && $server == $ignore;
         $server->send(@_)
     }
     return 1
 }
 
 sub sendfrom_children {
+    my $ignore = shift;
     foreach my $server (values %server::server) {
         next unless $server->{conn};
+        next if defined $ignore && $server == $ignore;
         $server->sendfrom(@_)
     }
     return 1
