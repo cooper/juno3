@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[log2 col conn];
+use utils qw[log2 col conn conf];
 
 our ($ID, %connection) = 0;
 
@@ -16,12 +16,14 @@ sub new {
     bless my $connection = {
         obj           => $peer,
         ip            => $peer->peerhost,
-        host          => $peer->peerhost,
         source        => $utils::GV{serverid},
         last_ping     => time,
         time          => time,
         last_response => time
     }, $this;
+
+    # resolve hostname
+    resolve_hostname($connection) if conf qw/enabled resolve/;
 
     log2("Processing connection from $$connection{ip}");    
     $main::select->add($peer);
@@ -67,7 +69,7 @@ sub handle {
             $connection->{nick} = $nick;
 
             # the user is ready if their USER info has been sent
-            $connection->ready if exists $connection->{ident}
+            $connection->ready if exists $connection->{ident} && exists $connection->{host}
 
         }
 
@@ -85,7 +87,7 @@ sub handle {
             }
 
             # the user is ready if their NICK has been sent
-            $connection->ready if exists $connection->{nick}
+            $connection->ready if exists $connection->{nick} && exists $connection->{host}
 
         }
 
@@ -119,7 +121,7 @@ sub handle {
             }
 
             # if a password has been sent, it's ready
-            $connection->ready if exists $connection->{pass}
+            $connection->ready if exists $connection->{pass} && exists $connection->{host}
 
         }
 
@@ -131,7 +133,7 @@ sub handle {
             $connection->{pass} = shift @args;
 
             # if a server has been sent, it's ready
-            $connection->ready if exists $connection->{name}
+            $connection->ready if exists $connection->{name} && exists $connection->{host}
 
         }
 
@@ -206,6 +208,17 @@ sub ready {
 
 }
 
+sub somewhat_ready {
+    my $connection = shift;
+    if (exists $connection->{nick} && exists $connection->{ident}) {
+        return 1
+    }
+    if (exists $connection->{name} && exists $connection->{pass}) {
+        return 1
+    }
+    return
+}
+
 # send data to the socket
 sub send {
     return main::sendpeer(shift->{obj}, @_)
@@ -255,6 +268,61 @@ sub done {
     undef $connection;
     return 1
 
+}
+
+sub resolve_hostname {
+    my $connection = shift;
+    my $res = Net::DNS::Resolver->new;
+    my $bg = $res->bgsend($connection->{ip}, 'PTR');
+
+    # ip-to-hostname check
+    main::register_loop("IP-to-hostname for $$connection{ip}", sub {
+        if ($res->bgisready($bg)) {
+            my $packet = $res->bgread($bg);
+            if (!defined $packet) {
+                log2("there was an error resolving $$connection{ip}");
+                $connection->{host} = $connection->{ip};
+                $connection->ready if $connection->somewhat_ready;
+                main::delete_loop(shift);
+                return
+            }
+            foreach my $rr ($packet->answer) {
+                my $resolution = $rr->ptrdname;
+                log2("checking $$connection{ip} to match $resolution");
+                my $check = $res->bgsend($resolution);
+
+                # hostname-to-ip check
+                main::register_loop("hostname-to-IP for $resolution", sub {
+                    if ($res->bgisready($check)) {
+                        my $packet = $res->bgread($check);
+                        if (!defined $packet) {
+                            log2("there was an error resolving $resolution");
+                            $connection->{host} = $connection->{ip};
+                            $connection->ready if $connection->somewhat_ready;
+                            main::delete_loop(shift);
+                            return
+                        }
+                        foreach my $rr ($packet->answer) {
+                            if ($rr->address eq $connection->{ip}) {
+                                # found a match!
+                                $connection->{host} = $resolution;
+                                log2("found a match: $$connection{ip} -> $resolution");
+                                $connection->ready if $connection->somewhat_ready;
+                                main::delete_loop(shift);
+                                return 1
+                            }
+                        }
+                        log2("no matches; using IP for $$connection{ip}");
+                        $connection->{host} = $connection->{ip};
+                        $connection->ready if $connection->somewhat_ready;
+                        main::delete_loop(shift);
+                    } # ha
+                }); # ha!
+ 
+            } # ...ha! ha!
+        } # ha
+    });
+    return
 }
 
 1

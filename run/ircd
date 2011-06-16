@@ -32,6 +32,7 @@ BEGIN {
 
 }
 
+use POSIX;
 use connection;
 use user;
 use server;
@@ -240,6 +241,11 @@ sub load_requirements {
         require Digest::SHA
     }
 
+    if (conf qw[enabled resolve]) {
+        log2('Loading Net::DNS');
+        require Net::DNS
+    }
+
 }
 
 sub create_sockets {
@@ -279,7 +285,7 @@ sub sendpeer {
 
 # register a block of code to the main loop
 sub register_loop {
-    my ($code, $name) = @_;
+    my ($name, $code) = @_;
     if (ref $code ne 'CODE') {
         log2("attempted to register a loop that is not CODE");
         return
