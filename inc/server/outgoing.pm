@@ -19,7 +19,7 @@ sub sid {
 
 sub sid_all {
     my $serv = shift;
-    server::mine::sendfrom_children($serv->{parent}->{sid},
+    server::mine::sendfrom_children($serv, $serv->{parent}->{sid},
       "SID $$serv{sid} $$serv{time} $$serv{name} $$serv{proto} $$serv{ircd} :$$serv{desc}")
 }
 
@@ -31,7 +31,7 @@ sub uid {
 
 sub uid_all {
     my $user = shift;
-    server::mine::sendfrom_children($user->{server}->{sid},
+    server::mine::sendfrom_children($user->{server}, $user->{server}->{sid},
       "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}")
 }
 

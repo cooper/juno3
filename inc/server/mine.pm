@@ -4,7 +4,7 @@ package server::mine;
 
 use warnings;
 use strict;
-use utils qw[log2];
+use utils qw[log2 col];
 
 our %commands = ();
 
@@ -29,7 +29,7 @@ sub register_handler {
 
     my $forward = shift;
 
-    #success
+    # success
     $commands{$command} = {
         code    => $ref,
         params  => $params,
@@ -39,7 +39,7 @@ sub register_handler {
     return 1
 }
 
-# handle local user data
+# handle local server data
 sub handle {
     my $server = shift;
     foreach my $line (split "\n", shift) {
@@ -69,7 +69,7 @@ sub handle {
         if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
             $commands{$command}{code}($server, $line, @s);
             # pass it on
-            send_children($line) if $commands{$command}{forward}
+            send_children(undef, $line) if $commands{$command}{forward}
         }
 
     }
@@ -104,16 +104,22 @@ sub send_burst {
 
 # send data to all of my children
 sub send_children {
+    my $ignore = shift;
     foreach my $server (values %server::server) {
+        next if defined $ignore && $server == $ignore;
         next unless $server->{conn};
+        next unless $server->{parent} == $utils::GV{server};
         $server->send(@_)
     }
     return 1
 }
 
 sub sendfrom_children {
+    my $ignore = shift;
     foreach my $server (values %server::server) {
+        next if defined $ignore && $server == $ignore;
         next unless $server->{conn};
+        next unless $server->{parent} == $utils::GV{server};
         $server->sendfrom(@_)
     }
     return 1

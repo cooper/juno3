@@ -62,8 +62,8 @@ sub is_local {
 
 # local shortcuts
 
-sub handle { server::mine::handle(@_) }
-sub send   { server::mine::send(@_)   }
+sub handle { user::mine::handle(@_) }
+sub send   { user::mine::send(@_)   }
 
 # other
 sub id { shift->{uid} }

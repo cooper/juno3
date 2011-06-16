@@ -150,3 +150,5 @@ PROTOCOL:
            Fixed a crash bug on nick collision.
 
         2. Fixed more bugs in the resolver.
+
+        3. Hopefully these fixes will prevent thousands of nick collisions.

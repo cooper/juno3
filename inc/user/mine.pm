@@ -13,4 +13,6 @@ sub handle {
     }
 }
 
+sub send {
+}
 1
