@@ -319,8 +319,9 @@ sub resolve_ptr {
     # found an rDNS. now check if it resolves to the IP address
     my $result = $rr[0]->ptrdname;
     main::delete_loop($loop);
-    my $check = $res->bgsend($result);
-    main::register_loop('A/AAAA lookup for '.$result, sub {
+    my $type  = (Net::IP::ip_is_ipv6($connection->{ip}) ? 'AAAA' : 'A');
+    my $check = $res->bgsend($result, $type);
+    main::register_loop($type.' lookup for '.$result, sub {
         resolve_aaaaa(shift, $res, $check, $connection, $result)
     });
 
@@ -355,8 +356,17 @@ sub resolve_aaaaa {
         return
     }
 
+    my $addr = $rr[0]->address;
+    my $ip   = $connection->{ip};
+
+    # compress them if it is IPv6
+    if (Net::IP::ip_is_ipv6($addr)) {
+        $addr = Net::IP::ip_compress_address($addr, 6);
+        $ip   = Net::IP::ip_compress_address($ip, 6);
+    }
+
     # found a record, does it match the IP address?
-    if ($rr[0]->address eq $connection->{ip}) {
+    if ($addr eq $ip) {
         # they match! set their host to that domain
         main::delete_loop($loop);
         $connection->resolve_finish($result);

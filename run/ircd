@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.5.0';
+our $VERSION = '0.5.1';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -243,6 +243,7 @@ sub load_requirements {
 
     if (conf qw[enabled resolve]) {
         log2('Loading Net::DNS');
+        require Net::IP;
         require Net::DNS
     }
 
