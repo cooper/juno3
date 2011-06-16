@@ -163,3 +163,7 @@ PROTOCOL:
         7. Fixed some bugs. Hopefully it actually does work now.
 
         8. Never mind, this will fix it.
+
+    5. June 16, 2011
+
+        0. Rewrote the hostname resolving. I think it might actually work now. (but don't believe me; I've already thought that the last 10 commits)

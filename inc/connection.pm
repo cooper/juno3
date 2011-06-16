@@ -275,70 +275,99 @@ sub done {
 
 }
 
+# RESOLVING FUNCTIONS
+
+sub resolve_finish {
+    my ($connection, $host) = @_;
+    log2("$$connection{ip} has been set to $host");
+    $connection->{host} = $host;
+    $connection->ready if $connection->somewhat_ready;
+    return 1
+}
+
 sub resolve_hostname {
     my $connection = shift;
     my $res = Net::DNS::Resolver->new;
     my $bg = $res->bgsend($connection->{ip}, 'PTR');
-
-    # ip-to-hostname check
-    main::register_loop("IP-to-hostname for $$connection{ip}", sub {
-        if ($res->bgisready($bg)) {
-            my $packet = $res->bgread($bg);
-            undef $bg;
-            if (!defined $packet) {
-                log2("there was an error resolving $$connection{ip}");
-                $connection->{host} = $connection->{ip};
-                $connection->ready if $connection->somewhat_ready;
-                main::delete_loop(shift);
-                return
-            }
-            foreach my $rr ($packet->answer) {
-                my $resolution = $rr->ptrdname;
-                log2("checking $$connection{ip} to match $resolution");
-                my $check = $res->bgsend($resolution);
-
-                # hostname-to-ip check
-                main::register_loop("hostname-to-IP for $resolution", sub {
-                    if ($res->bgisready($check)) {
-                        my $packet = $res->bgread($check);
-                        undef $check;
-                        if (!defined $packet) {
-                            log2("there was an error resolving $resolution");
-                            $connection->{host} = $connection->{ip};
-                            $connection->ready if $connection->somewhat_ready;
-                            main::delete_loop(shift);
-                            return
-                        }
-                        foreach my $rr ($packet->answer) {
-                            if (!$rr->isa('Net::DNS::RR::A') && !$rr->isa('Net::DNS::RR:AAAA')) {
-                                # this isn't an address!
-                                next
-                            }
-                            if ($rr->address eq $connection->{ip}) {
-                                # found a match!
-                                $connection->{host} = $resolution;
-                                log2("found a match: $$connection{ip} -> $resolution");
-                                $connection->ready if $connection->somewhat_ready;
-                                main::delete_loop(shift);
-                                return 1
-                            }
-                        }
-                        log2("no matches; using IP for $$connection{ip}");
-                        $connection->{host} = $connection->{ip};
-                        $connection->ready if $connection->somewhat_ready;
-                        main::delete_loop(shift);
-                    } # ha
-                }); # ha!
- 
-            } # ...ha! ha!
-            log2("no matches; using IP for $$connection{ip}");
-            $connection->{host} = $connection->{ip};
-            $connection->ready if $connection->somewhat_ready;
-            main::delete_loop(shift);
-            return
-        } # ha
+    main::register_loop('PTR lookup for '.$connection->{ip}, sub {
+        resolve_ptr(shift, $res, $bg, $connection);
     });
+}
+
+sub resolve_ptr {
+    my ($loop, $res, $bg, $connection) = @_;
+    return unless $res->bgisready($bg);
+    my $packet = $res->bgread($bg);
+    undef $bg;
+    if (!defined $packet) {
+        # error
+        main::delete_loop($loop);
+        $connection->resolve_finish($connection->{ip});
+        return
+    }
+
+    # no error; keep going
+    my @rr = $packet->answer;
+
+    # check if there is 1 record - no less, no more
+    if (scalar @rr != 1) {
+        main::delete_loop($loop);
+        $connection->resolve_finish($connection->{ip});
+        return
+    }
+
+    # found an rDNS. now check if it resolves to the IP address
+    my $result = $rr[0]->ptrdname;
+    main::delete_loop($loop);
+    my $check = $res->bgsend($result);
+    main::register_loop('A/AAAA lookup for '.$result, sub {
+        resolve_aaaaa(shift, $res, $check, $connection, $result)
+    });
+
+}
+
+sub resolve_aaaaa {
+    my ($loop, $res, $bg, $connection, $result) = @_;
+    return unless $res->bgisready($bg);
+    my $packet = $res->bgread($bg);
+    undef $bg;
+    if (!defined $packet) {
+        # error
+        main::delete_loop($loop);
+        $connection->resolve_finish($connection->{ip});
+        return
+    }
+
+    # no error; keep going
+    my @rr = $packet->answer;
+
+    # check if there is 1 record - no less, no more
+    if (scalar @rr != 1) {
+        main::delete_loop($loop);
+        $connection->resolve_finish($connection->{ip});
+        return
+    }
+
+    # only accept A and AA
+    if (!$rr[0]->isa('Net::DNS::RR::A') && !$rr[0]->isa('Net::DNS::RR::AAAA')) {
+        main::delete_loop($loop);
+        $connection->resolve_finish($connection->{ip});
+        return
+    }
+
+    # found a record, does it match the IP address?
+    if ($rr[0]->address eq $connection->{ip}) {
+        # they match! set their host to that domain
+        main::delete_loop($loop);
+        $connection->resolve_finish($result);
+        return 1
+    }
+
+    # they don't match :(
+    main::delete_loop($loop);
+    $connection->resolve_finish($connection->{ip});
     return
+
 }
 
 1
