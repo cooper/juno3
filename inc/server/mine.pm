@@ -101,7 +101,7 @@ sub send_burst {
 
 # send data to all of my children
 sub send_children {
-    foreach my $server (keys %server::server) {
+    foreach my $server (values %server::server) {
         next unless $server->{conn};
         $server->send(@_)
     }
