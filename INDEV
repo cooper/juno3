@@ -148,3 +148,5 @@ PROTOCOL:
            Added "forward" option to server handlers.
            When enabled, this server forwards the line to the child servers.
            Fixed a crash bug on nick collision.
+
+        2. Fixed more bugs in the resolver.

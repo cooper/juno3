@@ -279,6 +279,7 @@ sub resolve_hostname {
     main::register_loop("IP-to-hostname for $$connection{ip}", sub {
         if ($res->bgisready($bg)) {
             my $packet = $res->bgread($bg);
+            undef $bg;
             if (!defined $packet) {
                 log2("there was an error resolving $$connection{ip}");
                 $connection->{host} = $connection->{ip};
@@ -295,6 +296,7 @@ sub resolve_hostname {
                 main::register_loop("hostname-to-IP for $resolution", sub {
                     if ($res->bgisready($check)) {
                         my $packet = $res->bgread($check);
+                        undef $check;
                         if (!defined $packet) {
                             log2("there was an error resolving $resolution");
                             $connection->{host} = $connection->{ip};
@@ -303,6 +305,10 @@ sub resolve_hostname {
                             return
                         }
                         foreach my $rr ($packet->answer) {
+                            if (!$rr->isa('Net::DNS::RR::A') && !$rr->isa('Net::DNS::RR:AAAA')) {
+                                # this isn't an address!
+                                next
+                            }
                             if ($rr->address eq $connection->{ip}) {
                                 # found a match!
                                 $connection->{host} = $resolution;
