@@ -156,3 +156,6 @@ PROTOCOL:
         4. Just kidding; this should fix it.
 
         5. nope, maybe this will.
+
+        6. I almost promise that it works now.
+           Fixed a small bug in quit().

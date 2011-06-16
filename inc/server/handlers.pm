@@ -85,7 +85,7 @@ sub quit {
     my $source = utils::global_lookup(col($args[0]));
 
     # delete the server or user
-    $source->quit(col(join ' ', $args[2..$#args]));
+    $source->quit(col(join ' ', @args[2..$#args]));
 }
 
 1
