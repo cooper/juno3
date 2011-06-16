@@ -138,6 +138,13 @@ PROTOCOL:
 
         8. Added loop functions to extend the main loop.
 
-    4. June 13, 2011
+    4. June 13, 2011 <- obviously time is going backwards (June 15, 2011)
 
         0. Added hostname resolving! (don't expect it to be perfect [yet])
+
+        June 16, 2011
+
+        1. Fixed a small bug in the hostname resolver.
+           Added "forward" option to server handlers.
+           When enabled, this server forwards the line to the child servers.
+           Fixed a crash bug on nick collision.

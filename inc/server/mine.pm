@@ -27,10 +27,13 @@ sub register_handler {
         return
     }
 
+    my $forward = shift;
+
     #success
     $commands{$command} = {
-        code   => $ref,
-        params => $params
+        code    => $ref,
+        params  => $params,
+        forward => $forward
     };
     log2((caller)[0]." registered $command");
     return 1
@@ -65,6 +68,8 @@ sub handle {
 
         if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
             $commands{$command}{code}($server, $line, @s);
+            # pass it on
+            send_children($line) if $commands{$command}{forward}
         }
 
     }

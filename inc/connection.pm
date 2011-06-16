@@ -320,6 +320,7 @@ sub resolve_hostname {
                 }); # ha!
  
             } # ...ha! ha!
+            main::delete_loop(shift)
         } # ha
     });
     return

@@ -4,24 +4,27 @@ package server::handlers;
 
 use warnings;
 use strict;
-use utils qw[col];
+use utils qw[col log2];
 
 my %commands = (
     SID => {
-        params => 6,
-        code   => \&sid
+        params  => 6,
+        forward => 1,
+        code    => \&sid
     },
     UID => {
-        params => 9,
-        code   => \&uid
+        params  => 9,
+        forward => 1,
+        code    => \&uid
     },
     QUIT => {
-        params => 1,
-        code   => \&quit
+        params  => 1,
+        forward => 1,
+        code    => \&quit
     }
 );
 
-server::mine::register_handler($_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
+server::mine::register_handler($_, $commands{$_}{params}, $commands{$_}{code}, $commands{$_}{forward}) foreach keys %commands;
 
 sub sid {
     my ($server, $data, @args) = @_;
