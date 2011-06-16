@@ -1,0 +1,143 @@
+Development log
+---------------
+
+juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
+increasing the version for even the smallest changes helps track errors. Only six commits are in a
+minor, and only ten minors are in a major - the minor increases for every six changes. (up to 5,
+starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.\
+revision: I'll do it however I want to
+
+TODO:
+    no multiple nicks or collisions
+
+PROTOCOL:
+    SERVER <sid> <name> <protocol version> <ircd version> :<description>
+    :<parent SID> SID <sid> <ts> <name> <protocol version> <ircd version> :<description>
+    :<SID> UID <uid> <ts> +<usermodes> <nick> <ident> <host> <cloak> <ip> :<GECOS>
+
+0. April 30, 2011
+
+    0. April 30, 2011
+
+        0. Added directory finder.
+
+        1. Finished configuration parser and fetcher functions.
+
+        2. Fixed configuration parser.
+
+        3. Added load_requirements() and fatal() util.
+           user.pm is now soley for users; connection.pm will handle connections.
+
+        4. Whoops, forgot to put fatal() in @EXPORT_OK.
+           fatal() logs the method that called it now.
+           Added create_sockets() to create listening sockets and fatal() if not listening.
+           Added main loop stuff.
+           Added handler to connection.pm (kinda.)
+           Added send functions.
+
+        May 1, 2011
+
+        5. Added basic pre-registration commands and temporary incoming data handler (without any form of flood protection.)
+
+        6. Set connection->{ready} when NICK and USER have both been verified.
+           Made the configuration parser ignore blank lines.
+           Finished outgoing buffer.
+
+        7. Added user::new() and some more user.pm stuff.
+
+        8. Added connection::lookup() to a find a connection by its user or server object.
+           Finished connection.pm's data forwarding to user.pm or server.pm.
+
+        9. Finished SERVER and PASS.
+
+    1. May 1, 2011
+
+        0. Fixed realname bug.
+           Change configuration setup.
+
+        1. Fixed crash if disconnect before register.
+           Allow any drop-in replacement for IO::Socket::INET such as IO::Socket::IP or IO::Socket::INET6.
+           Finsihed flood protection and incoming buffer.
+
+        2. Added md5 support.
+           Changed configuration some more.
+           Added autoconnect and stuff.
+
+        3. Added more linking stuff.
+
+        May 2, 2011
+
+        4. If the credentials have been sent, don't send them again.
+
+        5. Created server::linkage for local protocol functions.
+
+    2. June 12, 2011
+
+        0. Add trim() util.
+           Keep track of server descriptions in server.pm.
+           Configuration parser now takes literal values and has improved syntax.
+           user::mine module is for handling of local user data.
+
+        1. Finished ping system!
+           Failure to respond to the first PING now leads to a registration timeout on unregistered connections.
+           Added lconf() util for fetching name configuration values.
+           
+        2. Only send PING if there isn't a pending ping.
+
+        3. Constants on and off define true and false values in the configuration.
+
+        4. server::mine contains the linking protocol handler.
+
+        June 13, 2011
+
+        5. a few fixes.
+
+        6. user::numeric contains numerics.
+           Keep track of the server users are connecting from.
+
+        7. added more functions to server::mine include send() to send data to a connected server.
+           added user::handlers and server::handlers for local handlers.
+           keep track of servers' parents.
+           other fixes.
+
+    3. June 13, 2011
+
+        0. Fixed bug where IRCd exits when attempting to write on a closed connection.
+
+        1. $user->mine->method() and $server->mine->method() now calls methods in user::mine and server::mine from a user or server object.
+
+        2. Reverted the stupid ->mine stuff.
+           Added several shortcuts to *::mine package functions.
+             - you can, of course, call them on an object such as $server->server::mine::send()
+           Added register_handler() to server::mine - registers a CODE reference to a command handler.
+           Server now handles and sends the UID command.
+           Added server::lookup_by_id() to find a server by its SID.
+
+        June 14, 2011
+
+        3. Store server parents by object, not SID.
+           Added user::is_local() for determining if the user is on this server.
+           server::outgoing contains outgoing commands.
+           Added quit() and uid() to server::outgoing.
+           Delete all users from a server when that server splits.
+           Connects, quits, and bursts should be completely accurate now - the servers should always be synced with users.
+           Properly remove child servers, their children, their children's children, and so on when a server splits.
+
+        4. Fixed a bug that sometimes leads to a crash where the local server's parent was unknown (itself).
+
+        5. Fixed several bugs in UID.
+           Added SID to share servers from server-to-server.
+           BURST no longer sends information on users and servers that the target server is already familiar with.
+
+        June 15, 2011
+
+        6. UID handler now determines who wins a nick collision battle.
+
+        7. Added nick check to registration.
+           Fixed a bug that occured when an unregistered connection disconnected.
+
+        8. Added loop functions to extend the main loop.
+
+    4. June 13, 2011
+
+        0. Added hostname resolving! (don't expect it to be perfect [yet])
