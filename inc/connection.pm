@@ -17,10 +17,13 @@ sub new {
         obj           => $peer,
         ip            => $peer->peerhost,
         source        => $utils::GV{serverid},
+        ssl           => $peer->isa('IO::Socket::SSL'),
         last_ping     => time,
         time          => time,
         last_response => time
     }, $this;
+
+    $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Looking up your hostname...');
 
     # resolve hostname
     if (conf qw/enabled resolve/) {
@@ -162,7 +165,6 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        $connection->{ssl}    = $connection->{obj}->isa('IO::Socket::SSL');
         $connection->{uid}    = $utils::GV{serverid}.++$ID;
         $connection->{server} = $utils::GV{server};
         $connection->{cloak}  = $connection->{host};
@@ -279,8 +281,16 @@ sub done {
 
 sub resolve_finish {
     my ($connection, $host) = @_;
-    log2("$$connection{ip} has been set to $host");
-    $connection->{host} = $host;
+    if (!defined $host) {
+        log2("could not resolve $$connection{ip}");
+        $connection->{host} = $connection->{ip};
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Could not resolve your hostname; using IP address instead')
+    }
+    else {
+        log2("$$connection{ip} -> $host");
+        $connection->{host} = $host;
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname ('.$host.')')
+    }
     $connection->ready if $connection->somewhat_ready;
     return 1
 }
@@ -312,7 +322,7 @@ sub resolve_ptr {
     # check if there is 1 record - no less, no more
     if (scalar @rr != 1) {
         main::delete_loop($loop);
-        $connection->resolve_finish($connection->{ip});
+        $connection->resolve_finish(undef);
         return
     }
 
@@ -324,7 +334,6 @@ sub resolve_ptr {
     main::register_loop($type.' lookup for '.$result, sub {
         resolve_aaaaa(shift, $res, $check, $connection, $result)
     });
-
 }
 
 sub resolve_aaaaa {
@@ -335,7 +344,7 @@ sub resolve_aaaaa {
     if (!defined $packet) {
         # error
         main::delete_loop($loop);
-        $connection->resolve_finish($connection->{ip});
+        $connection->resolve_finish(undef);
         return
     }
 
@@ -345,14 +354,14 @@ sub resolve_aaaaa {
     # check if there is 1 record - no less, no more
     if (scalar @rr != 1) {
         main::delete_loop($loop);
-        $connection->resolve_finish($connection->{ip});
+        $connection->resolve_finish(undef);
         return
     }
 
     # only accept A and AA
     if (!$rr[0]->isa('Net::DNS::RR::A') && !$rr[0]->isa('Net::DNS::RR::AAAA')) {
         main::delete_loop($loop);
-        $connection->resolve_finish($connection->{ip});
+        $connection->resolve_finish(undef);
         return
     }
 
@@ -375,9 +384,8 @@ sub resolve_aaaaa {
 
     # they don't match :(
     main::delete_loop($loop);
-    $connection->resolve_finish($connection->{ip});
+    $connection->resolve_finish(undef);
     return
-
 }
 
 1

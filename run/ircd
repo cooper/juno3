@@ -6,7 +6,7 @@ use strict;
 use feature 'say';
 
 our $run_dir = '.';
-our $VERSION = '0.5.1';
+our $VERSION = '0.5.2';
 our $PROTO   = '0.0.1';
 
 use POSIX;
@@ -34,15 +34,15 @@ BEGIN {
 
 use POSIX;
 use connection;
-use user;
 use server;
-use user::numerics;
-use user::mine;
-use user::handlers;
 use server::mine;
 use server::linkage;
 use server::handlers;
 use server::outgoing;
+use user;
+use user::numerics;
+use user::mine;
+use user::handlers;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel);
@@ -162,7 +162,7 @@ mainloop: for (;;) {
 
         }
 
-        if ((time-$conn->{last_ping}) > $freq) {
+        if ((time-$conn->{last_response}) > $freq) {
 
             # send a PING command and reset the ping time
             $conn->send("PING :$utils::GV{servername}") unless $conn->{ping_in_air};
