@@ -25,7 +25,8 @@ sub ping {
 }
 
 sub fake_user {
-    # send a "you're already registered" numeric
+    my $user = shift;
+    $user->numeric('ERR_ALREADYREGISTRED');
 }
 
 1

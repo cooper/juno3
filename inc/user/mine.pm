@@ -8,7 +8,7 @@ use strict;
 
 use utils qw[col log2];
 
-my %commands;
+my (%numerics, %commands);
 
 # register command handlers
 sub register_handler {
@@ -35,6 +35,22 @@ sub register_handler {
         params  => $params
     };
     log2((caller)[0]." registered $command");
+    return 1
+}
+
+# register user numerics
+sub register_numeric {
+    my $numeric = shift;
+
+    # does it already exist?
+    if (exists $numerics{$numeric}) {
+        log2("attempted to register $numeric which already exists");
+        return
+    }
+
+    my ($num, $str) = (shift, shift);
+    $numerics{$numeric} = [$num, $str];
+    log2((caller)[0]." registered $numeric $num");
     return 1
 }
 
@@ -69,7 +85,7 @@ sub send {
 }
 
 # send data with a source
-sub sendserv {
+sub sendfrom {
     my ($user, $source) = (shift, shift);
     if (!$user->{conn}) {
         my $sub = (caller 1)[3];
@@ -96,6 +112,16 @@ sub sendserv {
         push @send, ":$utils::GV{servername} $line"
     }
     $user->{conn}->send(@send)
+}
+
+sub numeric {
+    my ($user, $num) = (shift, shift);
+    if (exists $numerics{$num}) {
+        $user->sendserv($numerics{$num}[0]." $$user{nick} ".sprintf($numerics{$num}[1], @_));
+        return 1
+    }
+    log2("attempted to send nonexistent numeric $num");
+    return
 }
 
 1

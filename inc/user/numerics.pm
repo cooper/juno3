@@ -4,12 +4,12 @@ package user::numerics;
 
 use warnings;
 use strict;
-use constant {
-    RPL_WELCOME => '001'
-};
 
 my %numerics = (
-    RPL_WELCOME => 'Welcome to the %s IRC Network %s!%s@%s'
+    RPL_WELCOME          => ['001', 'Welcome to the %s IRC Network %s!%s@%s'],
+    ERR_ALREADYREGISTRED => ['461', ':You may not reregister']
 );
+
+user::mine::register_numeric($_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
 
 1

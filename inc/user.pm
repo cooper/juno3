@@ -66,6 +66,7 @@ sub handle   { user::mine::handle(@_)   }
 sub send     { user::mine::send(@_)     }
 sub sendfrom { user::mine::sendfrom(@_) }
 sub sendserv { user::mine::sendserv(@_) }
+sub numeric  { user::mine::numeric(@_)  }
 
 # other
 sub id { shift->{uid} }

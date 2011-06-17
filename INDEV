@@ -176,3 +176,6 @@ PROTOCOL:
            Added hostname notices.
            Added user handler and a few other things to  user::mine.
            Fixed a bug where PINGing was done more often than it should be.
+
+        3. Finished user numeric stuff.
+           Added fake USER command.

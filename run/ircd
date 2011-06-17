@@ -4,10 +4,12 @@
 use warnings;
 use strict;
 use feature 'say';
-
+use constant {
+    VERSION => '0.5.3',
+    PROTO   => '0.0.1'
+};
 our $run_dir = '.';
-our $VERSION = '0.5.2';
-our $PROTO   = '0.0.1';
+our ($VERSION, $PROTO ) = (VERSION, PROTO);
 
 use POSIX;
 use IO::Select;
@@ -40,9 +42,9 @@ use server::linkage;
 use server::handlers;
 use server::outgoing;
 use user;
-use user::numerics;
 use user::mine;
 use user::handlers;
+use user::numerics;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel);
