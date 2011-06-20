@@ -5,11 +5,11 @@ use warnings;
 use strict;
 use feature 'say';
 use constant {
-    VERSION => '0.5.3',
+    VERSION => '0.5.4',
     PROTO   => '0.0.1'
 };
 our $run_dir = '.';
-our ($VERSION, $PROTO ) = (VERSION, PROTO);
+our ($VERSION, $PROTO, $START) = ('juno3-'.VERSION, PROTO, time);
 
 use POSIX;
 use IO::Select;

@@ -8,7 +8,10 @@ starting at 0.) Using this system, it's likely that an entire minor will be comp
 revision: I'll do it however I want to
 
 TODO:
-
+    RPL_ISUPPORT
+    finish RPL_WELCOME
+    finish RPL_LUSERCHANNELS
+    LUSERS
 
 PROTOCOL:
     SERVER <sid> <name> <protocol version> <ircd version> :<description>
@@ -179,3 +182,9 @@ PROTOCOL:
 
         3. Finished user numeric stuff.
            Added fake USER command.
+
+        June 19, 2011
+
+        4. Added some numerics to user connect.
+           Added LUSERS command.
+           Added MOTD command.

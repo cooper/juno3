@@ -55,10 +55,22 @@ sub parse_config {
 
     }
 
+    open my $motd, conf('file', 'motd');
+    if (!eof $motd) {
+        while (my $line = <$motd>) {
+            chomp $line;
+            push @{$utils::GV{motd}}, $line
+        }
+    }
+    else {
+        $utils::GV{motd} = undef
+    }
+
     # set some global variables
     $utils::GV{servername} = conf('server', 'name');
     $utils::GV{serverid}   = conf('server', 'id');
     $utils::GV{serverdesc} = conf('server', 'description');
+    $utils::GV{network}    = conf('network', 'name');
 
     return 1
 

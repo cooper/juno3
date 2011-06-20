@@ -211,6 +211,7 @@ sub ready {
     }
     
     $connection->{type}->{conn} = $connection;
+    user::mine::new_connection($connection->{type}) if $connection->{type}->isa('user');
     return $connection->{ready} = 1
 
 }

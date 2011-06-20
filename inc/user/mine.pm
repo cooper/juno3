@@ -124,4 +124,15 @@ sub numeric {
     return
 }
 
+# send welcomes
+sub new_connection {
+    my $user = shift;
+    $user->numeric('RPL_WELCOME', $utils::GV{network}, $user->{nick}, $user->{ident}, $user->{host});
+    $user->numeric('RPL_YOURHOST', $utils::GV{servername}, $main::VERSION);
+    $user->numeric('RPL_CREATED', POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime $main::START));
+    $user->numeric('RPL_MYINFO', $utils::GV{servername}, $main::VERSION, 'i', 'i'); # TODO
+    $user->handle('LUSERS');
+    $user->handle('MOTD')
+}
+
 1
