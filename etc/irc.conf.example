@@ -1,0 +1,86 @@
+# the format of this configuration should be fairly self-explanatory.
+# you may space it out as you wish for clarity; whitespace is ignored.
+
+#   unnamed blocks:
+#       a shortcut to a "sec" block
+#       Format: [type]
+#       Example: [server]
+#       Could also be written as a named sec block: [sec:server]
+
+#   named blocks:
+#       Format: [type:name]
+#       Example: [oper:cooper]
+
+#   keys and values:
+#       Format: key:value
+#       The value is literal Perl.
+#       constants on and off are provided for true and false values
+#       Example: name:"NoTrollPlzNet"
+#       Example: pid:$$
+#       Example: autoconnect:off
+
+[ enabled ]
+                    # for password encryption   (link, oper, etc.)
+    sha: on         # SHA-1/224/256/384/512     (core Perl module)
+    md5: off        # probably less secure      (core Perl module)
+    resolve: on     # enable hostname resolving (useful, but not light)
+
+[ class ]
+
+    normal_package: "IO::Socket"        # the package to require for listening
+    normal_class: "IO::Socket::INET"    # the package used to create the socket objects
+                                        #   any drop-in replacement for IO::Socket 
+                                        #   such as IO::Socket::INET6 or IO::Socket::IP
+                                        #   is valid in either of these options
+
+[ network ]
+
+    name: "NoTrollPlzNet"
+
+[ server ]
+
+    name: "cooper.on.fgt-transit.com"           # the name of the server
+    description: "juno development server"      # the description of the server
+    sex: "male"                                 # the server's sex (preferably male or female)
+    id: 0                                       # the SID
+                                                #   must be unique to the network
+
+[ flood ]
+
+    lines: 50                   # flooding options:
+    bytes: 1                    #   defaults are usually sufficient.
+    message: "excess flood"
+
+[ limit ]
+
+    nick: 32    # the maximum number of character in nicknames
+
+[ file ]
+
+    motd: "etc/motd.conf"       # the path to the MOTD file
+
+[ ping: server ]
+
+    frequency: 20           # server ping section:
+    timeout: 500            #   defaults are usually sufficient.
+
+[ ping: user ]
+
+    message: "Ping timeout"     # user ping section:
+    frequency: 30                   defaults are usually sufficient.
+    timeout: 120
+
+
+[ listen: 0.0.0.0 ]
+                                    # <--- the address to bind to should be the block name
+    port: [6667..6669, 7000]        # separated by commas, nested by [].
+                                    #   ranges are supported.
+
+[ connect: server1.netbookwashers.info ]
+                                    # <--- the name of the opposite server should be the block name
+    address: "67.202.109.243"       # the address to connect to (usually an IP is desired.)
+    port: 7000                      # the port to connect to
+    encryption: "sha1"              # encryption of the receive password - make sure it is enabled
+    send_password: "k"              # the password to send to the other server
+    receive_password: "13fbd79c3d390e5d6585a21e11ff5ec1970cff0c" # the password to receive in return
+    autoconnect: off                # attempt to connect to the server automatically?
