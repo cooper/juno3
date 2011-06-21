@@ -1,3 +1,4 @@
 etc/*.conf
 etc/*.db
 dev/
+*~
