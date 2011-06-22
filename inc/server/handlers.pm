@@ -70,7 +70,7 @@ sub uid {
             # you lose
             $used->change_nick($used->{uid})
         }
-        elsif ($ref->{time} == $used->{time}) {
+        else {
             # we both lose
             $ref->{nick} = $ref->{uid};
             $used->change_nick($used->{uid})

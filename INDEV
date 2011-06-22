@@ -197,3 +197,6 @@ PROTOCOL:
            Relay nick changes to child servers.
            Handle NICK command from servers.
            Added fake PING command.
+
+        7. Added INFO command.
+           Added support for SHA224 and SHA384.

@@ -181,7 +181,9 @@ sub ready {
 
         given (conn($connection->{name}, 'encryption')) {
             when ('sha1')   { $password = Digest::SHA::sha1_hex($connection->{pass})   }
+            when ('sha224') { $password = Digest::SHA::sha224_hex($connection->{pass}) }
             when ('sha256') { $password = Digest::SHA::sha256_hex($connection->{pass}) }
+            when ('sha384') { $password = Digest::SHA::sha384_hex($connection->{pass}) }
             when ('sha512') { $password = Digest::SHA::sha512_hex($connection->{pass}) }
             when ('md5')    { $password = Digest::MD5::md5_hex($connection->{pass})    }
         }

@@ -30,6 +30,10 @@ my %commands = (
     PONG => {
         params => 0,
         code   => sub { }
+    },
+    INFO => {
+        params => 0,
+        code   => \&info
     }
 );
 
@@ -123,6 +127,26 @@ sub nick {
     $user->sendfrom($user->full, "NICK $newnick");
     $user->change_nick($newnick);
     server::outgoing::nickchange_all($user);
+}
+
+sub info {
+    my $user = shift;
+    my @info = (
+        "\2***\2 this is \2juno-ircd\2 version \2$main::VERSION. ***\2",
+        "",
+        "Copyright (c) 2011, Mitchell Cooper",
+        "",
+        "This program is free software.",
+        "You are free to modify and redistribute it under the",
+        "terms of the New BSD license.",
+        "",
+        "\2Developers\2",
+        "    Mitchell Cooper, \"cooper\" <cooper\@notroll.net>",
+        ""
+    );
+    $user->numeric('RPL_INFO', $_) foreach @info;
+    $user->numeric('RPL_ENDOFINFO');
+    return 1
 }
 
 1
