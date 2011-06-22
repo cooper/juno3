@@ -66,8 +66,16 @@ sub handle {
 
         my $command = uc $s[0];
 
-        if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
-            $commands{$command}{code}($user, $line, @s)
+        if ($commands{$command}) { # an existing handler
+            if ($#s >= $commands{$command}{params}) {
+                $commands{$command}{code}($user, $line, @s)
+            }
+            else { # not enough parameters
+                $user->numeric('ERR_NEEDMOREPARAMS', $s[0])
+            }
+        }
+        else { # unknown command
+            $user->numeric('ERR_UNKNOWNCOMMAND', $s[0])
         }
 
     }

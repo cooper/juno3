@@ -188,3 +188,7 @@ PROTOCOL:
         4. Added some numerics to user connect.
            Added LUSERS command.
            Added MOTD command.
+
+        June 22, 2011
+
+        5. Added more numerics.

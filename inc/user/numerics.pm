@@ -18,8 +18,10 @@ my %numerics = (
     RPL_MOTD             => ['372', ':- %s'],
     RPL_MOTDSTART        => ['375', ':%s message of the day'],
     RPL_ENDOFMOTD        => ['376', ':End of message of the day'],
+    ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],
-    ERR_ALREADYREGISTRED => ['461', ':You may not reregister'],
+    ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
+    ERR_ALREADYREGISTRED => ['462', ':You may not reregister']
 );
 
 user::mine::register_numeric($_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
