@@ -21,6 +21,11 @@ my %commands = (
         params  => 1,
         forward => 1,
         code    => \&quit
+    },
+    NICK => {
+        params  => 1,
+        forward => 1,
+        code    => \&nick
     }
 );
 
@@ -86,6 +91,14 @@ sub quit {
 
     # delete the server or user
     $source->quit(col(join ' ', @args[2..$#args]));
+}
+
+sub nick {
+    # handle a nickchange
+    my ($server, $data, @args) = @_;
+    my $user = user::lookup_by_id(col($args[0]));
+    # TODO send to familiar users
+    $user->change_nick($args[2])
 }
 
 1

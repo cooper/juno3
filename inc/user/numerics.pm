@@ -20,6 +20,7 @@ my %numerics = (
     RPL_ENDOFMOTD        => ['376', ':End of message of the day'],
     ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],
+    ERR_ERRONEUSNICKNAME => ['432', '%s: Erroneous nickname'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister']
 );

@@ -35,4 +35,14 @@ sub uid_all {
       "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}")
 }
 
+sub nickchange {
+    my ($server, $user) = @_;
+    $server->sendfrom($user->{uid}, "NICK $$user{nick}")
+}
+
+sub nickchange_all {
+    my $user = shift;
+    server::mine::sendfrom_children(undef, $user->{uid}, "NICK $$user{nick}")
+}
+
 1

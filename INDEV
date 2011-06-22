@@ -192,3 +192,8 @@ PROTOCOL:
         June 22, 2011
 
         5. Added more numerics.
+
+        6. Added NICK user command.
+           Relay nick changes to child servers.
+           Handle NICK command from servers.
+           Added fake PING command.

@@ -4,7 +4,7 @@ package user::handlers;
 
 use warnings;
 use strict;
-use utils qw[col log2];
+use utils qw[col log2 lceq];
 
 my %commands = (
     PING => {
@@ -22,6 +22,14 @@ my %commands = (
     MOTD => {
         params => 0,
         code   => \&motd
+    },
+    NICK => {
+        params => 1,
+        code   => \&nick
+    },
+    PONG => {
+        params => 0,
+        code   => sub { }
     }
 );
 
@@ -85,6 +93,36 @@ sub motd {
     }
     $user->numeric('RPL_ENDOFMOTD');
     return 1
+}
+
+# change nickname
+sub nick {
+    my ($user, $data, @args) = @_;
+    my $newnick = col($args[1]);
+
+    # ignore stupid nick changes
+    if (lceq $user->{nick} => $newnick) {
+        return
+    }
+
+    # check for valid nick
+    if (!utils::validnick($newnick)) {
+        $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
+        return
+    }
+
+    # check for existing nick
+    if (user::lookup_by_nick($newnick)) {
+        $user->numeric('ERR_NICKNAMEINUSE', $newnick);
+        return
+    }
+
+    # TODO send to familiar users
+    # but for now just send to the client
+
+    $user->sendfrom($user->full, "NICK $newnick");
+    $user->change_nick($newnick);
+    server::outgoing::nickchange_all($user);
 }
 
 1

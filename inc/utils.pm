@@ -12,7 +12,7 @@ use constant {
 };
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim];
+our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -152,6 +152,10 @@ sub validnick {
     # success
     return 1
 
+}
+
+sub lceq {
+    lc shift eq lc shift
 }
 
 1

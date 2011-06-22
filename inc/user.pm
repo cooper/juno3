@@ -60,6 +60,11 @@ sub is_local {
     return
 }
 
+sub full {
+    my $user = shift;
+    "$$user{nick}!$$user{ident}\@$$user{host}"
+}
+
 # local shortcuts
 
 sub handle   { user::mine::handle(@_)   }

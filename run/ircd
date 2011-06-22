@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 use constant {
-    VERSION => '0.5.4',
+    VERSION => '0.5.6',
     PROTO   => '0.0.1'
 };
 our $run_dir = '.';
