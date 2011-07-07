@@ -4,12 +4,15 @@
 use warnings;
 use strict;
 use feature 'say';
-use constant {
-    VERSION => '0.5.7',
-    PROTO   => '0.0.1'
-};
+sub VERSION () { '0.5.8' }
+sub PROTO   () { '0.0.1' }
+
+local $0     = 'juno3';
 our $run_dir = '.';
-our ($VERSION, $PROTO, $START) = ('juno3-'.VERSION, PROTO, time);
+our $VERSION = 'juno3-'.VERSION;
+our $PROTO   = PROTO;
+our $START   = time;
+my  $NOFORK  = 0;
 
 use POSIX;
 use IO::Select;
@@ -30,7 +33,10 @@ BEGIN {
     }
 
     chdir $run_dir or die "Can't access run directory.\n";
-    unshift @INC, "$run_dir/inc"
+    unshift @INC, "$run_dir/inc";
+
+    # nofork mode ?
+    $NOFORK = 'NOFORK' ~~ @ARGV
 
 }
 
@@ -47,11 +53,31 @@ use user::handlers;
 use user::numerics;
 use utils qw[conf lconf log2 fatal];
 
-my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel);
+my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
 our ($select, $socket_class);
 my  $loopid = 0;
 
 start();
+
+if (!$NOFORK) {
+    say 'Becoming a daemon...';
+
+    # since there will be no input or output from here on,
+    # open the filehandles to /dev/null
+    open STDIN,  '<', '/dev/null' or fatal("Can't read /dev/null: $!");
+    open STDOUT, '>', '/dev/null' or fatal("Can't write /dev/null: $!");
+    open STDERR, '>', '/dev/null' or fatal("Can't write /dev/null: $!");
+
+    # write the PID file that is used by the start/stop/rehash script.
+    open my $pidfh, '>', "$run_dir/etc/juno3.pid" or fatal("Can't write $run_dir/etc/juno3.pid");
+    $PID = fork;
+    say $pidfh $PID if $PID;
+    close $pidfh
+
+}
+
+exit if $PID;
+POSIX::setsid();
 
 # main loop
 

@@ -6,10 +6,6 @@ use warnings;
 use strict;
 use feature qw[switch say];
 use base 'Exporter';
-use constant {
-    on  => 1,
-    off => 0
-};
 use Exporter;
 
 our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq];
@@ -157,5 +153,8 @@ sub validnick {
 sub lceq {
     lc shift eq lc shift
 }
+
+sub on  () { 1 }
+sub off () { 0 }
 
 1

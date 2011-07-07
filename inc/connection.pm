@@ -30,7 +30,8 @@ sub new {
         resolve_hostname($connection)
     }
     else {
-        $connection->{host} = $connection->{ip}
+        $connection->{host} = $connection->{ip};
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Could not resolve your hostname; using IP address instead')
     }
 
     log2("Processing connection from $$connection{ip}");    
@@ -168,7 +169,9 @@ sub ready {
         $connection->{uid}    = $utils::GV{serverid}.++$ID;
         $connection->{server} = $utils::GV{server};
         $connection->{cloak}  = $connection->{host};
+        $connection->{modes}  = '';
         $connection->{type}   = user->new($connection);
+
         # tell my children
         server::outgoing::uid_all($connection->{type})
     }

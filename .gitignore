@@ -1,4 +1,5 @@
 etc/*.conf
 etc/*.db
+etc/*.pid
 dev/
 *~

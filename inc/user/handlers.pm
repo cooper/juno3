@@ -132,7 +132,7 @@ sub nick {
 sub info {
     my $user = shift;
     my @info = (
-        "\2***\2 this is \2juno-ircd\2 version \2$main::VERSION. ***\2",
+        "\2***\2 this is \2juno-ircd\2 version \0023.".main::VERSION."\2.\2 ***\2",
         "",
         "Copyright (c) 2011, Mitchell Cooper",
         "",

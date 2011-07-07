@@ -200,3 +200,7 @@ PROTOCOL:
 
         7. Added INFO command.
            Added support for SHA224 and SHA384.
+
+        8. Fixed a few small bugs.
+           Added the ability to fork and become a daemon.
+           Added NOFORK option.
