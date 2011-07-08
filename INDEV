@@ -220,3 +220,5 @@ PROTOCOL:
 
         2. Added lookup_by_name() channel function.
            Added some other channely stuff.
+
+        3. RPL_LUSERCHANNELS should only be sent if non-zero.

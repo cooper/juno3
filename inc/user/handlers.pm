@@ -80,7 +80,11 @@ sub lusers {
 
     $user->numeric('RPL_LUSERCLIENT', $users, $invisible, scalar keys %server::server);
     $user->numeric('RPL_LUSEROP', $opers) if $opers;
-    # TODO RPL_LUSERCHANNELS
+
+    # only send if non-zero
+    my $channels = scalar keys %channel::channels;
+    $user->numeric('RPL_LUSERCHANNELS', $channels) if $channels;
+
     $user->numeric('RPL_LUSERME', $myclients, $myservers);
 }
 
