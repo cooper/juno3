@@ -225,3 +225,5 @@ PROTOCOL:
 
         4. Made some changes to the user mode system.
            Do not change nicks if the nick is taken.
+
+        5. I probably fell asleep while writing the mode validator thingy, but now it is fixed.

@@ -24,12 +24,6 @@ sub new {
 
     $user->set_modes($ref->{modes});
 
-    foreach my $mode (@{$user->{modes}}) {
-        if (!($mode ~~ @modes)) {
-            log2("attempted to set nonexistent mode $mode on $$user{nick}; ignoring.");
-            delete $moe
-    }
-
     return $user
 
 }
