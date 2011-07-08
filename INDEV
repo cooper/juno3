@@ -228,5 +228,5 @@ PROTOCOL:
 
         5. I probably fell asleep while writing the mode validator thingy, but now it is fixed.
 
-        6. Added is_mode() user function.
+        6. Added is_mode() and unset_modes() user functions.
            Fixed a bug that causes crash on user connect because you can't push to a nonexistence array reference.
