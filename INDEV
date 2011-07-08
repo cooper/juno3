@@ -201,9 +201,17 @@ PROTOCOL:
         7. Added INFO command.
            Added support for SHA224 and SHA384.
 
+        July 7, 2011
+
         8. Fixed a few small bugs.
            Added the ability to fork and become a daemon.
            Added NOFORK option.
 
+        July 8, 2011
+
         9. Fixed broken NOFORK option.
            Added RPL_ISUPPORT, but much of it is unfinished since channels don't exist yet.
+
+    6. July 8, 2011
+
+        0. beginning to work on channel.pm.

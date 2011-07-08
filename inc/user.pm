@@ -16,9 +16,9 @@ sub new {
     my ($class, $ref) = @_;
     
     # create the user object
-    bless my $user = {}, $class;
-    $user->{$_} = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
-    $user->{modes} = [split //, $ref->{modes}];
+    bless my $user      = {}, $class;
+    $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
+    $user->{modes}      = [split //, $ref->{modes}];
     $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
@@ -73,8 +73,6 @@ sub send     { user::mine::send(@_)     }
 sub sendfrom { user::mine::sendfrom(@_) }
 sub sendserv { user::mine::sendserv(@_) }
 sub numeric  { user::mine::numeric(@_)  }
-
-# other
-sub id { shift->{uid} }
+sub id       { shift->{uid}             }
 
 1

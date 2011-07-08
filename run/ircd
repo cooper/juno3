@@ -4,7 +4,7 @@
 use warnings;
 use strict;
 use feature 'say';
-sub VERSION () { '0.5.9' }
+sub VERSION () { '0.6.0' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -316,7 +316,7 @@ sub register_loop {
         log2("attempted to register a loop that is not CODE");
         return
     }
-    my $id = $loopid += 0.01;
+    my $id = ++$loopid;
     $loop{$id} = {
         code => $code,
         name => $name
