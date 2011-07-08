@@ -19,13 +19,38 @@ sub new {
     # create the user object
     bless my $user      = {}, $class;
     $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
-    $user{$user->{uid}} = $user;
+    $user->{modes}      = [];
+    $user{$user->{uid}} = $user;\
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
     $user->set_modes($ref->{modes});
 
     return $user
 
+}
+
+sub is_mode {
+    my ($user, $mode) = @_;
+    $mode ~~ @{$user->{modes}}
+}
+
+sub unset_modes {
+    # takes a string of one or more modes
+    my ($user, $modes) = @_;
+
+    foreach my $mode (split //, $modes) {
+
+        # is the user set to this mode?
+        if (!$user->is_mode($mode)) {
+            log2("attempted to unset mode $mode on that is not set on $$user{nick}; ignoring.")
+        }
+
+        # it does, so remove it
+        @{$user->{modes}} = grep { $_ ne $mode } @{$user->{modes}}
+
+    }
+
+    return join '', @{$user->{modes}}
 }
 
 sub set_modes {
