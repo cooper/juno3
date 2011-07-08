@@ -222,3 +222,6 @@ PROTOCOL:
            Added some other channely stuff.
 
         3. RPL_LUSERCHANNELS should only be sent if non-zero.
+
+        4. Made some changes to the user mode system.
+           Do not change nicks if the nick is taken.

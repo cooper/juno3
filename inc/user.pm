@@ -8,6 +8,7 @@ use strict;
 use utils qw[log2];
 
 our %user;
+our @modes = qw/i o/;
 
 # create a new user
 
@@ -18,12 +19,37 @@ sub new {
     # create the user object
     bless my $user      = {}, $class;
     $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
-    $user->{modes}      = [split //, $ref->{modes}];
     $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
+    $user->set_modes($ref->{modes});
+
+    foreach my $mode (@{$user->{modes}}) {
+        if (!($mode ~~ @modes)) {
+            log2("attempted to set nonexistent mode $mode on $$user{nick}; ignoring.");
+            delete $moe
+    }
+
     return $user
 
+}
+
+sub set_modes {
+    # takes a string of one or more modes
+    my ($user, $modes) = @_;
+
+    foreach my $mode (split //, $modes) {
+
+        # does it exist? no
+        if (!($mode ~~ @modes)) {
+            log2("attempted to set nonexistent mode $mode on $$user{nick}; ignoring.")
+        }
+
+        # it does
+        push @{$user->{modes}}, $mode
+    }
+
+    return join '', @{$user->{modes}}
 }
 
 sub quit {
@@ -35,6 +61,13 @@ sub quit {
 
 sub change_nick {
     my ($user, $newnick) = @_;
+
+    # make sure it doesn't exist first
+    if (lookup_by_nick($newnick)) {
+        log2("attempted to change nicks to a nickname that already exists! $newnick");
+        return
+    }
+
     log2("$$user{nick} -> $newnick");
     $user->{nick} = $newnick
 }
