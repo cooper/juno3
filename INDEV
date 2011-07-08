@@ -204,3 +204,6 @@ PROTOCOL:
         8. Fixed a few small bugs.
            Added the ability to fork and become a daemon.
            Added NOFORK option.
+
+        9. Fixed broken NOFORK option.
+           Added RPL_ISUPPORT, but much of it is unfinished since channels don't exist yet.

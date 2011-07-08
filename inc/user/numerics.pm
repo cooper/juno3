@@ -5,12 +5,14 @@ package user::numerics;
 use warnings;
 use strict;
 
+use utils qw/conf/;
+
 my %numerics = (
     RPL_WELCOME          => ['001', 'Welcome to the %s IRC Network %s!%s@%s'],
     RPL_YOURHOST         => ['002', ':Your host is %s, running version %s'],
     RPL_CREATED          => ['003', ':This server was created %s'],
     RPL_MYINFO           => ['004', '%s %s %s %s'],
-    RPL_ISUPPORT         => ['005', '%s'], # TODO
+    RPL_ISUPPORT         => ['005', '%s:are supported by this server'],
     RPL_LUSERCLIENT      => ['251', ':There are %d users and %d invisible on %d servers'],
     RPL_LUSEROP          => ['252', '%d :operators online'], # non-zero
     RPL_LUSERCHANNELS    => ['254', '%d :channels formed'], # TODO non-zero
@@ -28,6 +30,40 @@ my %numerics = (
 );
 
 user::mine::register_numeric($_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
+
+sub rpl_isupport {
+    my $user = shift;
+
+    my %things = (
+        PREFIX      => '(qaohv)~&@%+',
+        CHANTYPES   => '#',
+        CHANMODES   => ',,,',                       # TODO
+        MODES       => 0,                           # TODO
+        CHANLIMIT   => '#:0',                       # TODO
+        NICKLEN     => conf('limit', 'nick'),
+        MAXLIST     => 'beIZ:0',                    # TODO
+        NETWORK     => $utils::GV{network},
+        EXCEPTS     => 'e',
+        INVEX       => 'I',
+        CASEMAPPING => 'rfc1459',
+        TOPICLEN    => conf('limit', 'topic'),
+        KICKLEN     => conf('limit', 'kickmsg'),
+        CHANNELLEN  => conf('limit', 'channelname'),
+        RFC2812     => 'YES',
+        FNC         => 'YES',
+        AWAYLEN     => conf('limit', 'away'),
+        MAXTARGETS  => 1
+      # ELIST                                       # TODO
+    );
+
+    my $string = '';
+
+    while (my ($param, $val) = each %things) {
+        $string .= $param.($val eq 'YES' ? '' : '='.$val).' '
+    }
+
+    $user->numeric('RPL_ISUPPORT', $string);
+}
 
 1
 

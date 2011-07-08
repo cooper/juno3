@@ -139,6 +139,7 @@ sub new_connection {
     $user->numeric('RPL_YOURHOST', $utils::GV{servername}, $main::VERSION);
     $user->numeric('RPL_CREATED', POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime $main::START));
     $user->numeric('RPL_MYINFO', $utils::GV{servername}, $main::VERSION, 'i', 'i'); # TODO
+    $user->user::numerics::rpl_isupport();
     $user->handle('LUSERS');
     $user->handle('MOTD')
 }

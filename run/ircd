@@ -8,11 +8,12 @@ sub VERSION () { '0.5.8' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
-our $run_dir = '.';
 our $VERSION = 'juno3-'.VERSION;
 our $PROTO   = PROTO;
 our $START   = time;
-my  $NOFORK  = 0;
+my  $NOFORK  = 'NOFORK' ~~ @ARGV;
+
+our $run_dir;
 
 use POSIX;
 use IO::Select;
@@ -26,7 +27,6 @@ BEGIN {
     }
 
     $run_dir = shift @ARGV;
-
     # make sure the run directory exists.
     if (!-d $run_dir) {
         die "Run directory does not exist.\n"
@@ -34,9 +34,6 @@ BEGIN {
 
     chdir $run_dir or die "Can't access run directory.\n";
     unshift @INC, "$run_dir/inc";
-
-    # nofork mode ?
-    $NOFORK = 'NOFORK' ~~ @ARGV
 
 }
 
@@ -60,7 +57,7 @@ my  $loopid = 0;
 start();
 
 if (!$NOFORK) {
-    say 'Becoming a daemon...';
+    log2('Becoming a daemon...');
 
     # since there will be no input or output from here on,
     # open the filehandles to /dev/null
