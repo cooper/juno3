@@ -215,3 +215,5 @@ PROTOCOL:
     6. July 8, 2011
 
         0. beginning to work on channel.pm.
+
+        1. Added channel join method that keeps the channel time accurate.
