@@ -16,8 +16,15 @@ sub new {
     $channel->{$_}    = $ref->{$_} foreach qw/name time/;
     $channel->{users} = []; # array ref of user objects
 
+    # make sure it doesn't exist already
+    if (exists $channels{lc($ref->{name})}) {
+        log2("attempted to create channel that already exists: $$ref{name}");
+        return
+    }
+
     # add to the channel hash
     $channels{lc($ref->{name})} = $channel;
+    log2("new channel $$ref{name} @ $$ref{time}");
 
     return $channel
 }
@@ -43,6 +50,12 @@ sub join {
 sub set_time {
     my ($channel, $time) = @_;
     $channel->{time} = $time
+}
+
+# find a channel by its name
+sub lookup_by_name {
+    my $name = lc shift;
+    return $channels{$name}
 }
 
 1

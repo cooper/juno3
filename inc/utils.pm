@@ -117,12 +117,13 @@ sub col {
     return $string
 }
 
-# find an object by it's id (server, user, channel)
+# find an object by it's id (server, user) or channel name
 sub global_lookup {
     my $id = shift;
     my $server = server::lookup_by_id($id);
     my $user   = user::lookup_by_id($id);
-    return ($server ? $server : ( $user ? $user : undef ) )
+    my $chan   = channel::lookup_by_name($id);
+    return $server ? $server : ( $user ? $user : ( $chan ? $chan : undef ) )
 }
 
 # remove leading and trailing whitespace
@@ -154,6 +155,7 @@ sub lceq {
     lc shift eq lc shift
 }
 
+# for configuration values
 sub on  () { 1 }
 sub off () { 0 }
 

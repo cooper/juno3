@@ -217,3 +217,6 @@ PROTOCOL:
         0. beginning to work on channel.pm.
 
         1. Added channel join method that keeps the channel time accurate.
+
+        2. Added lookup_by_name() channel function.
+           Added some other channely stuff.
