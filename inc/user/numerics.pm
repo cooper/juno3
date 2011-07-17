@@ -56,13 +56,18 @@ sub rpl_isupport {
       # ELIST                                       # TODO
     );
 
-    my $string = '';
+    my @lines;
+    my $curr = 0;
 
     while (my ($param, $val) = each %things) {
-        $string .= $param.($val eq 'YES' ? '' : '='.$val).' '
+        if (length $lines[$curr] > 135) {
+            $curr++;
+            $lines[$curr] = ''
+        }
+        $lines[$curr] .= ($val == 'YES' ? $param : $param.q(=).$val).q( )
     }
 
-    $user->numeric('RPL_ISUPPORT', $string);
+    $user->numeric('RPL_ISUPPORT', $_) foreach @lines
 }
 
 1

@@ -234,3 +234,5 @@ PROTOCOL:
     7. July 17, 2011
 
         0. Moved resolve stuff to separate "res" module.
+
+        1. split RPL_ISUPPORT into several lines when necessary.
