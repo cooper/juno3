@@ -136,6 +136,7 @@ sub nick {
 sub info {
     my $user = shift;
     my @info = (
+        "",
         "\2***\2 this is \2juno-ircd\2 version \0023.".main::VERSION."\2.\2 ***\2",
         "",
         "Copyright (c) 2011, Mitchell Cooper",
@@ -146,6 +147,8 @@ sub info {
         "",
         "\2Developers\2",
         "    Mitchell Cooper, \"cooper\" <cooper\@notroll.net>",
+        "",
+        "Proudly brought to you by \2\x0302No\x0313Troll\x0304Plz\x0309Net\x0f",
         ""
     );
     $user->numeric('RPL_INFO', $_) foreach @info;

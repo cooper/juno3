@@ -4,7 +4,8 @@
 use warnings;
 use strict;
 use feature 'say';
-sub VERSION () { '0.6.6' }
+
+sub VERSION () { '0.7.0' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -267,9 +268,8 @@ sub load_requirements {
     }
 
     if (conf qw[enabled resolve]) {
-        log2('Loading Net::DNS');
-        require Net::IP;
-        require Net::DNS
+        log2('Loading res, Net::IP, Net::DNS');
+        require res
     }
 
 }

@@ -230,3 +230,7 @@ PROTOCOL:
 
         6. Added is_mode() and unset_modes() user functions.
            Fixed a bug that causes crash on user connect because you can't push to a nonexistence array reference.
+
+    7. July 17, 2011
+
+        0. Moved resolve stuff to separate "res" module.

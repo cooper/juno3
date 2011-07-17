@@ -20,7 +20,7 @@ sub new {
     bless my $user      = {}, $class;
     $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
     $user->{modes}      = [];
-    $user{$user->{uid}} = $user;\
+    $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
     $user->set_modes($ref->{modes});
@@ -45,7 +45,7 @@ sub unset_modes {
             log2("attempted to unset mode $mode on that is not set on $$user{nick}; ignoring.")
         }
 
-        # it does, so remove it
+        # he is, so remove it
         @{$user->{modes}} = grep { $_ ne $mode } @{$user->{modes}}
 
     }
