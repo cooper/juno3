@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Copyright (c) 2011, Mitchell Cooper
-package user::mode;
+package user::modes;
 
 use warnings;
 use strict;

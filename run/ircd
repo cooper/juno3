@@ -49,6 +49,7 @@ use user;
 use user::mine;
 use user::handlers;
 use user::numerics;
+use user::modes;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
