@@ -29,13 +29,18 @@ my %commands = (
     },
     BURST    => {
         params  => 0,
-        forward => 0,
+        forward => 1,
         code    => \&burst
     },
     ENDBURST    => {
         params  => 0,
-        forward => 0,
+        forward => 1,
         code    => \&endburst
+    },
+    ADDUMODE  => {
+        params  => 2,
+        forward => 1,
+        code    => \&addumode
     }
 );
 
@@ -122,6 +127,12 @@ sub endburst {
     delete $server->{is_burst};
     $server->{sent_burst} = 1;
     log2("end of burst from $$server{name}")
+}
+
+sub addumode {
+    my ($server, $data, @args) = @_;
+    my $serv = server::lookup_by_id(col($args[0]));
+    $serv->add_umode($args[2], $args[3]);
 }
 
 1

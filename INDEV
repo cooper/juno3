@@ -255,3 +255,5 @@ PROTOCOL:
 
         8. send my ADDUMODES also.
            register internal modes to the local server.
+
+        9. handle ADDUMODEs.
