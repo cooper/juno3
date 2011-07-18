@@ -64,7 +64,7 @@ sub rpl_isupport {
             $curr++;
             $lines[$curr] = ''
         }
-        $lines[$curr] .= ($val == 'YES' ? $param : $param.q(=).$val).q( )
+        $lines[$curr] .= ($val eq 'YES' ? $param : $param.q(=).$val).q( )
     }
 
     $user->numeric('RPL_ISUPPORT', $_) foreach @lines

@@ -240,3 +240,5 @@ PROTOCOL:
         2. random cleanup of outgoing.pm
 
         3. added some stuff to make sure we only sent BURST once.
+
+        4. changed a few more things in burst.

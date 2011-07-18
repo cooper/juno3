@@ -27,6 +27,11 @@ my %commands = (
         forward => 1,
         code    => \&nick
     },
+    BURST    => {
+        params  => 0,
+        forward => 0,
+        code    => \&burst
+    },
     ENDBURST    => {
         params  => 0,
         forward => 0,
@@ -106,8 +111,17 @@ sub nick {
     $user->change_nick($args[2])
 }
 
+sub burst {
+    my $server = shift;
+    $server->{is_burst} = 1;
+    log2("$$server{name} is bursting information")
+}
+
 sub endburst {
-    shift->{sent_burst} = 1
+    my $server = shift;
+    delete $server->{is_burst};
+    $server->{sent_burst} = 1;
+    log2("end of burst from $$server{name}")
 }
 
 1

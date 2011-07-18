@@ -58,6 +58,7 @@ sub handle {
 
         # server is ready for BURST
         if (uc $s[0] eq 'READY') {
+            log2("sending burst to $$server{name}");
             send_burst($server);
             next
         }
