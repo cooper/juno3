@@ -49,7 +49,7 @@ sub unset_mode {
 }
 
 sub set_mode {
-    my ($user, $modes) = @_;
+    my ($user, $mode) = @_;
     return if $user->is_mode($mode);
     push @{$user->{modes}}, $mode
 }
