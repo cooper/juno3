@@ -49,7 +49,7 @@ my %commands = (
     }
 );
 
-server::mine::register_handler($_, $commands{$_}{params}, $commands{$_}{forward}, $commands{$_}{code}) foreach keys %commands;
+server::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{forward}, $commands{$_}{code}) foreach keys %commands;
 
 sub sid {
     my ($server, $data, @args) = @_;

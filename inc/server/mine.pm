@@ -10,7 +10,7 @@ our %commands = ();
 
 # register command handlers
 sub register_handler {
-    my $command = uc shift;
+    my ($source, $command) = (shift, uc shift);
 
     # does it already exist?
     if (exists $commands{$command}) {
@@ -27,13 +27,20 @@ sub register_handler {
         return
     }
 
+    # one per source
+    if (exists $commands{$command}{$source}) {
+        log2("$source already registered $command; aborting");
+        return
+    }
+
     #success
-    $commands{$command} = {
+    $commands{$command}{$source} = {
         code    => $ref,
         params  => $params,
-        forward => $forward
+        forward => $forward,
+        source  => $source
     };
-    log2((caller)[0]." registered $command");
+    log2("$source registered $command");
     return 1
 }
 
@@ -65,9 +72,22 @@ sub handle {
 
         my $command = uc $s[1];
 
-        if ($commands{$command} and scalar @s >= $commands{$command}{params}) { # an existing handler
-            $commands{$command}{code}($server, $line, @s);
-            send_children($server, $line) if $commands{$command}{forward}
+
+        if ($commands{$command}) { # an existing handler
+            foreach my $source (keys %{$commands{$command}}) {
+                if ($#s >= $commands{$command}{$source}{params}) {
+                    $commands{$command}{$source}{code}($server, $line, @s);
+                    send_children($server, $line) if $commands{$command}{$source}{forward}
+                }
+                else {
+                    log2("not enough parameters for $command");
+                }
+            }
+        }
+
+        # to make things prettier
+        else {
+            next
         }
 
     }
