@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+# Copyright (c) 2011, Mitchell Cooper
+package user::mode;
+
+use warnings;
+use strict;
+
+my %modes = (
+);
+
+1

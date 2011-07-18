@@ -8,7 +8,6 @@ use strict;
 use utils qw[log2];
 
 our %user;
-our @modes = qw/i o/;
 
 # create a new user
 
@@ -19,7 +18,7 @@ sub new {
     # create the user object
     bless my $user      = {}, $class;
     $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source];
-    $user->{modes}      = [];
+    $user->{modes}      = []; # named modes!
     $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
@@ -29,46 +28,30 @@ sub new {
 
 }
 
+# named mode stuff
+
 sub is_mode {
     my ($user, $mode) = @_;
     $mode ~~ @{$user->{modes}}
 }
 
-sub unset_modes {
-    # takes a string of one or more modes
-    my ($user, $modes) = @_;
+sub unset_mode {
+    my ($user, $mode) = @_;
 
-    foreach my $mode (split //, $modes) {
-
-        # is the user set to this mode?
-        if (!$user->is_mode($mode)) {
-            log2("attempted to unset mode $mode on that is not set on $$user{nick}; ignoring.")
-        }
-
-        # he is, so remove it
-        @{$user->{modes}} = grep { $_ ne $mode } @{$user->{modes}}
-
+    # is the user set to this mode?
+    if (!$user->is_mode($mode)) {
+        log2("attempted to unset mode $mode on that is not set on $$user{nick}; ignoring.")
     }
 
-    return join '', @{$user->{modes}}
+    # he is, so remove it
+    @{$user->{modes}} = grep { $_ ne $mode } @{$user->{modes}}
+
 }
 
-sub set_modes {
-    # takes a string of one or more modes
+sub set_mode {
     my ($user, $modes) = @_;
-
-    foreach my $mode (split //, $modes) {
-
-        # does it exist? no
-        if (!($mode ~~ @modes)) {
-            log2("attempted to set nonexistent mode $mode on $$user{nick}; ignoring.")
-        }
-
-        # it does
-        push @{$user->{modes}}, $mode
-    }
-
-    return join '', @{$user->{modes}}
+    return if $user->is_mode($mode);
+    push @{$user->{modes}}, $mode
 }
 
 sub quit {

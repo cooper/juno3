@@ -242,3 +242,7 @@ PROTOCOL:
         3. added some stuff to make sure we only sent BURST once.
 
         4. changed a few more things in burst.
+
+        5. added user mode module.
+           from here on, modes will be named rather than lettered.
+           fixed a small warning in RPL_ISUPPORT.

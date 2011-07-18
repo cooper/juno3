@@ -56,7 +56,7 @@ sub rpl_isupport {
       # ELIST                                       # TODO
     );
 
-    my @lines;
+    my @lines = '';
     my $curr = 0;
 
     while (my ($param, $val) = each %things) {

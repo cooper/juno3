@@ -16,6 +16,11 @@ sub new {
     # create the server object
     bless my $server = {}, $class;
     $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time parent source];
+
+    $server->{umodes}       = {}; ################
+    $server->{chmodes}      = {}; # named modes! #
+                                  ################
+
     $server{$server->{sid}} = $server;
     log2("new server $$server{sid}:$$server{name} $$server{proto}-$$server{ircd} parent:$$server{parent}{name} [$$server{desc}]");
 
@@ -53,6 +58,28 @@ sub lookup_by_id {
     my $sid = shift;
     return $server{$sid} if exists $server{$sid};
     return
+}
+
+
+# add a user mode
+sub add_umode {
+    my ($server, $name, $mode) = @_;
+    $server->{umodes}->{$name} = $mode;
+}
+
+# umode letter to name
+sub umode_name {
+    my ($server, $mode) = @_;
+    while (my ($key, $val) = each %{$server->{umodes}}) {
+        return $key if $mode eq $val
+    }
+    return
+}
+
+# umode name to letter
+sub umode_letter {
+    my ($server, $name) = @_;
+    return $server->{umodes}->{$name}
 }
 
 # local shortcuts
