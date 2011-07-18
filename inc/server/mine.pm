@@ -92,7 +92,12 @@ sub send_burst {
           $server->{sid} == $serv->{source}) {
             next
         }
-        $server->server::outgoing::sid($serv)
+        $server->server::outgoing::sid($serv);
+
+        # send user modes names :)
+        while (my ($name, $mode) = each %{$serv->{umodes}}) {
+            $server->server::outgoing::addumode($serv, $name, $mode);
+        }
     }
 
     # users

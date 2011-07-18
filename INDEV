@@ -247,4 +247,8 @@ PROTOCOL:
            from here on, modes will be named rather than lettered.
            fixed a small warning in RPL_ISUPPORT.
 
+        July 18, 2011
+
         6. added outgoing ADDUMODE command.
+
+        7. send ADDUMODES in burst.
