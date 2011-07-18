@@ -257,3 +257,9 @@ PROTOCOL:
            register internal modes to the local server.
 
         9. handle ADDUMODEs.
+
+    8. July 18, 2011
+
+        0. handle UMODE server command.
+           added user::handle_mode_string() which translates a string of mode letters to their mode names and sets or unsets them.
+     

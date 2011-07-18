@@ -36,22 +36,23 @@ sub is_mode {
 }
 
 sub unset_mode {
-    my ($user, $mode) = @_;
+    my ($user, $name) = @_;
 
     # is the user set to this mode?
-    if (!$user->is_mode($mode)) {
-        log2("attempted to unset mode $mode on that is not set on $$user{nick}; ignoring.")
+    if (!$user->is_mode($name)) {
+        log2("attempted to unset mode $name on that is not set on $$user{nick}; ignoring.")
     }
 
     # he is, so remove it
-    @{$user->{modes}} = grep { $_ ne $mode } @{$user->{modes}}
+    @{$user->{modes}} = grep { $_ ne $name } @{$user->{modes}}
 
 }
 
 sub set_mode {
-    my ($user, $mode) = @_;
-    return if $user->is_mode($mode);
-    push @{$user->{modes}}, $mode
+    my ($user, $name) = @_;
+    return if $user->is_mode($name);
+    log2("$name $$user{nick}");
+    push @{$user->{modes}}, $name
 }
 
 sub quit {
@@ -72,6 +73,32 @@ sub change_nick {
 
     log2("$$user{nick} -> $newnick");
     $user->{nick} = $newnick
+}
+
+# handle a mode string and convert the mode letters to their mode
+# names by searching the user's server's modes
+sub handle_mode_string {
+    my ($user, $modestr) = @_;
+    log2("set $modestr on $$user{nick}");
+    my $do = 'set_mode';
+    foreach my $letter (split //, $modestr) {
+        if ($letter eq '+') {
+            $do = 'set_mode'
+        }
+        elsif ($letter eq '-') {
+            $do = 'unset_mode'
+        }
+        else {
+            my $name = $user->{server}->umode_name($letter);
+            if (!defined $name) {
+                log2("unknown mode $letter!");
+                next
+            }
+            $user->$do($name);
+        }
+    }
+    log2("end of mode handle");
+    return 1
 }
 
 # lookup functions

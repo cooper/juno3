@@ -41,6 +41,11 @@ my %commands = (
         params  => 2,
         forward => 1,
         code    => \&addumode
+    },
+    UMODE => {
+        params  => 1,
+        forward => 1,
+        code    => \&umode
     }
 );
 
@@ -133,6 +138,13 @@ sub addumode {
     my ($server, $data, @args) = @_;
     my $serv = server::lookup_by_id(col($args[0]));
     $serv->add_umode($args[2], $args[3]);
+}
+
+sub umode {
+    # why would umodes need time stamps?
+    my ($server, $data, @args) = @_;
+    my $user    = user::lookup_by_id(col($args[0]));
+    $user->handle_mode_string($args[2]);
 }
 
 1
