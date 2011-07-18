@@ -246,3 +246,5 @@ PROTOCOL:
         5. added user mode module.
            from here on, modes will be named rather than lettered.
            fixed a small warning in RPL_ISUPPORT.
+
+        6. added outgoing ADDUMODE command.

@@ -6,6 +6,10 @@ package server::outgoing;
 use warnings;
 use strict;
 
+###########
+# servers #
+###########
+
 sub quit_all {
     my ($connection, $reason) = @_;
     server::mine::sendfrom_children(undef, $connection->{type}->id, 'QUIT :'.$reason)
@@ -26,6 +30,20 @@ sub sid_all {
           $serv->{sid}, $serv->{time}, $serv->{name},
           $serv->{proto}, $serv->{ircd}, $serv->{desc})
 }
+
+sub addumode {
+    my ($server, $serv, $name, $mode) = @_;
+    $server->sendfrom($serv->{sid}, "ADDUMODE $name $mode");
+}
+
+sub addumode_all {
+    my ($serv, $name, $mode) = @_;
+    server::mine::sendfrom_children(undef, $serv->{sid}, "ADDUMODE $name $mode");
+}
+
+#########
+# users #
+#########
 
 sub uid {
     my ($server, $user) = @_;
