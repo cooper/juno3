@@ -13,26 +13,36 @@ sub quit_all {
 
 sub sid {
     my ($server, $serv) = @_;
-    $server->sendfrom($serv->{parent}->{sid},
-      "SID $$serv{sid} $$serv{time} $$serv{name} $$serv{proto} $$serv{ircd} :$$serv{desc}")
+    $server->sendfrom($serv->{parent}->{sid}, sprintf
+        'SID %s %d %s %s %s :%s',
+          $serv->{sid}, $serv->{time}, $serv->{name},
+          $serv->{proto}, $serv->{ircd}, $serv->{desc})
 }
 
 sub sid_all {
     my $serv = shift;
-    server::mine::sendfrom_children(undef, $serv->{parent}->{sid},
-      "SID $$serv{sid} $$serv{time} $$serv{name} $$serv{proto} $$serv{ircd} :$$serv{desc}")
+    server::mine::sendfrom_children(undef, $serv->{parent}->{sid}, sprintf
+        'SID %s %d %s %s %s :%s',
+          $serv->{sid}, $serv->{time}, $serv->{name},
+          $serv->{proto}, $serv->{ircd}, $serv->{desc})
 }
 
 sub uid {
     my ($server, $user) = @_;
-    $server->sendfrom($user->{server}->{sid},
-      "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}")
+    $server->sendfrom($user->{server}->{sid}, sprintf
+        'UID %s %d + %s %s %s %s %s :%s',
+          $user->{uid}, $user->{time}, $user->{nick},
+          $user->{ident}, $user->{host}, $user->{cloak},
+          $user->{ip}, $user->{real})
 }
 
 sub uid_all {
     my $user = shift;
-    server::mine::sendfrom_children(undef, $user->{server}->{sid},
-      "UID $$user{uid} $$user{time} + $$user{nick} $$user{ident} $$user{host} $$user{cloak} $$user{ip} :$$user{real}")
+    server::mine::sendfrom_children(undef, $user->{server}->{sid}, sprintf
+        'UID %s %d + %s %s %s %s %s :%s',
+          $user->{uid}, $user->{time}, $user->{nick},
+          $user->{ident}, $user->{host}, $user->{cloak},
+          $user->{ip}, $user->{real})
 }
 
 sub nickchange {
