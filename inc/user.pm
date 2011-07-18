@@ -101,6 +101,16 @@ sub handle_mode_string {
     return 1
 }
 
+# returns a +modes string
+sub mode_string {
+    my $user = shift;
+    my $string = '+';
+    foreach my $name (@{$user->{modes}}) {
+        $string .= $user->{server}->umode_letter($name)
+    }
+    return $string
+}
+
 # lookup functions
 
 sub lookup_by_nick {

@@ -48,19 +48,19 @@ sub addumode_all {
 sub uid {
     my ($server, $user) = @_;
     $server->sendfrom($user->{server}->{sid}, sprintf
-        'UID %s %d + %s %s %s %s %s :%s',
-          $user->{uid}, $user->{time}, $user->{nick},
-          $user->{ident}, $user->{host}, $user->{cloak},
-          $user->{ip}, $user->{real})
+        'UID %s %d %s %s %s %s %s %s :%s',
+          $user->{uid}, $user->{time}, $user->mode_string(),
+          $user->{nick}, $user->{ident}, $user->{host},
+          $user->{cloak}, $user->{ip}, $user->{real})
 }
 
 sub uid_all {
     my $user = shift;
     server::mine::sendfrom_children(undef, $user->{server}->{sid}, sprintf
-        'UID %s %d + %s %s %s %s %s :%s',
-          $user->{uid}, $user->{time}, $user->{nick},
-          $user->{ident}, $user->{host}, $user->{cloak},
-          $user->{ip}, $user->{real})
+        'UID %s %d %s %s %s %s %s %s :%s',
+          $user->{uid}, $user->{time}, $user->mode_string(),
+          $user->{nick}, $user->{ident}, $user->{host},
+          $user->{cloak}, $user->{ip}, $user->{real})
 }
 
 sub nickchange {

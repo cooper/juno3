@@ -262,4 +262,6 @@ PROTOCOL:
 
         0. handle UMODE server command.
            added user::handle_mode_string() which translates a string of mode letters to their mode names and sets or unsets them.
-     
+
+        1. added user->mode_string() to create mode strings to the user's local server.
+           actually send modes in UID command now.
