@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '0.7.7' }
+sub VERSION () { '0.7.8' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -232,6 +232,9 @@ sub start {
 
     # how is this possible?!?!
     $utils::GV{server}{parent} = $utils::GV{server};
+
+    # register user modes
+    $utils::GV{server}->user::modes::add_internal_modes();
 
     load_requirements();
     create_sockets();

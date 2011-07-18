@@ -84,6 +84,12 @@ sub send_burst {
 
     $server->sendme('BURST');
 
+    # send MY user mode names
+    while (my ($name, $mode) = each %{$utils::GV{server}->{umodes}}) {
+        $server->server::outgoing::addumode($utils::GV{server}, $name, $mode);
+    }
+
+
     # child servers
     foreach my $serv (values %server::server) {
         # the server already knows of thse
@@ -94,7 +100,7 @@ sub send_burst {
         }
         $server->server::outgoing::sid($serv);
 
-        # send user modes names :)
+        # send user modes of other servers names :)
         while (my ($name, $mode) = each %{$serv->{umodes}}) {
             $server->server::outgoing::addumode($serv, $name, $mode);
         }

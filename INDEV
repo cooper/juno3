@@ -252,3 +252,6 @@ PROTOCOL:
         6. added outgoing ADDUMODE command.
 
         7. send ADDUMODES in burst.
+
+        8. send my ADDUMODES also.
+           register internal modes to the local server.

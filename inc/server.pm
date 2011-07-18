@@ -65,6 +65,8 @@ sub lookup_by_id {
 sub add_umode {
     my ($server, $name, $mode) = @_;
     $server->{umodes}->{$name} = $mode;
+    log2("$$server{name} registered $mode:$name");
+    return 1
 }
 
 # umode letter to name
