@@ -75,7 +75,6 @@ sub uid {
     $ref->{source} = $server->{sid};
     $ref->{server} = server::lookup_by_id(col($ref->{server}));
     delete $ref->{dummy};
-    delete $ref->{modes}; # this will be an array ref later
 
     # nick collision?
     # TODO send the nick change to the user if it's local!
@@ -99,6 +98,10 @@ sub uid {
 
     # create a new user
     my $user = user->new($ref);
+
+    # set modes
+    $user->handle_mode_string($ref->{modes});
+
     return 1
 
 }
