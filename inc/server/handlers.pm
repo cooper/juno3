@@ -26,6 +26,11 @@ my %commands = (
         params  => 1,
         forward => 1,
         code    => \&nick
+    },
+    ENDBURST    => {
+        params  => 0,
+        forward => 0,
+        code    => \&endburst
     }
 );
 
@@ -99,6 +104,10 @@ sub nick {
     my $user = user::lookup_by_id(col($args[0]));
     # TODO send to familiar users
     $user->change_nick($args[2])
+}
+
+sub endburst {
+    shift->{sent_burst} = 1
 }
 
 1

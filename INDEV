@@ -238,3 +238,5 @@ PROTOCOL:
         1. split RPL_ISUPPORT into several lines when necessary.
 
         2. random cleanup of outgoing.pm
+
+        3. added some stuff to make sure we only sent BURST once.

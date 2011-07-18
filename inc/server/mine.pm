@@ -75,6 +75,12 @@ sub handle {
 
 sub send_burst {
     my $server = shift;
+
+    if ($server->{i_sent_burst}) {
+        log2("trying to send burst to a server we have already sent burst to?!");
+        return
+    }
+
     $server->sendme('BURST');
 
     # child servers
@@ -96,6 +102,8 @@ sub send_burst {
     }
 
     $server->sendme('ENDBURST');
+    $server->{i_sent_burst} = 1;
+
     return 1
 }
 
