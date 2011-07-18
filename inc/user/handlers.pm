@@ -37,7 +37,7 @@ my %commands = (
     }
 );
 
-user::mine::register_handler($_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
+user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
 
 sub ping {
     my ($user, $data, @s) = @_;

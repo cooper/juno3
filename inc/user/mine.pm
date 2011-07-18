@@ -12,7 +12,7 @@ my (%numerics, %commands);
 
 # register command handlers
 sub register_handler {
-    my $command = uc shift;
+    my ($source, $command) = (shift, uc shift);
 
     # does it already exist?
     if (exists $commands{$command}) {
@@ -29,18 +29,25 @@ sub register_handler {
         return
     }
 
+    # one per source
+    if (exists $commands{$command}{$source}) {
+        log2("$source already registered $command; aborting");
+        return
+    }
+
     # success
-    $commands{$command} = {
+    $commands{$command}{$source} = {
         code    => $ref,
-        params  => $params
+        params  => $params,
+        source  => $source
     };
-    log2((caller)[0]." registered $command");
+    log2("$source registered $command");
     return 1
 }
 
 # register user numerics
 sub register_numeric {
-    my $numeric = shift;
+    my ($source, $numeric) = (shift, shift);
 
     # does it already exist?
     if (exists $numerics{$numeric}) {
@@ -50,7 +57,7 @@ sub register_numeric {
 
     my ($num, $str) = (shift, shift);
     $numerics{$numeric} = [$num, $str];
-    log2((caller)[0]." registered $numeric $num");
+    log2("$source registered $numeric $num");
     return 1
 }
 
@@ -67,12 +74,16 @@ sub handle {
         my $command = uc $s[0];
 
         if ($commands{$command}) { # an existing handler
-            if ($#s >= $commands{$command}{params}) {
-                $commands{$command}{code}($user, $line, @s)
+
+            foreach my $source (keys %{$commands{$command}}) {
+                if ($#s >= $commands{$command}{$source}{params}) {
+                    $commands{$command}{$source}{code}($user, $line, @s)
+                }
+                else { # not enough parameters
+                    $user->numeric('ERR_NEEDMOREPARAMS', $s[0])
+                }
             }
-            else { # not enough parameters
-                $user->numeric('ERR_NEEDMOREPARAMS', $s[0])
-            }
+
         }
         else { # unknown command
             $user->numeric('ERR_UNKNOWNCOMMAND', $s[0])

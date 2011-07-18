@@ -29,7 +29,7 @@ my %numerics = (
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister']
 );
 
-user::mine::register_numeric($_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
+user::mine::register_numeric('core', $_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
 
 sub rpl_isupport {
     my $user = shift;

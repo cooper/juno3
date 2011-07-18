@@ -267,3 +267,5 @@ PROTOCOL:
            actually send modes in UID command now.
 
         2. handle mode strings in UID and apply the modes.
+
+        3. made it possible to add multiple user handlers of the same command (which will be useful later in the module API.)
