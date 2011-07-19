@@ -83,4 +83,14 @@ sub umode_all {
     server::mine::sendfrom_children(undef, $user->{uid}, "UMODE $modestr")
 }
 
+sub privmsg {
+    my ($server, $user, $target, $message) = @_;
+    $server->sendfrom($user->{uid}, "PRIVMSG $target :$message")
+}
+
+sub privmsg_all {
+    my ($server, $user, $target, $message) = @_;
+    server::mine::sendfrom_children(undef, $user->{uid}, "PRIVMSG $target :$message")
+}
+
 1

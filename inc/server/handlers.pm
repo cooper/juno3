@@ -71,11 +71,12 @@ sub sid {
 sub uid {
     my ($server, $data, @args) = @_;
 
-    my $ref        = {};
-    $ref->{$_}     = shift @args foreach qw[server dummy uid time modes nick ident host cloak ip];
-    $ref->{real}   = col(join ' ', @args);
-    $ref->{source} = $server->{sid};
-    $ref->{server} = server::lookup_by_id(col($ref->{server}));
+    my $ref          = {};
+    $ref->{$_}       = shift @args foreach qw[server dummy uid time modes nick ident host cloak ip];
+    $ref->{real}     = col(join ' ', @args);
+    $ref->{source}   = $server->{sid};
+    $ref->{location} = $server;
+    $ref->{server}   = server::lookup_by_id(col($ref->{server}));
     delete $ref->{dummy};
 
     # nick collision?

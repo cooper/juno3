@@ -292,3 +292,6 @@ PROTOCOL:
         1. added user mode tests. if any of the tests fail, the mode will not be accepted.
 
         2. send UMODE to other servers.
+
+        3. added PRIVMSG handler! :D
+             local user-to-user PRIVMSGs should work now.

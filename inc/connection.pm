@@ -165,11 +165,12 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        $connection->{uid}    = $utils::GV{serverid}.++$ID;
-        $connection->{server} = $utils::GV{server};
-        $connection->{cloak}  = $connection->{host};
-        $connection->{modes}  = '';
-        $connection->{type}   = user->new($connection);
+        $connection->{uid}      = $utils::GV{serverid}.++$ID;
+        $connection->{server}   = $utils::GV{server};
+        $connection->{location} = $utils::GV{server};
+        $connection->{cloak}    = $connection->{host};
+        $connection->{modes}    = '';
+        $connection->{type}     = user->new($connection);
 
         # tell my children
         server::outgoing::uid_all($connection->{type})

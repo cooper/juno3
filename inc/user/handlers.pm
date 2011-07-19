@@ -38,6 +38,10 @@ my %commands = (
     MODE => {
         params => 2,
         code   => \&mode
+    },
+    PRIVMSG => {
+        params => 2,
+        code   => \&privmsg
     }
 );
 
@@ -184,6 +188,50 @@ sub mode {
     if (user::lookup_by_nick($args[1])) {
         $user->numeric('ERR_USERSDONTMATCH');
         return
+    }
+
+    # no such nick/channel
+    $user->numeric('ERR_NOSUCHNICK', $args[1]);
+    return
+}
+
+sub privmsg {
+    my ($user, $data, @args) = @_;
+
+    # we can't  use @args because it splits by whitespace
+    $data =~ s/^:(.+)\s//;
+    my @m = split ' ', $data, 3;
+    my $message = col($m[2]);
+
+    # no text to send
+    if ($message eq '') {
+        $user->numeric('ERR_NOTEXTTOSEND');
+        return
+    }
+
+    # is it a user?
+    my $tuser = user::lookup_by_nick($args[1]);
+    if ($tuser) {
+
+        # TODO here check for user modes preventing
+        # the user from sending the message
+
+        # if it's a local user, send it to them
+        if ($tuser->is_local) {
+            $tuser->sendfrom($user->full, "PRIVMSG $$tuser{nick} :$message");
+        }
+
+        # send it to the server holding this user
+        else {
+            $tuser->{location}->server::outgoing::privmsg($user, $tuser->{nick}, $message);
+        }
+        return 1
+    }
+
+    # must be a channel
+    my $channel = channel::lookup_by_name($args[1]);
+    if ($channel) {
+        return 1 # TODO
     }
 
     # no such nick/channel
