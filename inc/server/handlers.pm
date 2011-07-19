@@ -49,7 +49,9 @@ my %commands = (
     }
 );
 
+log2("registering core server handlers");
 server::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{forward}, $commands{$_}{code}) foreach keys %commands;
+log2("end of core handlers");
 
 sub sid {
     my ($server, $data, @args) = @_;

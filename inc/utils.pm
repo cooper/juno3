@@ -97,7 +97,7 @@ sub conn {
 sub log2 {
     my $line = shift;
     my $sub = (caller 1)[3];
-    say(time.($sub ? " $sub(): " : q[ ]).$line)
+    say(time.q( ).($sub && $sub ne '(eval)' ? "$sub():" : q([).(caller)[0].q(])).q( ).$line)
 }
 
 # log and exit

@@ -70,6 +70,7 @@ sub handle {
             next
         }
 
+        next unless defined $s[1];
         my $command = uc $s[1];
 
 

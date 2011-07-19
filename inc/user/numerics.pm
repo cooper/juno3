@@ -5,7 +5,7 @@ package user::numerics;
 use warnings;
 use strict;
 
-use utils qw/conf/;
+use utils qw/conf log2/;
 
 my %numerics = (
     RPL_WELCOME          => ['001', 'Welcome to the %s IRC Network %s!%s@%s'],
@@ -31,7 +31,9 @@ my %numerics = (
     ERR_USERSDONTMATCH   => ['502', ':Can\'t change mode for other users']
 );
 
+log2("registering core numerics");
 user::mine::register_numeric('core', $_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
+log2("end of core numerics");
 
 sub rpl_isupport {
     my $user = shift;

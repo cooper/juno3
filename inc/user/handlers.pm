@@ -41,7 +41,9 @@ my %commands = (
     }
 );
 
+log2("registering core user handlers");
 user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
+log2("end of core handlers");
 
 sub ping {
     my ($user, $data, @s) = @_;

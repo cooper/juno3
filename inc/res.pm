@@ -29,6 +29,7 @@ sub resolve_finish {
 
 sub resolve_hostname {
     my $connection = shift;
+    $connection->{host} = time;
     my $res = Net::DNS::Resolver->new;
     my $bg = $res->bgsend($connection->{ip}, 'PTR');
     main::register_loop('PTR lookup for '.$connection->{ip}, sub {
