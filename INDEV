@@ -302,3 +302,6 @@ PROTOCOL:
         5. added a really fail MAP that will be made prettier later.
 
         6. fixed a few things and added more numerics to LUSERS.
+
+        7. fixed something in LUSERS.
+           added nickname in use numeric.

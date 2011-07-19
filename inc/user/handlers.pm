@@ -85,7 +85,7 @@ sub lusers {
             $myclients++;
             my $usr = $connection->{type};
             $global++;
-            $local++ if $user->is_local;
+            $local++ if $usr->is_local;
             $opers++ if $usr->is_mode('ircop');
             $invisible++ if $usr->is_mode('invisible');
             $users++

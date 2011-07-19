@@ -32,6 +32,7 @@ my %numerics = (
     ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],
     ERR_ERRONEUSNICKNAME => ['432', '%s: Erroneous nickname'],
+    ERR_NICKNAMEINUSE    => ['433', '%s :Nickname in use'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister'],
     ERR_USERSDONTMATCH   => ['502', ':Can\'t change mode for other users']
