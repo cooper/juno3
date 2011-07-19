@@ -175,7 +175,7 @@ sub privmsg {
             return 1
         }
         # otherwise pass this on...
-        $tuser->{location}->server::outgoing::privmsg($user, $tuser->{nick}, $message);
+        $tuser->{location}->server::outgoing::privmsg($user, $tuser->{uid}, $message);
         return 1
     }
 
