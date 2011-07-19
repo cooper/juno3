@@ -96,6 +96,16 @@ sub is_local {
     return shift eq $utils::GV{server}
 }
 
+# returns an array of child servers
+sub children {
+    my $server = shift;
+    my @children = ();
+    foreach my $serv (values %server) {
+        push @children, $serv if $serv->{parent} == $server
+    }
+    return @children
+}
+
 # local shortcuts
 sub handle   { server::mine::handle(@_)   }
 sub send     { server::mine::send(@_)     }

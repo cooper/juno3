@@ -298,3 +298,5 @@ PROTOCOL:
 
         4. added PRIVMSG server handler.
              global user-to-user PRIVMSGs should work now.
+
+        5. added a really fail MAP that will be made prettier later.

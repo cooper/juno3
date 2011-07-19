@@ -42,6 +42,10 @@ my %commands = (
     PRIVMSG => {
         params => 2,
         code   => \&privmsg
+    },
+    MAP => {
+        params => 0,
+        code   => \&cmap
     }
 );
 
@@ -237,6 +241,15 @@ sub privmsg {
     # no such nick/channel
     $user->numeric('ERR_NOSUCHNICK', $args[1]);
     return
+}
+
+sub cmap {
+    # TODO this will be much prettier later!
+    my $user  = shift;
+    foreach my $server (values %server::server) {
+        $user->numeric('RPL_MAP', '    '.$server->{name})
+    }
+    $user->numeric('RPL_MAPEND');
 }
 
 1
