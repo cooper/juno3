@@ -115,8 +115,8 @@ sub handle {
                 # check for matching IPs
 
                 if ($connection->{ip} ne $addr) {
-                #    $connection->done('Invalid credentials');
-                #    return
+                    $connection->done('Invalid credentials');
+                    return
                 }
 
             }

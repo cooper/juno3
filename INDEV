@@ -12,6 +12,7 @@ TODO:
     finish RPL_WELCOME
     finish RPL_LUSERCHANNELS
     LUSERS
+    wildcard in connect blocks
 
 PROTOCOL:
     SERVER <sid> <name> <protocol version> <ircd version> :<description>
