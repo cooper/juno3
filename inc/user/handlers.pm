@@ -64,36 +64,42 @@ sub fake_user {
 }
 
 sub lusers {
-    my $user = shift;
-    my ($users, $invisible, $opers, $myclients, $myservers, $unknown) = 0;
-    $invisible = $opers = $myclients = $myservers = $unknown = $users;
+    my $user      = shift;
+    my $users     =
+    my $invisible =
+    my $opers     =
+    my $myclients =
+    my $myservers =
+    my $local     =
+    my $global    =
+    my $unknown   = 0;
 
     foreach my $connection (values %connection::connection) {
         if (!exists $connection->{type}) {
-            $unknown++;
-            next
+            $unknown++
         }
         elsif ($connection->{type}->isa('server')) {
-            $myservers++;
-            next
+            $myservers++
         }
         elsif ($connection->{type}->isa('user')) {
             $myclients++;
-            next
+            my $usr = $connection->{type};
+            $global++;
+            $local++ if $user->is_local;
+            $opers++ if $usr->is_mode('ircop');
+            $invisible++ if $usr->is_mode('invisible');
+            $users++
         }
         else {
             $unknown++
         }
     }
 
-    foreach my $usr (values %user::user) {
-        # TODO opers
-        # TODO invisible
-        $users++
-    }
-
     $user->numeric('RPL_LUSERCLIENT', $users, $invisible, scalar keys %server::server);
     $user->numeric('RPL_LUSEROP', $opers) if $opers;
+    $user->numeric('RPL_LUSERUNKNOWN', $unknown) if $unknown;
+    $user->numeric('RPL_LOCALUSERS', $local, $local, $local, $local); # TODO max
+    $user->numeric('RPL_GLOBALUSERS', $global, $global, $global, $global); # TODO max
 
     # only send if non-zero
     my $channels = scalar keys %channel::channels;

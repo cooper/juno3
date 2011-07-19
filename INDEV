@@ -300,3 +300,5 @@ PROTOCOL:
              global user-to-user PRIVMSGs should work now.
 
         5. added a really fail MAP that will be made prettier later.
+
+        6. fixed a few things and added more numerics to LUSERS.
