@@ -83,7 +83,7 @@ sub handle_mode_string {
     my ($user, $modestr) = @_;
     log2("set $modestr on $$user{nick}");
     my $state = 1;
-    my $str   = '';
+    my $str   = '+';
     foreach my $letter (split //, $modestr) {
         if ($letter eq '+') {
             $str .= '+' unless $state;
@@ -110,7 +110,10 @@ sub handle_mode_string {
             $str .= $letter
         }
     }
+
+    $str =~ s/\+\+/\+/g; 
     $str =~ s/\+\-/\-/g; # it happens sometimes.
+
     log2("end of mode handle");
     return $str
 }

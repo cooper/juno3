@@ -284,3 +284,7 @@ PROTOCOL:
 
         8. send MODE string back to a user when he sets user modes.
            fixed time bug in resolving.
+
+    9. July 19, 2011
+
+        0. Fixed a small bug in the user mode handler.
