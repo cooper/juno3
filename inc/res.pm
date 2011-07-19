@@ -20,8 +20,8 @@ sub resolve_finish {
     else {
         log2("$$connection{ip} -> $host");
         $connection->{host} = $host;
-        my $time = time - $connection->{res_start};
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname in '.$time.'s ('.$host.')')
+        my $time = time - delete $connection->{res_start};
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname in '.$time.' seconds ('.$host.')')
     }
     $connection->ready if $connection->somewhat_ready;
     return 1
@@ -29,7 +29,7 @@ sub resolve_finish {
 
 sub resolve_hostname {
     my $connection = shift;
-    $connection->{host} = time;
+    $connection->{res_start} = time;
     my $res = Net::DNS::Resolver->new;
     my $bg = $res->bgsend($connection->{ip}, 'PTR');
     main::register_loop('PTR lookup for '.$connection->{ip}, sub {

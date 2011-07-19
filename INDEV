@@ -279,3 +279,8 @@ PROTOCOL:
            handle_mode_string() now returns the final mode string, which will be used later.
 
         7. cleaned up some stuff.
+
+        July 19, 2011
+
+        8. send MODE string back to a user when he sets user modes.
+           fixed time bug in resolving.

@@ -167,7 +167,8 @@ sub mode {
 
     # is it the user himself?
     if (lceq $user->{nick} => $args[1]) {
-        $user->handle_mode_string($args[2]);
+        my $result = $user->handle_mode_string($args[2]);
+        $user->sendfrom($user->full, "MODE $$user{nick} $result");
         return 1
     }
 
