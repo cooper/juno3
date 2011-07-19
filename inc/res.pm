@@ -14,12 +14,14 @@ sub resolve_finish {
     if (!defined $host) {
         log2("could not resolve $$connection{ip}");
         $connection->{host} = $connection->{ip};
+        delete $connection->{res_start};
         $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Could not resolve your hostname; using IP address instead')
     }
     else {
         log2("$$connection{ip} -> $host");
         $connection->{host} = $host;
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname ('.$host.')')
+        my $time = time - $connection->{res_start};
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname in '.$time.'s ('.$host.')')
     }
     $connection->ready if $connection->somewhat_ready;
     return 1

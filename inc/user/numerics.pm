@@ -22,11 +22,13 @@ my %numerics = (
     RPL_ENDOFINFO        => ['374', 'End of INFO list'],
     RPL_MOTDSTART        => ['375', ':%s message of the day'],
     RPL_ENDOFMOTD        => ['376', ':End of message of the day'],
+    ERR_NOSUCHNICK       => ['401', '%s :No such nick/channel'],
     ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],
     ERR_ERRONEUSNICKNAME => ['432', '%s: Erroneous nickname'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
-    ERR_ALREADYREGISTRED => ['462', ':You may not reregister']
+    ERR_ALREADYREGISTRED => ['462', ':You may not reregister'],
+    ERR_USERSDONTMATCH   => ['502', ':Can\'t change mode for other users']
 );
 
 user::mine::register_numeric('core', $_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;

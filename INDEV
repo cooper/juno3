@@ -273,3 +273,6 @@ PROTOCOL:
         4. did the same for server handlers.
 
         5. added default mode settings.
+
+        6. added MODE user command.
+           handle_mode_string() now returns the final mode string, which will be used later.

@@ -23,15 +23,14 @@ sub new {
         last_response => time
     }, $this;
 
-    $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Looking up your hostname...');
-
     # resolve hostname
     if (conf qw/enabled resolve/) {
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Looking up your hostname...');
         res::resolve_hostname($connection)
     }
     else {
         $connection->{host} = $connection->{ip};
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Could not resolve your hostname; using IP address instead')
+        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** hostname resolving is not enabled on this server')
     }
 
     log2("Processing connection from $$connection{ip}");    

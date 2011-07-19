@@ -44,6 +44,7 @@ sub unset_mode {
     }
 
     # he is, so remove it
+    log2("$$user{nick} -$name");
     @{$user->{modes}} = grep { $_ ne $name } @{$user->{modes}}
 
 }
@@ -51,7 +52,7 @@ sub unset_mode {
 sub set_mode {
     my ($user, $name) = @_;
     return if $user->is_mode($name);
-    log2("$name $$user{nick}");
+    log2("$$user{nick} +$name");
     push @{$user->{modes}}, $name
 }
 
@@ -76,17 +77,21 @@ sub change_nick {
 }
 
 # handle a mode string and convert the mode letters to their mode
-# names by searching the user's server's modes
+# names by searching the user's server's modes. returns the mode
+# string, or '+' if no changes were made.
 sub handle_mode_string {
     my ($user, $modestr) = @_;
     log2("set $modestr on $$user{nick}");
-    my $do = 'set_mode';
+    my $state = 1;
+    my $str   = '';
     foreach my $letter (split //, $modestr) {
         if ($letter eq '+') {
-            $do = 'set_mode'
+            $str .= '+' unless $state;
+            $state = 1
         }
         elsif ($letter eq '-') {
-            $do = 'unset_mode'
+            $str .= '-' if $state;
+            $state = 0
         }
         else {
             my $name = $user->{server}->umode_name($letter);
@@ -94,11 +99,20 @@ sub handle_mode_string {
                 log2("unknown mode $letter!");
                 next
             }
+
+            # ignore stupid mode changes
+            if ($state && $user->is_mode($name) ||
+              !$state && !$user->is_mode($name)) {
+                next
+            }
+            my $do   = $state ? 'set_mode' : 'unset_mode';
             $user->$do($name);
+            $str .= $letter
         }
     }
+    $str =~ s/\+\-/\-/g; # it happens sometimes.
     log2("end of mode handle");
-    return 1
+    return $str
 }
 
 # returns a +modes string

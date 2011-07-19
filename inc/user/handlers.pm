@@ -34,6 +34,10 @@ my %commands = (
     INFO => {
         params => 0,
         code   => \&info
+    },
+    MODE => {
+        params => 2,
+        code   => \&mode
     }
 );
 
@@ -154,6 +158,32 @@ sub info {
     $user->numeric('RPL_INFO', $_) foreach @info;
     $user->numeric('RPL_ENDOFINFO');
     return 1
+}
+
+sub mode {
+    my ($user, $data, @args) = @_;
+
+    # is it the user himself?
+    if (lceq $user->{nick} => $args[1]) {
+        $user->handle_mode_string($args[2]);
+        return 1
+    }
+
+    # is it a channel, then?
+    if (my $channel = channel::lookup_by_name($args[1])) {
+        # TODO
+        return 1
+    }
+
+    # hmm.. maybe it's another user
+    if (user::lookup_by_nick($args[1])) {
+        $user->numeric('ERR_USERSDONTMATCH');
+        return
+    }
+
+    # no such nick/channel
+    $user->numeric('ERR_NOSUCHNICK', $args[1]);
+    return
 }
 
 1
