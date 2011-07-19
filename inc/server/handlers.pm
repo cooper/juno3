@@ -46,6 +46,11 @@ my %commands = (
         params  => 1,
         forward => 1,
         code    => \&umode
+    },
+    PRIVMSG => {
+        params  => 2,
+        forward => 0, # we have to figure ourself
+        code    => \&privmsg
     }
 );
 
@@ -149,8 +154,33 @@ sub addumode {
 sub umode {
     # why would umodes need time stamps?
     my ($server, $data, @args) = @_;
-    my $user    = user::lookup_by_id(col($args[0]));
+    my $user = user::lookup_by_id(col($args[0]));
     $user->handle_mode_string($args[2]);
+}
+
+sub privmsg {
+    my ($server, $data, @args) = @_;
+    my $user = user::lookup_by_id(col($args[0]));
+
+    # we can't  use @args because it splits by whitespace
+    my @m = split ' ', $data, 4;
+    my $message = col($m[3]);
+
+    # is it a user?
+    my $tuser = user::lookup_by_id(col($args[2]));
+    if ($tuser) {
+        # if it's mine, send it
+        if ($tuser->is_local) {
+            $tuser->sendfrom($user->full, "PRIVMSG $$tuser{nick} :$message");
+            return 1
+        }
+        # otherwise pass this on...
+        $tuser->{location}->server::outgoing::privmsg($user, $tuser->{nick}, $message);
+        return 1
+    }
+
+    # must be a channel
+    # TODO
 }
 
 1

@@ -295,3 +295,6 @@ PROTOCOL:
 
         3. added PRIVMSG handler! :D
              local user-to-user PRIVMSGs should work now.
+
+        4. added PRIVMSG server handler.
+             global user-to-user PRIVMSGs should work now.
