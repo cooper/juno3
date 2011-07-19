@@ -117,8 +117,12 @@ sub handle_mode_string {
         }
     }
 
-    $str =~ s/\+\+/\+/g; 
-    $str =~ s/\+\-/\-/g; # it happens sometimes.
+    # it's easier to do this than it is to
+    # keep track of them
+    $str =~ s/\+\+/\+/g;
+    $str =~ s/\-\-/\-/g; 
+    $str =~ s/\+\-/\-/g;
+    $str =~ s/\-\+/\+/g;
 
     log2("end of mode handle");
     return $str

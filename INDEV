@@ -290,3 +290,5 @@ PROTOCOL:
         0. Fixed a small bug in the user mode handler.
 
         1. added user mode tests. if any of the tests fail, the mode will not be accepted.
+
+        2. send UMODE to other servers.

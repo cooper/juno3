@@ -73,4 +73,14 @@ sub nickchange_all {
     server::mine::sendfrom_children(undef, $user->{uid}, "NICK $$user{nick}")
 }
 
+sub umode {
+    my ($server, $user, $modestr) = @_;
+    $server->sendfrom($user->{uid}, "UMODE $modestr")
+}
+
+sub umode_all {
+    my ($user, $modestr) = @_;
+    server::mine::sendfrom_children(undef, $user->{uid}, "UMODE $modestr")
+}
+
 1

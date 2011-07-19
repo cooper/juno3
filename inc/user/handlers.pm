@@ -168,7 +168,9 @@ sub mode {
     # is it the user himself?
     if (lceq $user->{nick} => $args[1]) {
         my $result = $user->handle_mode_string($args[2]);
+        return if $result =~ m/^(\-|\+)$/;
         $user->sendfrom($user->full, "MODE $$user{nick} $result");
+        server::outgoing::umode_all($user, $result);
         return 1
     }
 
