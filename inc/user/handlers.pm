@@ -227,7 +227,7 @@ sub privmsg {
 
         # send it to the server holding this user
         else {
-            $tuser->{location}->server::outgoing::privmsg($user, $tuser->{nick}, $message);
+            $tuser->{location}->server::outgoing::privmsg($user, $tuser->{uid}, $message);
         }
         return 1
     }
