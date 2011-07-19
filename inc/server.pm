@@ -20,7 +20,6 @@ sub new {
     $server->{umodes}       = {}; ################
     $server->{chmodes}      = {}; # named modes! #
                                   ################
-
     $server{$server->{sid}} = $server;
     log2("new server $$server{sid}:$$server{name} $$server{proto}-$$server{ircd} parent:$$server{parent}{name} [$$server{desc}]");
 
@@ -63,7 +62,16 @@ sub lookup_by_id {
 
 # add a user mode
 sub add_umode {
-    my ($server, $name, $mode) = @_;
+    my ($server, $name, $mode) = (shift, shift, shift);
+    if ($server->is_local) {
+        foreach my $test (@_) {
+            if (!$test || ref $test ne 'CODE') {
+                $test = sub {1};
+            }
+            $server->{umode_tests}->{$name} = [] if !$server->{umode_tests}->{$name};
+            push @{$server->{umode_tests}->{$name}}, $test;
+        }
+    }
     $server->{umodes}->{$name} = $mode;
     log2("$$server{name} registered $mode:$name");
     return 1
@@ -82,6 +90,10 @@ sub umode_name {
 sub umode_letter {
     my ($server, $name) = @_;
     return $server->{umodes}->{$name}
+}
+
+sub is_local {
+    return shift eq $utils::GV{server}
 }
 
 # local shortcuts

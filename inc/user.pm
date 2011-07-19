@@ -84,7 +84,7 @@ sub handle_mode_string {
     log2("set $modestr on $$user{nick}");
     my $state = 1;
     my $str   = '+';
-    foreach my $letter (split //, $modestr) {
+    letter: foreach my $letter (split //, $modestr) {
         if ($letter eq '+') {
             $str .= '+' unless $state;
             $state = 1
@@ -105,6 +105,12 @@ sub handle_mode_string {
               !$state && !$user->is_mode($name)) {
                 next
             }
+
+            # don't allow this mode to be changed if the test fails
+            foreach my $code (@{$user->{server}->{umode_tests}->{$name}}) {
+                next letter unless $code->()
+            }
+
             my $do   = $state ? 'set_mode' : 'unset_mode';
             $user->$do($name);
             $str .= $letter

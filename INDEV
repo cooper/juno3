@@ -288,3 +288,5 @@ PROTOCOL:
     9. July 19, 2011
 
         0. Fixed a small bug in the user mode handler.
+
+        1. added user mode tests. if any of the tests fail, the mode will not be accepted.
