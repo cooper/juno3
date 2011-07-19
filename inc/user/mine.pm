@@ -6,7 +6,7 @@ package user::mine;
 use warnings;
 use strict;
 
-use utils qw[col log2];
+use utils qw[col log2 conf];
 
 my (%numerics, %commands);
 
@@ -152,7 +152,16 @@ sub new_connection {
     $user->numeric('RPL_MYINFO', $utils::GV{servername}, $main::VERSION, 'i', 'i'); # TODO
     $user->user::numerics::rpl_isupport();
     $user->handle('LUSERS');
-    $user->handle('MOTD')
+    $user->handle('MOTD');
+
+    # set modes
+    $user->handle_mode_string(conf qw/users automodes/);
+    send_modechange($user, $user->full, $user->mode_string);
+}
+
+sub send_modechange {
+    my ($user, $source, $modestr) = @_;
+    $user->sendfrom($source, "MODE $$user{nick} $modestr");
 }
 
 1

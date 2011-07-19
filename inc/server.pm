@@ -72,8 +72,8 @@ sub add_umode {
 # umode letter to name
 sub umode_name {
     my ($server, $mode) = @_;
-    while (my ($key, $val) = each %{$server->{umodes}}) {
-        return $key if $mode eq $val
+    foreach my $name (keys %{$server->{umodes}}) {
+        return $name if $mode eq $server->{umodes}->{$name}
     }
     return
 }

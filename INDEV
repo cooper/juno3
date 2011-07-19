@@ -271,3 +271,5 @@ PROTOCOL:
         3. made it possible to add multiple user handlers of the same command (which will be useful later in the module API.)
 
         4. did the same for server handlers.
+
+        5. added default mode settings.
