@@ -305,3 +305,5 @@ PROTOCOL:
 
         7. fixed something in LUSERS.
            added nickname in use numeric.
+
+        8. fixed another LUSERS bug.

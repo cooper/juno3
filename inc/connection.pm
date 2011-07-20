@@ -69,7 +69,7 @@ sub handle {
 
             # invalid chars
             if (!utils::validnick($nick)) {
-                $connection->send(":$utils::GV{servername} 432 * $nick :Erroneous Nickname");
+                $connection->send(":$utils::GV{servername} 432 * $nick :Erroneous nickname");
                 return
             }
 

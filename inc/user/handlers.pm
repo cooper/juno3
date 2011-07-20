@@ -86,9 +86,12 @@ sub lusers {
             my $usr = $connection->{type};
             $global++;
             $local++ if $usr->is_local;
-            $opers++ if $usr->is_mode('ircop');
-            $invisible++ if $usr->is_mode('invisible');
-            $users++
+            if ($usr->is_mode('invisible')) {
+                $invisible++
+            }
+            else {
+                $users++
+            }
         }
         else {
             $unknown++
