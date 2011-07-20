@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '1.1.3' }
+sub VERSION () { '1.1.4' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -138,9 +138,11 @@ mainloop: for (;;) {
         my $connection = $connection::connection{$socket};
 
         # they've reached their limit; force them to quit
-        my $isaserver = exists $connection->{type} ? $connection->{type}->isa('server') : 0;
-        $connection->done(conf qw[flood message])
-        if length $inbuffer{$socket} > conf qw[flood bytes] && !$isaserver;
+        if (length $inbuffer{$socket} > conf qw[flood bytes]) {
+            if ((exists $connection->{type} && !$connection->{type}->isa('server')) || !exists $connection->{type}) {
+                $connection->done(conf qw[flood message])
+            }
+        }
 
     }
 
