@@ -259,7 +259,7 @@ sub privmsgnotice {
         # then tell local servers
         my %sent;
         foreach my $usr (keys %user::user) {
-            next if $user->is_local;
+            next if $usr->is_local;
             next if $sent{$usr->{location}};
             $sent{$usr->{location}} = 1;
             $usr->{location}->server::outgoing::privmsgnotice($command, $user, $channel->{name}, $message);

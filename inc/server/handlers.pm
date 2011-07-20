@@ -178,7 +178,7 @@ sub privmsgnotice {
     my $message = col($m[3]);
 
     # is it a user?
-    my $tuser = user::lookup_by_id(col($args[2]));
+    my $tuser = user::lookup_by_id($args[2]);
     if ($tuser) {
         # if it's mine, send it
         if ($tuser->is_local) {
@@ -191,7 +191,7 @@ sub privmsgnotice {
     }
 
     # must be a channel
-    my $channel = channel::lookup_by_name($args[1]);
+    my $channel = channel::lookup_by_name($args[2]);
     if ($channel) {
         # tell local users
         $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
