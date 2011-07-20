@@ -214,7 +214,7 @@ sub privmsgnotice {
 sub sjoin {
     my ($server, $data, @args) = @_;
     my $user    = user::lookup_by_id(col($args[0]));
-    my $chname  = uc $args[2];
+    my $chname  = $args[2];
 
     # if the channel exists, just join
     my $channel = channel::lookup_by_name($chname);
