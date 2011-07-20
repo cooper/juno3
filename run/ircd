@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '0.1.1' }
+sub VERSION () { '0.1.2' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -51,6 +51,7 @@ use user::handlers;
 use user::numerics;
 use user::modes;
 use channel;
+use channel::mine;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
@@ -141,7 +142,7 @@ mainloop: for (;;) {
 
     }
 
-    out: foreach my $socket ($select->can_write(0)) {
+    out: foreach my $socket ($select->can_write(1)) {
 
         # nothing to write
         next out unless exists $outbuffer{$socket};

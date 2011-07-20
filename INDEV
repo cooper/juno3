@@ -319,3 +319,5 @@ PROTOCOL:
         0. added join user handler. (yay, soon we will have working channels!)
 
         1. fixed a bug in the PRIVMSG/NOTICE handler.
+
+        2. omg we have join.

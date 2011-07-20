@@ -282,15 +282,16 @@ sub cjoin {
 
         # if the channel exists, just join
         my $channel = channel::lookup_by_name($chname);
+        my $time = time;
 
         # otherwise create a new one
         if (!$channel) {
             $channel = channel->new({
                 name   => $chname,
-                'time' => time
+                'time' => $time
             });
         }
-        $channel->join($user, time);
+        $channel->channel::mine::join($user, $time);
     }
 }
 
