@@ -8,7 +8,7 @@ use feature qw[switch say];
 use base 'Exporter';
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq];
+our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -148,6 +148,31 @@ sub validnick {
 
     # success
     return 1
+
+}
+
+# match a host to a list
+sub match {
+    my ($mask, @list) = @_;
+    $mask = lc $mask;
+    my @aregexps;
+
+    foreach my $regexp (@list) {
+
+        # replace wildcards with regex
+        $regexp =~ s/\./\\\./g;
+        $regexp =~ s/\?/\./g;
+        $regexp =~ s/\*/\.\*/g;
+        $regexp = '^'.$regexp.'$';
+        push @aregexps, lc $regexp
+
+    }
+
+    # success
+    return 1 if grep { $mask =~ m/$_/ } @aregexps;
+
+    # no matches
+    return
 
 }
 

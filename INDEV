@@ -307,3 +307,7 @@ PROTOCOL:
            added nickname in use numeric.
 
         8. fixed another LUSERS bug.
+
+        9. added NOTICE command.
+           send NOTICE from server to server.
+           fix a couple small things.

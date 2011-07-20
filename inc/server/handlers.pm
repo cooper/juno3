@@ -50,7 +50,12 @@ my %commands = (
     PRIVMSG => {
         params  => 2,
         forward => 0, # we have to figure ourself
-        code    => \&privmsg
+        code    => \&privmsgnotice
+    },
+    NOTICE => {
+        params  => 2,
+        forward => 0, # we have to figure ourself
+        code    => \&privmsgnotice
     }
 );
 
@@ -158,9 +163,10 @@ sub umode {
     $user->handle_mode_string($args[2]);
 }
 
-sub privmsg {
+sub privmsgnotice {
     my ($server, $data, @args) = @_;
-    my $user = user::lookup_by_id(col($args[0]));
+    my $user    = user::lookup_by_id(col($args[0]));
+    my $command = uc $args[1];
 
     # we can't  use @args because it splits by whitespace
     my @m = split ' ', $data, 4;
@@ -171,11 +177,11 @@ sub privmsg {
     if ($tuser) {
         # if it's mine, send it
         if ($tuser->is_local) {
-            $tuser->sendfrom($user->full, "PRIVMSG $$tuser{nick} :$message");
+            $tuser->sendfrom($user->full, "$command $$tuser{nick} :$message");
             return 1
         }
         # otherwise pass this on...
-        $tuser->{location}->server::outgoing::privmsg($user, $tuser->{uid}, $message);
+        $tuser->{location}->server::outgoing::privmsgnotice($command, $user, $tuser->{uid}, $message);
         return 1
     }
 

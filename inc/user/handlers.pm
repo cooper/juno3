@@ -41,7 +41,11 @@ my %commands = (
     },
     PRIVMSG => {
         params => 2,
-        code   => \&privmsg
+        code   => \&privmsgnotice
+    },
+    NOTICE => {
+        params => 2,
+        code   => \&privmsgnotice
     },
     MAP => {
         params => 0,
@@ -208,13 +212,14 @@ sub mode {
     return
 }
 
-sub privmsg {
+sub privmsgnotice {
     my ($user, $data, @args) = @_;
 
     # we can't  use @args because it splits by whitespace
-    $data =~ s/^:(.+)\s//;
-    my @m = split ' ', $data, 3;
+    $data       =~ s/^:(.+)\s//;
+    my @m       = split ' ', $data, 3;
     my $message = col($m[2]);
+    my $command = uc $m[0];
 
     # no text to send
     if ($message eq '') {
@@ -236,7 +241,7 @@ sub privmsg {
 
         # send it to the server holding this user
         else {
-            $tuser->{location}->server::outgoing::privmsg($user, $tuser->{uid}, $message);
+            $tuser->{location}->server::outgoing::privmsgnotice($command, $user, $tuser->{uid}, $message);
         }
         return 1
     }
