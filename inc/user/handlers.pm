@@ -50,6 +50,10 @@ my %commands = (
     MAP => {
         params => 0,
         code   => \&cmap
+    },
+    JOIN => {
+        params => 1,
+        code   => \&cjoin
     }
 );
 
@@ -264,6 +268,30 @@ sub cmap {
         $user->numeric('RPL_MAP', '    '.$server->{name})
     }
     $user->numeric('RPL_MAPEND');
+}
+
+sub cjoin {
+    my ($user, $data, @args) = @_;
+    foreach my $chname (split ',', $args[1]) {
+
+        # make sure it's a valid name
+        if (!utils::validchan($chname)) {
+            $user->numeric('ERR_NOSUCHCHANNEL', $chname);
+            next
+        }
+
+        # if the channel exists, just join
+        my $channel = channel::lookup_by_name($chname);
+
+        # otherwise create a new one
+        if (!$channel) {
+            $channel = channel->new({
+                name   => $chname,
+                'time' => time
+            });
+        }
+        $channel->join($user, time);
+    }
 }
 
 1

@@ -151,6 +151,14 @@ sub validnick {
 
 }
 
+# check if a channel name is valid
+sub validchan {
+    my $name = shift;
+    return if length $name > conf('limit', 'channelname');
+    return unless $name =~ m/^#/;
+    return 1
+}
+
 # match a host to a list
 sub match {
     my ($mask, @list) = @_;

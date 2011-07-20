@@ -28,6 +28,7 @@ my %numerics = (
     RPL_MOTDSTART        => ['375', ':%s message of the day'],
     RPL_ENDOFMOTD        => ['376', ':End of message of the day'],
     ERR_NOSUCHNICK       => ['401', '%s :No such nick/channel'],
+    ERR_NOSUCHCHANNEL    => ['403', '%s :No such channel'],
     ERR_NOTEXTTOSEND     => ['412', ':No text to send'],
     ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],

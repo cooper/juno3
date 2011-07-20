@@ -311,3 +311,10 @@ PROTOCOL:
         9. added NOTICE command.
            send NOTICE from server to server.
            fix a couple small things.
+
+1. July 20, 2011
+
+    0. July 20, 2011
+
+        0. added join user handler. (yay, soon we will have working channels!)
+

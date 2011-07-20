@@ -6,6 +6,8 @@ package channel;
 use warnings;
 use strict;
 
+use utils qw/log2/;
+
 our %channels;
 
 sub new {
@@ -24,7 +26,7 @@ sub new {
 
     # add to the channel hash
     $channels{lc($ref->{name})} = $channel;
-    log2("new channel $$ref{name} @ $$ref{time}");
+    log2("new channel $$ref{name} at $$ref{time}");
 
     return $channel
 }
@@ -38,6 +40,8 @@ sub join {
     if ($time < $channel->{time}) {
         $channel->set_time($time);
     }
+
+    log2("adding $$user{nick} to $$channel{name}");
 
     # add the user to the channel
     push @{$channel->{users}}, $user;
