@@ -50,6 +50,15 @@ sub join {
 
 }
 
+# user is on channel
+sub has_user {
+    my ($channel, $user) = @_;
+    foreach my $usr (@{$channel->{users}}) {
+        return 1 if $usr == $user
+    }
+    return
+}
+
 # set the channel time
 sub set_time {
     my ($channel, $time) = @_;

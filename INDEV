@@ -321,3 +321,5 @@ PROTOCOL:
         1. fixed a bug in the PRIVMSG/NOTICE handler.
 
         2. omg we have join.
+
+        3. joining a channel now sends NAMES and creation time.
