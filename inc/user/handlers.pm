@@ -240,7 +240,7 @@ sub privmsgnotice {
 
         # if it's a local user, send it to them
         if ($tuser->is_local) {
-            $tuser->sendfrom($user->full, "PRIVMSG $$tuser{nick} :$message");
+            $tuser->sendfrom($user->full, "$command $$tuser{nick} :$message");
         }
 
         # send it to the server holding this user
