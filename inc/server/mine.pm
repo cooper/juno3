@@ -106,10 +106,10 @@ sub send_burst {
     $server->sendme('BURST');
 
     # send MY user mode names
-    while (my ($name, $mode) = each %{$utils::GV{server}->{umodes}}) {
+    foreach my $name (keys %{$utils::GV{server}->{umodes}}) {
+        my $mode = $utils::GV{server}->{umodes}->{$name};
         $server->server::outgoing::addumode($utils::GV{server}, $name, $mode);
     }
-
 
     # child servers
     foreach my $serv (values %server::server) {
@@ -132,6 +132,13 @@ sub send_burst {
         # ignore users the server already knows!
         next if $user->{server} == $server || $server->{sid} == $user->{source};
         $server->server::outgoing::uid($user)
+    }
+
+    # channels (joins)
+    foreach my $channel (values %channel::channels) {
+        foreach my $user (@{$channel->{users}}) {
+            $server->server::outgoing::join($user, $channel, $channel->{time});
+        }
     }
 
     $server->sendme('ENDBURST');
