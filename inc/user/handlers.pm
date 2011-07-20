@@ -303,6 +303,7 @@ sub cjoin {
                 'time' => $time
             });
         }
+        return if $channel->has_user($user);
         $channel->channel::mine::join($user, $time);
         server::outgoing::join_all($user, $channel, $time);
     }

@@ -227,6 +227,7 @@ sub sjoin {
             'time' => $time
         });
     }
+    return if $channel->has_user($user);
     $channel->join($user, $time);
 
     # for each user in the channel
