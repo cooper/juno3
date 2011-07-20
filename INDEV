@@ -328,3 +328,5 @@ PROTOCOL:
            quit messages are sent to users in common channels now.
 
         5. send and handle joins among servers.
+
+        6. just kidding. it will work now.

@@ -191,7 +191,22 @@ sub privmsgnotice {
     }
 
     # must be a channel
-    # TODO
+    my $channel = channel::lookup_by_name($args[1]);
+    if ($channel) {
+        # tell local users
+        $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
+
+        # then tell local servers if necessary
+        my %sent;
+        foreach my $usr (keys %user::user) {
+            next if $usr->is_local;
+            next if $sent{$usr->{location}};
+            $sent{$usr->{location}} = 1;
+            $usr->{location}->server::outgoing::privmsgnotice($command, $user, $channel->{name}, $message);
+        }
+
+        return 1
+    }
 }
 
 # join
