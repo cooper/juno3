@@ -354,3 +354,5 @@ PROTOCOL:
         4. maybe this will fix the flood problem.
 
         5. or this. hash != hashref.
+
+        6. I THINK CHANNELS ACTUALLY STAY IN SYNC NOW AND I AM USING CAPITALS BECAUSE THIS COMMIT IS ACTUALLY IMPORTANT.
