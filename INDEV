@@ -336,3 +336,7 @@ PROTOCOL:
         8. okay, channel PRIVMSGs now work globally.
 
         9. send channel joins in burst.
+
+    1. July 20, 2011
+
+        0. Maybe this will fix fail problem?

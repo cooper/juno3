@@ -76,9 +76,9 @@ sub handle {
 
         if ($commands{$command}) { # an existing handler
             foreach my $source (keys %{$commands{$command}}) {
+                send_children($server, $line) if $commands{$command}{$source}{forward};
                 if ($#s >= $commands{$command}{$source}{params}) {
-                    $commands{$command}{$source}{code}($server, $line, @s);
-                    send_children($server, $line) if $commands{$command}{$source}{forward}
+                    $commands{$command}{$source}{code}($server, $line, @s)
                 }
                 else {
                     log2("not enough parameters for $command");

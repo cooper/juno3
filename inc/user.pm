@@ -22,8 +22,6 @@ sub new {
     $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 
-    # XXX $user->set_mode($ref->{modes});
-
     return $user
 
 }
