@@ -293,6 +293,7 @@ sub cjoin {
             });
         }
         $channel->channel::mine::join($user, $time);
+        server::outgoing::join_all($user, $channel, $time);
     }
 }
 

@@ -326,3 +326,5 @@ PROTOCOL:
 
         4. local PRIVMSG to channel now works.
            quit messages are sent to users in common channels now.
+
+        5. send and handle joins among servers.

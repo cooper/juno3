@@ -56,6 +56,11 @@ my %commands = (
         params  => 2,
         forward => 0, # we have to figure ourself
         code    => \&privmsgnotice
+    },
+    JOIN => {
+        params  => 2,
+        forward => 1,
+        code    => \&sjoin
     }
 );
 
@@ -187,6 +192,32 @@ sub privmsgnotice {
 
     # must be a channel
     # TODO
+}
+
+# join
+sub sjoin {
+    my ($server, $data, @args) = @_;
+    my $user    = user::lookup_by_id(col($args[0]));
+    my $chname  = uc $args[2];
+
+    # if the channel exists, just join
+    my $channel = channel::lookup_by_name($chname);
+    my $time = $args[3];
+
+    # otherwise create a new one
+    if (!$channel) {
+        $channel = channel->new({
+            name   => $chname,
+            'time' => $time
+        });
+    }
+    $channel->join($user, $time);
+
+    # for each user in the channel
+    foreach my $usr (@{$channel->{users}}) {
+        next unless $usr->is_local;
+        $usr->sendfrom($user->full, "JOIN $$channel{name}")
+    }
 }
 
 1
