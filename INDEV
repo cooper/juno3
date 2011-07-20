@@ -342,3 +342,6 @@ PROTOCOL:
         0. Maybe this will fix fail problem?
 
         1. users should definitely be removed from channels properly now.
+
+        2. I should stop saying 'definitely' when i'm not sure.
+             now they should DEFINITELY be working right.

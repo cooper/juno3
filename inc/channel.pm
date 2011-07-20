@@ -53,10 +53,10 @@ sub join {
 # remove a user
 sub remove {
     my ($channel, $user) = @_;
-    log2("removing $$user{nick} from $channel");
+    log2("removing $$user{nick} from $$channel{name}");
     my $i = 0;
     foreach my $usr (@{$channel->{users}}) {
-        delete $channel->{users}->[$i] if $usr == $user;
+        splice @{$channel->{users}}, $i, 1;
         $i++
     }
 }
