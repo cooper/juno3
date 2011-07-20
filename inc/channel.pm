@@ -54,11 +54,11 @@ sub join {
 sub remove {
     my ($channel, $user) = @_;
     log2("removing $$user{nick} from $$channel{name}");
-    my $i = 0;
+    my @new;
     foreach my $usr (@{$channel->{users}}) {
-        splice @{$channel->{users}}, $i, 1;
-        $i++
+        push @new, $usr if $usr != $user
     }
+    $channel->{users} = \@new
 }
 
 # user is on channel
