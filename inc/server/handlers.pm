@@ -199,6 +199,7 @@ sub privmsgnotice {
         # then tell local servers if necessary
         my %sent;
         foreach my $usr (values %user::user) {
+            next if $server == $usr->{location};
             next if $usr->is_local;
             next if $sent{$usr->{location}};
             $sent{$usr->{location}} = 1;
