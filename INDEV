@@ -340,3 +340,5 @@ PROTOCOL:
     1. July 20, 2011
 
         0. Maybe this will fix fail problem?
+
+        1. users should definitely be removed from channels properly now.

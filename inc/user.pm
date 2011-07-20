@@ -67,6 +67,7 @@ sub quit {
     # XXX y u no mine.pm
     foreach my $channel (values %channel::channels) {
         next unless $channel->has_user($user);
+        $channel->remove($user);
         foreach my $usr (@{$channel->{users}}) {
             next unless $usr->is_local;
             next if $sent{$usr};
@@ -75,8 +76,8 @@ sub quit {
         }
     }
 
-
     delete $user{$user->{uid}};
+    undef $user;
 }
 
 sub change_nick {

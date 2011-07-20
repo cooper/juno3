@@ -50,6 +50,17 @@ sub join {
 
 }
 
+# remove a user
+sub remove {
+    my ($channel, $user) = @_;
+    log2("removing $$user{nick} from $channel");
+    my $i = 0;
+    foreach my $usr (@{$channel->{users}}) {
+        delete $channel->{users}->[$i] if $usr == $user;
+        $i++
+    }
+}
+
 # user is on channel
 sub has_user {
     my ($channel, $user) = @_;
