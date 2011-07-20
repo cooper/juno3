@@ -352,3 +352,5 @@ PROTOCOL:
              just like all the others.
 
         4. maybe this will fix the flood problem.
+
+        5. or this. hash != hashref.
