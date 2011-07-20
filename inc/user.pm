@@ -57,9 +57,27 @@ sub set_mode {
 }
 
 sub quit {
-    # TODO don't forget to send QUIT to the user if it's local
     my ($user, $reason) = @_;
     log2("user quit from $$user{server}{name} uid:$$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}] ($reason)");
+
+    my %sent;
+    $user->sendfrom($user->full, "QUIT :$reason");
+
+    # search for local users that know this client
+    # and send the quit to them.
+
+    # XXX y u no mine.pm
+    foreach my $channel (values %channel::channels) {
+        next unless $channel->has_user($user);
+        foreach my $usr (@{$channel->{users}}) {
+            next unless $usr->is_local;
+            next if $sent{$usr};
+            $usr->sendfrom($user->full, "QUIT :$reason");
+            $sent{$usr} = 1
+        }
+    }
+
+
     delete $user{$user->{uid}};
 }
 

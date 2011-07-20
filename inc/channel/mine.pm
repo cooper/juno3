@@ -41,4 +41,14 @@ sub names {
     $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $str) if $str ne '';
 }
 
+sub send_all {
+    my ($channel, $what, $ignore) = @_;
+    foreach my $user (@{$channel->{users}}) {
+        next unless $user->is_local;
+        next if defined $ignore && $ignore == $user;
+        $user->send($what);
+    }
+    return 1
+}
+
 1

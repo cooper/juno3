@@ -323,3 +323,6 @@ PROTOCOL:
         2. omg we have join.
 
         3. joining a channel now sends NAMES and creation time.
+
+        4. local PRIVMSG to channel now works.
+           quit messages are sent to users in common channels now.

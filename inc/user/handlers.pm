@@ -253,7 +253,8 @@ sub privmsgnotice {
     # must be a channel
     my $channel = channel::lookup_by_name($args[1]);
     if ($channel) {
-        return 1 # TODO
+        $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
+        return 1
     }
 
     # no such nick/channel
