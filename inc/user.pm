@@ -58,8 +58,8 @@ sub quit {
     my ($user, $reason) = @_;
     log2("user quit from $$user{server}{name} uid:$$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}] ($reason)");
 
-    my %sent;
-    $user->sendfrom($user->full, "QUIT :$reason");
+    my %sent = { $user => 1 };
+    $user->sendfrom($user->full, "QUIT :$reason") if $user->is_local;
 
     # search for local users that know this client
     # and send the quit to them.

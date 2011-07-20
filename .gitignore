@@ -1,5 +1,6 @@
 etc/*.conf
 etc/*.db
 etc/*.pid
+.gedit
 dev/
 *~
