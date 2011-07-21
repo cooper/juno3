@@ -370,3 +370,5 @@ PROTOCOL:
              see the example configuration.
            user->handle_mode_string now takes an optional 'force' argument that, when true, skips the mode tests.
            this new argument is now used in the linking protocol, that way servers can force users to oper up.
+
+        1. added user functions to add/remove/check oper flags.

@@ -158,6 +158,29 @@ sub mode_string {
     return $string
 }
 
+# add oper flags
+sub add_flags {
+    my $user = shift;
+    push @{$user->{flags}}, @_
+}
+
+# remove oper flags
+sub remove_flags {
+    my $user = shift;
+    my @remove = @_;
+    log2("removing flags from $$user{nick}: @remove");
+    my %r;
+    @r{@remove}++;
+    my @new = grep { !exists $r{$_} } @{$user->{flags}};
+    $user->{flags} = \@new;
+}
+
+# has oper flag
+sub has_flag {
+    my ($user, $flag) = @_;
+    return $flag ~~ @{$user->{flags}}
+}
+
 # lookup functions
 
 sub lookup_by_nick {
