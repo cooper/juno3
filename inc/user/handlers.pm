@@ -160,11 +160,22 @@ sub nick {
         return
     }
 
-    # TODO send to familiar users
-    # but for now just send to the client
-
+    # tell ppl
     $user->sendfrom($user->full, "NICK $newnick");
+    my %sent = ( $user => 1);
+    foreach my $channel (values %channel::channels) {
+        next unless $channel->has_user($user);
+        foreach my $usr (@{$channel->{users}}) {
+            next unless $usr->is_local;
+            next if $sent{$usr};
+            $usr->sendfrom($user->full, "NICK $newnick");
+            $sent{$usr} = 1
+        }
+    }
+
+    # change it
     $user->change_nick($newnick);
+
     server::outgoing::nickchange_all($user);
 }
 

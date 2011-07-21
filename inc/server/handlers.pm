@@ -138,7 +138,19 @@ sub nick {
     # handle a nickchange
     my ($server, $data, @args) = @_;
     my $user = user::lookup_by_id(col($args[0]));
-    # TODO send to familiar users
+
+    # tell ppl
+    my %sent = ( $user => 1);
+    foreach my $channel (values %channel::channels) {
+        next unless $channel->has_user($user);
+        foreach my $usr (@{$channel->{users}}) {
+            next unless $usr->is_local;
+            next if $sent{$usr};
+            $usr->sendfrom($user->full, "NICK $args[2]");
+            $sent{$usr} = 1
+        }
+    }
+
     $user->change_nick($args[2])
 }
 
