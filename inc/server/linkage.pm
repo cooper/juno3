@@ -40,7 +40,8 @@ sub connect_server {
     # send server credentials.
     main::sendpeer($socket,
         "SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}",
-        "PASS $serv{send_password}"
+        "PASS $serv{send_password}",
+        "READY"
     );
 
     return 1
