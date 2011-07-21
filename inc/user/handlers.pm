@@ -368,7 +368,10 @@ sub oper {
 
     # this will set ircop as well as send a MODE to the user
     my $result = $user->handle_mode_string('+'.$user->{server}->umode_letter('ircop'), 1);
-    $user->sendfrom($user->full, "MODE $$user{nick} $result");
+    if ($result && $result ne '+') {
+        server::outgoing::umode_all($user, $result);
+        $user->sendfrom($user->full, "MODE $$user{nick} $result");
+    }
 
     $user->numeric('RPL_YOUREOPER');
     return 1

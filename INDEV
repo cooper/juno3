@@ -10,9 +10,9 @@ revision: I'll do it however I want to
 TODO:
     RPL_ISUPPORT
     finish RPL_WELCOME
-    finish RPL_LUSERCHANNELS
     LUSERS
     wildcard in connect blocks
+    look in to movement of modes from server to server- i think it fails.
 
 PROTOCOL:
     SERVER <sid> <name> <protocol version> <ircd version> :<description>
@@ -374,3 +374,6 @@ PROTOCOL:
         1. added user functions to add/remove/check oper flags.
 
         2. keep oper flags in sync between servers that way we can user->has_flag for non-local users.
+
+        3. only send the MODE message if the returned string isn't empty.
+           send ircop mode to other servers on /oper.
