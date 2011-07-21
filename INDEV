@@ -13,11 +13,7 @@ TODO:
     LUSERS
     wildcard in connect blocks
     look in to movement of modes from server to server- i think it fails.
-
-PROTOCOL:
-    SERVER <sid> <name> <protocol version> <ircd version> :<description>
-    :<parent SID> SID <sid> <ts> <name> <protocol version> <ircd version> :<description>
-    :<SID> UID <uid> <ts> +<usermodes> <nick> <ident> <host> <cloak> <ip> :<GECOS>
+    local mode letters shouldn't be in modes.pm.
 
 0. April 30, 2011
 
@@ -381,3 +377,5 @@ PROTOCOL:
         4. fixed a crash.. dunno why i put 'opers' instead of 'flags'
 
         5. fixed a bug where you could not unset your oper mode.
+
+        6. rewrote the way mode blocks are done.
