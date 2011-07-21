@@ -54,6 +54,10 @@ my %commands = (
     JOIN => {
         params => 1,
         code   => \&cjoin
+    },
+    NAMES => {
+        params => 1,
+        code   => \&names
     }
 );
 
@@ -306,6 +310,17 @@ sub cjoin {
         return if $channel->has_user($user);
         $channel->channel::mine::join($user, $time);
         server::outgoing::join_all($user, $channel, $time);
+    }
+}
+
+sub names {
+    my ($user, $data, @args) = @_;
+    foreach my $chname (split ',', $args[1]) {
+        # nonexistent channels return no error,
+        # and RPL_ENDOFNAMES is sent no matter what
+        my $channel = channel::lookup_by_name($chname);
+        $channel->channel::mine::names($user) if $channel;
+        $user->numeric('RPL_ENDOFNAMES', $channel ? $channel->{name} : $chname);
     }
 }
 
