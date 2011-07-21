@@ -377,3 +377,5 @@ PROTOCOL:
 
         3. only send the MODE message if the returned string isn't empty.
            send ircop mode to other servers on /oper.
+
+        4. fixed a crash.. dunno why i put 'opers' instead of 'flags'

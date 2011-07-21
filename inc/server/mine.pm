@@ -58,10 +58,10 @@ sub handle {
         }
 
         # end connection
-        if (uc $s[0] eq 'ERROR') {
-            $server->{conn}->done(col(join ' ', @s[1..$#s]));
-            return
-        }
+        #if (uc $s[0] eq 'ERROR') {
+        #    $server->{conn}->done(col(join ' ', @s[1..$#s]));
+        #    return
+        #}
 
         # server is ready for BURST
         if (uc $s[0] eq 'READY') {
@@ -134,7 +134,7 @@ sub send_burst {
         $server->server::outgoing::uid($user);
 
         # oper flags
-        if (scalar @{$user->{opers}}) {
+        if (scalar @{$user->{flags}}) {
             $server->server::outgoing::oper($user, @{$user->{flags}});
         }
     }
