@@ -103,4 +103,14 @@ sub join_all {
     server::mine::sendfrom_children(undef, $user->{uid}, "JOIN $$channel{name} $time");
 }
 
+sub oper {
+    my ($server, $user, @flags) = @_;
+    $server->sendfrom($user->{uid}, "OPER @flags");
+}
+
+sub oper_all {
+    my ($user, @flags) = @_;
+    server::mine::sendfrom_children(undef, $user->{uid}, "OPER @flags");
+}
+
 1

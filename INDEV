@@ -372,3 +372,5 @@ PROTOCOL:
            this new argument is now used in the linking protocol, that way servers can force users to oper up.
 
         1. added user functions to add/remove/check oper flags.
+
+        2. keep oper flags in sync between servers that way we can user->has_flag for non-local users.

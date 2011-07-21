@@ -61,6 +61,11 @@ my %commands = (
         params  => 2,
         forward => 1,
         code    => \&sjoin
+    },
+    OPER => {
+        params  => 1,
+        forward => 1,
+        code    => \&oper
     }
 );
 
@@ -247,6 +252,13 @@ sub sjoin {
         next unless $usr->is_local;
         $usr->sendfrom($user->full, "JOIN $$channel{name}")
     }
+}
+
+# add user flags
+sub oper {
+    my ($server, $data, @args) = @_;
+    my $user = user::lookup_by_id(col($args[0]));
+    $user->add_flags(@args[2..$#args]);
 }
 
 1

@@ -131,7 +131,12 @@ sub send_burst {
     foreach my $user (values %user::user) {
         # ignore users the server already knows!
         next if $user->{server} == $server || $server->{sid} == $user->{source};
-        $server->server::outgoing::uid($user)
+        $server->server::outgoing::uid($user);
+
+        # oper flags
+        if (scalar @{$user->{opers}}) {
+            $server->server::outgoing::oper($user, @{$user->{flags}});
+        }
     }
 
     # channels (joins)

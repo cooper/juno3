@@ -19,6 +19,7 @@ sub new {
     bless my $user      = {}, $class;
     $user->{$_}         = $ref->{$_} foreach qw[nick ident real host ip ssl uid time server cloak source location];
     $user->{modes}      = []; # named modes!
+    $user->{flags}      = []; # oper flags
     $user{$user->{uid}} = $user;
     log2("new user from $$user{server}{name}: $$user{uid} $$user{nick}!$$user{ident}\@$$user{host} [$$user{real}]");
 

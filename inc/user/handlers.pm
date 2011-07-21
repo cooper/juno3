@@ -361,6 +361,7 @@ sub oper {
     my %h = map { $_ => 1 } @flags;
     @flags = keys %h; # should remove duplicates
     $user->add_flags(@flags);
+    server::outgoing::oper_all($user, @flags);
 
     # okay, we should have a complete list of flags now.
     log2("$$user{nick}!$$user{ident}\@$$user{host} has opered as $args[1] and now has flags: @flags");
