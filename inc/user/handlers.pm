@@ -277,7 +277,7 @@ sub cmap {
     # TODO this will be much prettier later!
     my $user  = shift;
     foreach my $server (values %server::server) {
-        $user->numeric('RPL_MAP', '    '.$server->{name})
+        $user->numeric('RPL_MAP', '    '.$server->{name}.':'.$server->{sid})
     }
     $user->numeric('RPL_MAPEND');
 }
