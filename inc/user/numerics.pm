@@ -30,6 +30,7 @@ my %numerics = (
     RPL_ENDOFINFO        => ['374', 'End of /INFO list'],
     RPL_MOTDSTART        => ['375', ':%s message of the day'],
     RPL_ENDOFMOTD        => ['376', ':End of message of the day'],
+    RPL_YOUREOPER        => ['381', ':You are now an IRC operator'],
     ERR_NOSUCHNICK       => ['401', '%s :No such nick/channel'],
     ERR_NOSUCHCHANNEL    => ['403', '%s :No such channel'],
     ERR_NOTEXTTOSEND     => ['412', ':No text to send'],
@@ -39,6 +40,7 @@ my %numerics = (
     ERR_NICKNAMEINUSE    => ['433', '%s :Nickname in use'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister'],
+    ERR_NOOPERHOST       => ['491', ':No oper blocks for your host'],
     ERR_USERSDONTMATCH   => ['502', ':Can\'t change mode for other users']
 );
 

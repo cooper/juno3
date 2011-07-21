@@ -362,3 +362,11 @@ PROTOCOL:
         8. added NAMES command.
 
         9. send NICK messages globally. nicknames should be in sync at all times now.
+
+    2. July 21, 2011 (omg time please no..)
+
+        0. removed LUSERS temporarily because it sucks.
+           added OPER command, oper blocks, and oper classes!
+             see the example configuration.
+           user->handle_mode_string now takes an optional 'force' argument that, when true, skips the mode tests.
+           this new argument is now used in the linking protocol, that way servers can force users to oper up.

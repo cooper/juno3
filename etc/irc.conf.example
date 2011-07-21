@@ -52,8 +52,12 @@
     message: "excess flood"
 
 [ limit ]
-
-    nick: 32    # the maximum number of character in nicknames
+                        # the maximum number of characters in...
+    nick: 32            # nicknames
+    topic: 1000         # channel topics
+    kickmsg: 300        # kick messages
+    channelname: 50     # channel names
+    away: 100           # away reasons
 
 [ file ]
 
@@ -84,3 +88,31 @@
     send_password: "k"              # the password to send to the other server
     receive_password: "13fbd79c3d390e5d6585a21e11ff5ec1970cff0c" # the password to receive in return
     autoconnect: off                # attempt to connect to the server automatically?
+
+# oper classes
+
+[ operclass: local ]
+    flags: [qw/localkill locops/]       # list of oper flags
+
+[ operclass: global ]
+    extends: 'local'                    # gets the flags from local
+    flags: [qw/globalkill globops/]     # and adds these flags
+
+[ operclass: netadmin ]
+
+    extends: 'global'                   # gets the flags from both global and local
+    flags: [qw/grant/]                  # and adds these flags
+
+[ oper: cooper ]
+
+    class: "netadmin"                   # their oper class
+    password: "13fbd79c3d390e5d6585a21e11ff5ec1970cff0c" # the password, encrypted in the below crypt
+    encryption: "sha1"                  # the encryption to use in the password
+    flags: [qw/some_flag some_other/]   # list of oper flags
+
+# the above oper example ends up with flags: localkill, locops, globalkill, globops, grant, some_flag, some_other
+# because it has its own flags and is in the netadmins class
+# where netadmins provides grant
+# and extends global which provides globalkill and globops
+# which extends local which provides localkill and locops
+# :).

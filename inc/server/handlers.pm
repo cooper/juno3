@@ -118,7 +118,7 @@ sub uid {
     my $user = user->new($ref);
 
     # set modes
-    $user->handle_mode_string($ref->{modes});
+    $user->handle_mode_string($ref->{modes}, 1);
 
     return 1
 
@@ -177,7 +177,7 @@ sub umode {
     # why would umodes need time stamps?
     my ($server, $data, @args) = @_;
     my $user = user::lookup_by_id(col($args[0]));
-    $user->handle_mode_string($args[2]);
+    $user->handle_mode_string($args[2], 1);
 }
 
 sub privmsgnotice {

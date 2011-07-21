@@ -97,7 +97,7 @@ sub change_nick {
 # names by searching the user's server's modes. returns the mode
 # string, or '+' if no changes were made.
 sub handle_mode_string {
-    my ($user, $modestr) = @_;
+    my ($user, $modestr, $force) = @_;
     log2("set $modestr on $$user{nick}");
     my $state = 1;
     my $str   = '+';
@@ -124,11 +124,14 @@ sub handle_mode_string {
             }
 
             # don't allow this mode to be changed if the test fails
-            foreach my $code (@{$user->{server}->{umode_tests}->{$name}}) {
-                next letter unless $code->()
+            # *unless* force is provided
+            if (!$force) {
+                foreach my $code (@{$user->{server}->{umode_tests}->{$name}}) {
+                    next letter unless $code->()
+                }
             }
 
-            my $do   = $state ? 'set_mode' : 'unset_mode';
+            my $do = $state ? 'set_mode' : 'unset_mode';
             $user->$do($name);
             $str .= $letter
         }

@@ -4,7 +4,9 @@ package user::handlers;
 
 use warnings;
 use strict;
-use utils qw[col log2 lceq];
+use feature 'switch';
+
+use utils qw[col log2 lceq lconf];
 
 my %commands = (
     PING => {
@@ -15,10 +17,6 @@ my %commands = (
         params => 0,
         code   => \&fake_user
     },
-    LUSERS => {
-        params => 0,
-        code   => \&lusers
-    }, 
     MOTD => {
         params => 0,
         code   => \&motd
@@ -58,6 +56,10 @@ my %commands = (
     NAMES => {
         params => 1,
         code   => \&names
+    },
+    OPER => {
+        params => 2,
+        code   => \&oper
     }
 );
 
@@ -73,54 +75,6 @@ sub ping {
 sub fake_user {
     my $user = shift;
     $user->numeric('ERR_ALREADYREGISTRED');
-}
-
-sub lusers {
-    my $user      = shift;
-    my $users     =
-    my $invisible =
-    my $opers     =
-    my $myclients =
-    my $myservers =
-    my $local     =
-    my $global    =
-    my $unknown   = 0;
-
-    foreach my $connection (values %connection::connection) {
-        if (!exists $connection->{type}) {
-            $unknown++
-        }
-        elsif ($connection->{type}->isa('server')) {
-            $myservers++
-        }
-        elsif ($connection->{type}->isa('user')) {
-            $myclients++;
-            my $usr = $connection->{type};
-            $global++;
-            $local++ if $usr->is_local;
-            if ($usr->is_mode('invisible')) {
-                $invisible++
-            }
-            else {
-                $users++
-            }
-        }
-        else {
-            $unknown++
-        }
-    }
-
-    $user->numeric('RPL_LUSERCLIENT', $users, $invisible, scalar keys %server::server);
-    $user->numeric('RPL_LUSEROP', $opers) if $opers;
-    $user->numeric('RPL_LUSERUNKNOWN', $unknown) if $unknown;
-    $user->numeric('RPL_LOCALUSERS', $local, $local, $local, $local); # TODO max
-    $user->numeric('RPL_GLOBALUSERS', $global, $global, $global, $global); # TODO max
-
-    # only send if non-zero
-    my $channels = scalar keys %channel::channels;
-    $user->numeric('RPL_LUSERCHANNELS', $channels) if $channels;
-
-    $user->numeric('RPL_LUSERME', $myclients, $myservers);
 }
 
 sub motd {
@@ -333,6 +287,89 @@ sub names {
         $channel->channel::mine::names($user) if $channel;
         $user->numeric('RPL_ENDOFNAMES', $channel ? $channel->{name} : $chname);
     }
+}
+
+sub oper {
+    my ($user, $data, @args) = @_;
+    my $password = lconf('oper', $args[1], 'password');
+    my $supplied = $args[2];
+
+    # no password?!
+    if (not defined $password) {
+        $user->numeric('ERR_NOOPERHOST');
+        return
+    }
+
+    my $crypt = lconf('oper', $args[1], 'encryption');
+
+    # so now let's check if the password is right
+    given ($crypt) {
+        when ('sha1')   { $supplied = Digest::SHA::sha1_hex($supplied)   }
+        when ('sha224') { $supplied = Digest::SHA::sha224_hex($supplied) }
+        when ('sha256') { $supplied = Digest::SHA::sha256_hex($supplied) }
+        when ('sha384') { $supplied = Digest::SHA::sha384_hex($supplied) }
+        when ('sha512') { $supplied = Digest::SHA::sha512_hex($supplied) }
+        when ('md5')    { $supplied = Digest::MD5::md5_hex($supplied)    }
+    }
+
+    # incorrect
+    if ($supplied ne $password) {
+        $user->numeric('ERR_NOOPERHOST');
+        return
+    }
+
+    # or keep going!
+    # let's find all of their oper flags now
+
+    my @flags;
+
+    # flags in their oper block
+    if (defined ( my $flagref = lconf('oper', $args[1], 'flags') )) {
+        if (ref $flagref ne 'ARRAY') {
+            log2("'flags' specified for oper block $args[1], but it is not an array reference.");
+        }
+        else {
+            push @flags, @$flagref
+        }
+    }
+
+    # flags in their oper class block
+    my $add_class = sub {
+        my $add_class = shift;
+        my $operclass = shift;
+
+        # if it has flags, add them
+        if (defined ( my $flagref = lconf('operclass', $operclass, 'flags') )) {
+            if (ref $flagref ne 'ARRAY') {
+                log2("'flags' specified for oper class block $operclass, but it is not an array reference.");
+            }
+            else {
+                push @flags, @$flagref
+            }
+        }
+
+        # add parent too
+        if (defined ( my $parent = lconf('operclass', $operclass, 'extends') )) {
+            $add_class->($add_class, $parent);
+        }
+    };
+
+    if (defined ( my $operclass = lconf('oper', $args[1], 'class') )) {
+        $add_class->($add_class, $operclass);
+    }
+
+    my %h = map { $_ => 1 } @flags;
+    @flags = keys %h; # should remove duplicates
+
+    # okay, we should have a complete list of flags now.
+    log2("$$user{nick}!$$user{ident}\@$$user{host} has opered as $args[1] and now has flags: @flags");
+
+    # this will set ircop as well as send a MODE to the user
+    my $result = $user->handle_mode_string('+'.$user->{server}->umode_letter('ircop'), 1);
+    $user->sendfrom($user->full, "MODE $$user{nick} $result");
+
+    $user->numeric('RPL_YOUREOPER');
+    return 1
 }
 
 1
