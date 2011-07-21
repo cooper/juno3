@@ -128,7 +128,7 @@ sub handle_mode_string {
             # *unless* force is provided
             if (!$force) {
                 foreach my $code (@{$user->{server}->{umode_tests}->{$name}}) {
-                    next letter unless $code->()
+                    next letter unless $code->($user, $state)
                 }
             }
 
@@ -161,8 +161,10 @@ sub mode_string {
 
 # add oper flags
 sub add_flags {
-    my $user = shift;
-    push @{$user->{flags}}, @_
+    my $user  = shift;
+    my @flags = @_;
+    log2("adding flags to $$user{nick}: @flags");
+    push @{$user->{flags}}, @flags
 }
 
 # remove oper flags

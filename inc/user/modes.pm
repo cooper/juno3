@@ -10,7 +10,7 @@ use utils 'log2';
 my %modes = (
     ircop => {
         letter => 'o',
-        test => [ sub { return } ] #TODO
+        test => [\&ircop_test]
     },
     invisible => {
         letter => 'i'
@@ -28,6 +28,16 @@ sub add_internal_modes {
         $server->add_umode($name, $modes{$name}{letter}, @{$modes{$name}{test}});
     }
     log2("end of internal modes");
+}
+
+sub ircop_test {
+    my ($user, $state) = @_;
+
+    # always allow unset.
+    return 1 unless $state;
+
+    # but never allow anything else; that's a server's job
+    return
 }
 
 1
