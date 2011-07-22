@@ -387,3 +387,7 @@ CHANGES:
         8. connect blocks now allow wildcards in the IP address.
 
         9. added host option to oper blocks. see example configuration.
+
+    3. July 21, 2011
+
+        0. Added WHOIS command.

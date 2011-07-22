@@ -60,6 +60,10 @@ my %commands = (
     OPER => {
         params => 2,
         code   => \&oper
+    },
+    WHOIS => {
+        params => 1,
+        code   => \&whois
     }
 );
 
@@ -403,6 +407,46 @@ sub oper {
     }
 
     $user->numeric('RPL_YOUREOPER');
+    return 1
+}
+
+sub whois {
+
+    my ($user, $data, @args) = @_;
+
+    # this is the way inspircd does it so I can too
+    my $query = $args[2] ? $args[2] : $args[1];
+    my $quser = user::lookup_by_nick($query);
+
+    # exists?
+    if (!$quser) {
+        $user->numeric('ERR_NOSUCHNICK', $query);
+        return
+    }
+
+    # nick, ident, host
+    $user->numeric('RPL_WHOISUSER', $quser->{nick}, $quser->{ident}, $quser->{host}, $quser->{real});
+
+    # channels
+    my @channels = map { $_->{name} } grep { $_->has_user($quser) } values %channel::channels;
+    $user->numeric('RPL_WHOISCHANNELS', $quser->{nick}, join(' ', @channels)) if @channels;
+
+    # server 
+    $user->numeric('RPL_WHOISSERVER', $quser->{nick}, $quser->{server}->{name}, $quser->{server}->{desc});
+
+    # IRC operator
+    $user->numeric('RPL_WHOISOPERATOR', $quser->{nick}) if $quser->is_mode('ircop');
+
+    # using modes
+    my $modes = $quser->mode_string;
+    $user->numeric('RPL_WHOISMODES', $quser->{nick}, $modes) if $modes && $modes ne '+';
+
+    # connecting from
+    $user->numeric('RPL_WHOISHOST', $quser->{nick}, $quser->{host}, $quser->{ip});
+
+    # TODO 137 idle
+
+    $user->numeric('RPL_ENDOFWHOIS', $quser->{nick});
     return 1
 }
 
