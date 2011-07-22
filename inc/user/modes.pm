@@ -16,12 +16,34 @@ my %modes = (
     invisible => 'i'
 );
 
+# this just tells the internal server what
+# mode is associated with what letter
+sub add_internal_modes {
+    my $server = shift;
+    log2("registering internal modes");
+    foreach my $name (keys %modes) {
+        $server->add_umode($name, $modes{$name});
+    }
+    log2("end of internal modes");
+}
+
+# returns a string of every mode
+sub mode_string {
+    my @modes = sort { $a cmp $b } values %modes;
+    return join '', @modes
+}
+
 # here we create the internal mode "blocks"
 # which are called by a mode handler.
 # if any blocks of a mode return false,
 # the mode will not be set.
 # they have unique names because some API
 # modules might want to override or remove them.
+# *** keep in mind that these are only used
+# for local mode changes (the user MODE command),
+# and changes from a user on a different server
+# will not apply to these and must be handled
+# separately
 log2("registering internal mode blocks");
 
 # block for oper
@@ -38,18 +60,6 @@ register_block('ircop', 'internal_ircop', sub {
 });
 
 log2("end internal mode blocks");
-
-# local modes
-# this just tells the internal server what
-# mode is associated with what letter
-sub add_internal_modes {
-    my $server = shift;
-    log2("registering internal modes");
-    foreach my $name (keys %modes) {
-        $server->add_umode($name, $modes{$name});
-    }
-    log2("end of internal modes");
-}
 
 # register a block check to a mode
 sub register_block {

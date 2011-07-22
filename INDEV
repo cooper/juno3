@@ -379,3 +379,5 @@ TODO:
         5. fixed a bug where you could not unset your oper mode.
 
         6. rewrote the way mode blocks are done.
+
+        7. RPL_MYINFO now shows the actual user modes registered to the ircd.

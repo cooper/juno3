@@ -52,8 +52,8 @@ sub rpl_isupport {
     my $user = shift;
 
     my %things = (
-        PREFIX      => '(qaohv)~&@%+',
-        CHANTYPES   => '#',
+        PREFIX      => '(qaohv)~&@%+',              # TODO 
+        CHANTYPES   => '#',                         # TODO
         CHANMODES   => ',,,',                       # TODO
         MODES       => 0,                           # TODO
         CHANLIMIT   => '#:0',                       # TODO
@@ -69,7 +69,7 @@ sub rpl_isupport {
         RFC2812     => 'YES',
         FNC         => 'YES',
         AWAYLEN     => conf('limit', 'away'),
-        MAXTARGETS  => 1
+        MAXTARGETS  => 1                            # TODO
       # ELIST                                       # TODO
     );
 
