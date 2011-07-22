@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[log2 col conn conf];
+use utils qw[log2 col conn conf match];
 
 our ($ID, %connection) = 0;
 
@@ -114,7 +114,7 @@ sub handle {
 
                 # check for matching IPs
 
-                if ($connection->{ip} ne $addr) {
+                if (!match($connection->{ip}, $addr)) {
                     $connection->done('Invalid credentials');
                     return
                 }

@@ -1,12 +1,6 @@
 Development log
 ---------------
 
-juno3 versions consist of three parts. major.minor.commit. Because juno is constantly developed,
-increasing the version for even the smallest changes helps track errors. Only six commits are in a
-minor, and only ten minors are in a major - the minor increases for every six changes. (up to 5,
-starting at 0.) Using this system, it's likely that an entire minor will be completed in a day.\
-revision: I'll do it however I want to
-
 TODO:
     RPL_ISUPPORT
     finish RPL_WELCOME
@@ -14,6 +8,15 @@ TODO:
     wildcard in connect blocks
     look in to movement of modes from server to server- i think it fails.
     local mode letters shouldn't be in modes.pm.
+    make modes like o remove flags when unsetting from another server.
+
+PLANS: 
+    rather than remote includes, send certain configuration values over the linking protocol
+    create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
+    the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
+    modes to be known by their names, types, or levels rather than letters
+
+CHANGES:
 
 0. April 30, 2011
 
@@ -381,3 +384,5 @@ TODO:
         6. rewrote the way mode blocks are done.
 
         7. RPL_MYINFO now shows the actual user modes registered to the ircd.
+
+        8. connect blocks now allow wildcards in the IP address.
