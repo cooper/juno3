@@ -5,7 +5,6 @@ TODO:
     RPL_ISUPPORT
     finish RPL_WELCOME
     LUSERS
-    wildcard in connect blocks
     look in to movement of modes from server to server- i think it fails.
     local mode letters shouldn't be in modes.pm.
     make modes like o remove flags when unsetting from another server.
