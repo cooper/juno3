@@ -385,3 +385,5 @@ CHANGES:
         7. RPL_MYINFO now shows the actual user modes registered to the ircd.
 
         8. connect blocks now allow wildcards in the IP address.
+
+        9. added host option to oper blocks. see example configuration.

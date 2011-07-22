@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[col log2 lceq lconf];
+use utils qw[col log2 lceq lconf match];
 
 my %commands = (
     PING => {
@@ -298,6 +298,35 @@ sub oper {
     if (not defined $password) {
         $user->numeric('ERR_NOOPERHOST');
         return
+    }
+
+    # if they have specific addresses specified, make sure they match
+
+    if (defined( my $addr = lconf('oper', $args[1], 'host') )) {
+        my $win = 0;
+
+        # a reference of several addresses
+        if (ref $addr eq 'ARRAY') {
+            match: foreach my $host (@$addr) {
+                if (match($user->full, $host) || match("$$user{nick}!$$user{ident}\@$$user{ip}", $host)) {
+                    $win = 1;
+                    last match
+                }
+            }
+        }
+
+        # must just be a string of 1 address
+        else {
+            if (match($user->{host}, $addr) || match($user->{ip}, $addr)) {
+                $win = 1
+            }
+        }
+
+        # nothing matched :(
+        if (!$win) {
+            $user->numeric('ERR_NOOPERHOST');
+            return
+        }
     }
 
     my $crypt = lconf('oper', $args[1], 'encryption');

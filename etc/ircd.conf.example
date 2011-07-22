@@ -82,7 +82,7 @@
 
 [ connect: server1.netbookwashers.info ]
                                     # <--- the name of the opposite server should be the block name
-    address: "67.202.109.243"       # the address to connect to (usually an IP is desired.)
+    address: "67.202.109.243"       # the IP to connect to OR to accept connections from (accept wildcards, must always be an IP)
     port: 7000                      # the port to connect to
     encryption: "sha1"              # encryption of the receive password - make sure it is enabled
     send_password: "k"              # the password to send to the other server
@@ -106,6 +106,7 @@
 [ oper: cooper ]
 
     class: "netadmin"                   # their oper class
+    host: ['*@127.0.0.*', 'me@::1', 'cooper@*.in.comcast.net'] # an array ref of hosts to accept
     password: "13fbd79c3d390e5d6585a21e11ff5ec1970cff0c" # the password, encrypted in the below crypt
     encryption: "sha1"                  # the encryption to use in the password
     flags: [qw/some_flag some_other/]   # list of oper flags
