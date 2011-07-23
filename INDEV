@@ -410,3 +410,5 @@ CHANGES:
         2. Added handler description and COMMANDS command as in the earlier version of juno.
 
         3. Added AWAY user command.
+
+        4. Send and handle AWAY messages from server to server.

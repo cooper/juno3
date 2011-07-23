@@ -45,6 +45,8 @@ sub addumode_all {
 # users #
 #########
 
+# new user
+
 sub uid {
     my ($server, $user) = @_;
     $server->sendfrom($user->{server}->{sid}, sprintf
@@ -63,6 +65,8 @@ sub uid_all {
           $user->{cloak}, $user->{ip}, $user->{real})
 }
 
+# nick change
+
 sub nickchange {
     my ($server, $user) = @_;
     $server->sendfrom($user->{uid}, "NICK $$user{nick}")
@@ -72,6 +76,8 @@ sub nickchange_all {
     my $user = shift;
     server::mine::sendfrom_children(undef, $user->{uid}, "NICK $$user{nick}")
 }
+
+# user mode change
 
 sub umode {
     my ($server, $user, $modestr) = @_;
@@ -83,6 +89,8 @@ sub umode_all {
     server::mine::sendfrom_children(undef, $user->{uid}, "UMODE $modestr")
 }
 
+# privmsg and notice
+
 sub privmsgnotice {
     my ($server, $cmd, $user, $target, $message) = @_;
     $server->sendfrom($user->{uid}, "$cmd $target :$message")
@@ -92,6 +100,8 @@ sub privmsgnotice_all {
     my ($cmd, $user, $target, $message) = @_;
     server::mine::sendfrom_children(undef, $user->{uid}, "$cmd $target :$message")
 }
+
+# channel join
 
 sub join {
     my ($server, $user, $channel, $time) = @_;
@@ -103,6 +113,8 @@ sub join_all {
     server::mine::sendfrom_children(undef, $user->{uid}, "JOIN $$channel{name} $time");
 }
 
+# add oper flags
+
 sub oper {
     my ($server, $user, @flags) = @_;
     $server->sendfrom($user->{uid}, "OPER @flags");
@@ -111,6 +123,30 @@ sub oper {
 sub oper_all {
     my ($user, @flags) = @_;
     server::mine::sendfrom_children(undef, $user->{uid}, "OPER @flags");
+}
+
+# set away
+
+sub away {
+    my ($server, $user) = @_;
+    $server->sendfrom($user->{uid}, "AWAY :$$user{away}");
+}
+
+sub away_all {
+    my $user = shift;
+    server::mine::sendfrom_children(undef, $user->{uid}, "AWAY :$$user{away}");
+}
+
+# return from away
+
+sub return_away {
+    my ($server, $user) = @_;
+    $server->sendfrom($user->{uid}, 'RETURN');
+}
+
+sub return_away_all {
+    my $user = shift;
+    server::mine::sendfrom_children($user->{uid}, 'RETURN');
 }
 
 1

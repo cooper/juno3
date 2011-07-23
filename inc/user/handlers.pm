@@ -515,12 +515,14 @@ sub away {
     if (defined $args[1]) {
         my $reason = cut_to_limit('away', col((split /\s+/, $data, 2)[1]));
         $user->set_away($reason);
+        server::outgoing::away_all($user);
         $user->numeric('RPL_NOWAWAY');
         return 1
     }
 
     # unsetting
     $user->unset_away;
+    server::outgoing::return_away_all($user);
     $user->numeric('RPL_UNAWAY');
 }
 

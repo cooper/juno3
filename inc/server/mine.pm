@@ -137,6 +137,10 @@ sub send_burst {
         if (scalar @{$user->{flags}}) {
             $server->server::outgoing::oper($user, @{$user->{flags}});
         }
+
+        if (exists $user->{away}) {
+            $server->server::outgoing::away($user);
+        }
     }
 
     # channels (joins)

@@ -66,6 +66,16 @@ my %commands = (
         params  => 1,
         forward => 1,
         code    => \&oper
+    },
+    AWAY => {
+        params  => 1,
+        forward => 1,
+        code    => \&away
+    },
+    RETURN => {
+        params  => 0,
+        forward => 1,
+        code    => \&return_away
     }
 );
 
@@ -259,6 +269,19 @@ sub oper {
     my ($server, $data, @args) = @_;
     my $user = user::lookup_by_id(col($args[0]));
     $user->add_flags(@args[2..$#args]);
+}
+
+sub away {
+    my ($server, $data, @args) = @_;
+    my $user   = user::lookup_by_id(col($args[0]));
+    my $reason = col((split /\s+/, $data, 3)[2]);
+    $user->set_away($reason);
+}
+
+sub return_away {
+    my ($server, $data, @args) = @_;
+    my $user = user::lookup_by_id(col($args[0]));
+    $user->return_away();
 }
 
 1
