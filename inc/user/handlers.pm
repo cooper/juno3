@@ -11,68 +11,89 @@ use utils qw[col log2 lceq lconf match];
 my %commands = (
     PING => {
         params => 1,
-        code   => \&ping
+        code   => \&ping,
+        desc   => 'ping the server'
     },
     USER => {
         params => 0,
-        code   => \&fake_user
+        code   => \&fake_user,
+        desc   => 'fake user command'
     },
     MOTD => {
         params => 0,
-        code   => \&motd
+        code   => \&motd,
+        desc   => 'display the message of the day'
     },
     NICK => {
         params => 1,
-        code   => \&nick
+        code   => \&nick,
+        desc   => 'change your nickname'
     },
     PONG => {
         params => 0,
-        code   => sub { }
+        code   => sub { },
+        desc   => 'reply to a ping'
     },
     INFO => {
         params => 0,
-        code   => \&info
+        code   => \&info,
+        desc   => 'display IRCd information'
     },
     MODE => {
         params => 2,
-        code   => \&mode
+        code   => \&mode,
+        desc   => 'view or change user and channel modes'
     },
     PRIVMSG => {
         params => 2,
-        code   => \&privmsgnotice
+        code   => \&privmsgnotice,
+        desc   => 'send a message to a user or channel'
     },
     NOTICE => {
         params => 2,
-        code   => \&privmsgnotice
+        code   => \&privmsgnotice,
+        desc   => 'send a notice to a user or channel'
     },
     MAP => {
         params => 0,
-        code   => \&cmap
+        code   => \&cmap,
+        desc   => 'view a list of servers connected to the network'
     },
     JOIN => {
         params => 1,
-        code   => \&cjoin
+        code   => \&cjoin,
+        desc   => 'join a channel'
     },
     NAMES => {
         params => 1,
-        code   => \&names
+        code   => \&names,
+        desc   => 'view the user list of a channel'
     },
     OPER => {
         params => 2,
-        code   => \&oper
+        code   => \&oper,
+        desc   => 'gain privileges of an IRC operator'
+
     },
     WHOIS => {
         params => 1,
-        code   => \&whois
+        code   => \&whois,
+        desc   => 'display information on a user'
     },
     ISON => {
         params => 1,
-        code   => \&ison
+        code   => \&ison,
+        desc   => 'check if users are online'
+    },
+    COMMANDS => {
+        params => 0,
+        code   => \&commands,
+        desc   => 'view a list of available commands'
     }
 );
 
 log2("registering core user handlers");
-user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}) foreach keys %commands;
+user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}, $commands{$_}{desc}) foreach keys %commands;
 log2("end of core handlers");
 
 sub ping {
@@ -465,6 +486,21 @@ sub ison {
     }
 
     $user->numeric('RPL_ISON', join('', @found));
+}
+
+sub commands {
+    my $user = shift;
+    $user->server_notice('List of available commands');
+
+    # send a notice for each command
+    foreach my $command (keys %user::mine::commands) {
+        foreach my $source (keys %{$user::mine::commands{$command}}) {
+            $user->server_notice(sprintf "%s [\2%s\2] %s", $command,
+              $source, $user::mine::commands{$command}{$source}{desc})
+        }
+    }
+
+    $user->server_notice('End of commands list');
 }
 
 1

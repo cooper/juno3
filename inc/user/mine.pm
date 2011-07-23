@@ -8,7 +8,7 @@ use strict;
 
 use utils qw[col log2 conf];
 
-my (%numerics, %commands);
+our (%numerics, %commands);
 
 # register command handlers
 sub register_handler {
@@ -35,13 +35,16 @@ sub register_handler {
         return
     }
 
+    my $desc = shift;
+
     # success
     $commands{$command}{$source} = {
         code    => $ref,
         params  => $params,
-        source  => $source
+        source  => $source,
+        desc    => $desc
     };
-    log2("$source registered $command");
+    log2("$source registered $command: $desc");
     return 1
 }
 
@@ -131,6 +134,17 @@ sub sendserv {
         push @send, ":$utils::GV{servername} $line"
     }
     $user->{conn}->send(@send)
+}
+
+# a notice from server
+sub server_notice {
+    my $user = shift;
+    if (!$user->{conn}) {
+        my $sub = (caller 1)[3];
+        log2("can't send data to a nonlocal user! please report this error by $sub. $$user{nick}");
+        return
+    }
+    $user->{conn}->send(map { ":$utils::GV{servername} NOTICE $$user{nick} :$_" } @_)
 }
 
 sub numeric {

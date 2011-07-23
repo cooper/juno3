@@ -210,11 +210,12 @@ sub full {
 
 # local shortcuts
 
-sub handle   { user::mine::handle(@_)   }
-sub send     { user::mine::send(@_)     }
-sub sendfrom { user::mine::sendfrom(@_) }
-sub sendserv { user::mine::sendserv(@_) }
-sub numeric  { user::mine::numeric(@_)  }
-sub id       { shift->{uid}             }
+sub handle        { user::mine::handle(@_)        }
+sub send          { user::mine::send(@_)          }
+sub sendfrom      { user::mine::sendfrom(@_)      }
+sub sendserv      { user::mine::sendserv(@_)      }
+sub server_notice { user::mine::server_notice(@_) }
+sub numeric       { user::mine::numeric(@_)       }
+sub id            { shift->{uid}                  }
 
 1

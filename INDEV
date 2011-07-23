@@ -406,3 +406,5 @@ CHANGES:
         July 23, 2011
 
         1. Added ISON command.
+
+        2. Added handler description and COMMANDS command as in the earlier version of juno.
