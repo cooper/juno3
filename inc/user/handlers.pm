@@ -241,6 +241,11 @@ sub privmsgnotice {
         # TODO here check for user modes preventing
         # the user from sending the message
 
+        # tell them of away if set
+        if ($command eq 'PRIVMSG' && exists $user->{away}) {
+            $user->numeric('RPL_AWAY', $tuser->{nick}, $tuser->{away});
+        }
+
         # if it's a local user, send it to them
         if ($tuser->is_local) {
             $tuser->sendfrom($user->full, "$command $$tuser{nick} :$message");
@@ -466,6 +471,9 @@ sub whois {
 
     # IRC operator
     $user->numeric('RPL_WHOISOPERATOR', $quser->{nick}) if $quser->is_mode('ircop');
+
+    # is away
+    $user->numeric('RPL_AWAY', $quser->{nick}, $quser->{away}) if exists $quser->{away};
 
     # using modes
     my $modes = $quser->mode_string;

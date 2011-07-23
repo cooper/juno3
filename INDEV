@@ -412,3 +412,6 @@ CHANGES:
         3. Added AWAY user command.
 
         4. Send and handle AWAY messages from server to server.
+
+        5. Added away line to WHOIS command.
+           notify users when they send PRIVMSGs to away users.

@@ -22,6 +22,7 @@ my %numerics = (
     RPL_LUSERME          => ['255', 'I have %d clients and %d servers'],
     RPL_LOCALUSERS       => ['265', '%d %d :Current local users %d, max %d'],
     RPL_GLOBALUSERS      => ['266', '%d %d :Current global users %d, max %d'],
+    RPL_AWAY             => ['301', '%s :%s'],
     RPL_ISON             => ['303', ':%s'],
     RPL_UNAWAY           => ['305', ':You are no longer marked as away'],
     RPL_NOWAWAY          => ['306', ':You are now marked as away'],
