@@ -183,6 +183,20 @@ sub has_flag {
     return $flag ~~ @{$user->{flags}}
 }
 
+# set away msg
+sub set_away {
+    my ($user, $reason) = @_;
+    $user->{away} = $reason;
+    log2("$$user{nick} is now away: $reason");
+}
+
+# return from away
+sub unset_away {
+    my $user = shift;
+    log2("$$user{nick} has returned from being away: $$user{away}");
+    delete $user->{away};
+}
+
 # lookup functions
 
 sub lookup_by_nick {

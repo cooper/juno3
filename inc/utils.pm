@@ -8,7 +8,7 @@ use feature qw[switch say];
 use base 'Exporter';
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match];
+our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match cut_to_limit];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -186,6 +186,15 @@ sub match {
 
 sub lceq {
     lc shift eq lc shift
+}
+
+# chop a string to its limit as the config says
+sub cut_to_limit {
+    my ($limit, $string) = (conf('limit', shift), shift);
+    return $string unless $limit;
+    my $overflow = length $string - $limit;
+    $string = substr $string, 0, -$overflow if length $string > $limit;
+    return $string
 }
 
 # for configuration values

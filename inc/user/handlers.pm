@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[col log2 lceq lconf match];
+use utils qw[col log2 lceq lconf match cut_to_limit];
 
 my %commands = (
     PING => {
@@ -89,6 +89,11 @@ my %commands = (
         params => 0,
         code   => \&commands,
         desc   => 'view a list of available commands'
+    },
+    AWAY => {
+        params => 0,
+        code   => \&away,
+        desc   => 'mark yourself as away or return from being away'
     }
 );
 
@@ -501,6 +506,22 @@ sub commands {
     }
 
     $user->server_notice('End of commands list');
+}
+
+sub away {
+    my ($user, $data, @args) = @_;
+
+    # setting away
+    if (defined $args[1]) {
+        my $reason = cut_to_limit('away', col((split /\s+/, $data, 2)[1]));
+        $user->set_away($reason);
+        $user->numeric('RPL_NOWAWAY');
+        return 1
+    }
+
+    # unsetting
+    $user->unset_away;
+    $user->numeric('RPL_UNAWAY');
 }
 
 1
