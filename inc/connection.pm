@@ -145,9 +145,18 @@ sub handle {
 
         }
 
-    }
+        when ('QUIT') {
+            my $reason = 'leaving';
 
-    return 1
+            # get the reason if they specified one
+            if (defined $args[1]) {
+                $reason = col((split /\s+/,  $data, 2)[1])
+            }
+
+            $connection->done("Quit: $reason");
+        }
+
+    }
 }
 
 # post-registration
@@ -278,6 +287,7 @@ sub done {
     syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0 unless eof $connection->{obj};
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
+    undef $connection->{obj};
     undef $connection;
     return 1
 

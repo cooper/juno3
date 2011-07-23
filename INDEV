@@ -376,7 +376,7 @@ CHANGES:
 
         0. removed LUSERS temporarily because it sucks.
            added OPER command, oper blocks, and oper classes!
-             see the example configuration.
+             see the example configuration.[
            user->handle_mode_string now takes an optional 'force' argument that, when true, skips the mode tests.
            this new argument is now used in the linking protocol, that way servers can force users to oper up.
 
@@ -415,3 +415,5 @@ CHANGES:
 
         5. Added away line to WHOIS command.
            notify users when they send PRIVMSGs to away users.
+
+        6. Added QUIT command (both as a normal command a pre-registration command.)

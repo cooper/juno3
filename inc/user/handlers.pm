@@ -94,6 +94,11 @@ my %commands = (
         params => 0,
         code   => \&away,
         desc   => 'mark yourself as away or return from being away'
+    },
+    QUIT => {
+        params => 0,
+        code   => \&quit,
+        desc   => 'disconnect from network'
     }
 );
 
@@ -532,6 +537,18 @@ sub away {
     $user->unset_away;
     server::outgoing::return_away_all($user);
     $user->numeric('RPL_UNAWAY');
+}
+
+sub quit {
+    my ($user, $data, @args) = @_;
+    my $reason = 'leaving';
+
+    # get the reason if they specified one
+    if (defined $args[1]) {
+        $reason = col((split /\s+/,  $data, 2)[1])
+    }
+
+    $user->{conn}->done("Quit: $reason");
 }
 
 1
