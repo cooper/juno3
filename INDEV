@@ -2,18 +2,29 @@ Development log
 ---------------
 
 TODO:
-    RPL_ISUPPORT
-    finish RPL_WELCOME
-    LUSERS
-    look in to movement of modes from server to server- i think it fails.
-    local mode letters shouldn't be in modes.pm.
-    make modes like o remove flags when unsetting from another server.
+    [H] RPL_ISUPPORT
+    [H] look in to movement of modes from server to server- i think it fails.
+    [M] LUSERS
+    [M] make modes like o remove flags when unsetting from another server.
+    [L] idle time in WHOIS
+    [L] local mode letters shouldn't be in modes.pm.
+    [L] finish RPL_WELCOME
 
-PLANS: 
-    rather than remote includes, send certain configuration values over the linking protocol
-    create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
-    the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
-    modes to be known by their names, types, or levels rather than letters
+PLANS:
+
+    GENERAL:
+
+        create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
+        the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
+
+    LINKING:
+
+        rather than remote includes, send certain configuration values over the linking protocol
+        modes to be known by their names, types, or levels rather than letters
+
+    CHANNELS:
+
+        module: channel mode to show invite notices
 
 CHANGES:
 
@@ -388,6 +399,10 @@ CHANGES:
 
         9. added host option to oper blocks. see example configuration.
 
-    3. July 21, 2011
+    3. July 22, 2011
 
         0. Added WHOIS command.
+
+        July 23, 2011
+
+        1. Added ISON command.

@@ -22,6 +22,7 @@ my %numerics = (
     RPL_LUSERME          => ['255', 'I have %d clients and %d servers'],
     RPL_LOCALUSERS       => ['265', '%d %d :Current local users %d, max %d'],
     RPL_GLOBALUSERS      => ['266', '%d %d :Current global users %d, max %d'],
+    RPL_ISON             => ['303', ':%s'],
     RPL_CREATIONTIME     => ['329', '%s %d'],
     RPL_WHOISUSER        => ['311', '%s %s %s * :%s'],
     RPL_WHOISSERVER      => ['312', '%s %s :%s'],

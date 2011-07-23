@@ -64,6 +64,10 @@ my %commands = (
     WHOIS => {
         params => 1,
         code   => \&whois
+    },
+    ISON => {
+        params => 1,
+        code   => \&ison
     }
 );
 
@@ -448,6 +452,19 @@ sub whois {
 
     $user->numeric('RPL_ENDOFWHOIS', $quser->{nick});
     return 1
+}
+
+sub ison {
+    my ($user, $data, @args) = @_;
+    my @found;
+
+    # for each nick, lookup and add if exists
+    foreach my $nick (@args[1..$#args]) {
+        my $user = user::lookup_by_nick(col($nick));
+        push @found, $user->{nick} if $user
+    }
+
+    $user->numeric('RPL_ISON', join('', @found));
 }
 
 1
