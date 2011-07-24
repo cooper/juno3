@@ -417,3 +417,5 @@ CHANGES:
            notify users when they send PRIVMSGs to away users.
 
         6. Added QUIT command (both as a normal command a pre-registration command.)
+
+        7. might as well use the magic provided by IO::Handle.

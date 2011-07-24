@@ -51,6 +51,7 @@ sub handle {
     return $connection->{type}->handle($data) if $connection->{ready};
 
     my @args = split /\s+/, $data;
+    return unless defined $args[0];
 
     given (uc shift @args) {
 
@@ -280,14 +281,15 @@ sub done {
         $connection->{type}->quit($reason)
     }
 
+    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ) unless eof $connection->{obj};
+
     # remove from connection list
     delete $connection{$connection->{obj}};
+    delete $main::outbuffer{$connection->{obj}};
+    delete $main::timer{$connection->{obj}};
 
-    # close socket, remove from IO::Select
-    syswrite $connection->{obj}, "ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ, 0 unless eof $connection->{obj};
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
-    undef $connection->{obj};
     undef $connection;
     return 1
 

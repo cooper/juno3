@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '1.3.6' }
+sub VERSION () { '1.3.7' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -108,7 +108,7 @@ mainloop: for (;;) {
             $timer{$socket} = $time if $timer{$socket} < $time;
             $conn = $connection::connection{$socket};
 
-            if (sysread $socket, my $data, POSIX::BUFSIZ, 0) {
+            if ($socket->sysread(my $data, POSIX::BUFSIZ)) {
                 $inbuffer{$socket} .= $data
             }
 
@@ -155,7 +155,7 @@ mainloop: for (;;) {
         next out unless exists $outbuffer{$socket};
 
         # send the data
-        my $sent = syswrite $socket, $outbuffer{$socket}, POSIX::BUFSIZ;
+        my $sent = $socket->syswrite($outbuffer{$socket}, POSIX::BUFSIZ);
 
         if (defined $sent &&
           $sent <= length $outbuffer{$socket}
