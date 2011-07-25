@@ -433,3 +433,7 @@ CHANGES:
            burst ADDCMODE and CMODE.
 
         3. added handlers for ADDCMODE and CMODE.
+
+        4. MODE handler now handles channel mode strings.
+           when modes are set to channels, they should properly be sent in MODE messages to both local and non-local members.
+           cleaned up a bit in server/handlers.

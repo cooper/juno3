@@ -51,4 +51,25 @@ sub send_all {
     return 1
 }
 
+# send to all members of channels in common
+# with a user, but only once.
+sub send_all_user {
+    my ($user, $what) = @_;
+    $user->sendfrom($user->full, $what);
+    my %sent = ( $user => 1);
+
+    foreach my $channel (values %channel::channels) {
+        next unless $channel->has_user($user);
+
+        # send to each member
+        foreach my $usr (@{$channel->{users}}) {
+            next unless $usr->is_local;
+            next if $sent{$usr};
+            $usr->sendfrom($user->full, $what);
+            $sent{$usr} = 1
+        }
+
+    }
+}
+
 1

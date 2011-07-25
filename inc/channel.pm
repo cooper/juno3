@@ -117,9 +117,14 @@ sub set_time {
 sub handle_mode_string {
     my ($channel, $server, $source, $modestr, $force) = @_;
     log2("set $modestr on $$channel{name} from $$server{name}");
+
+    # array reference passed to mode blocks and used in the return
+    my $parameters = [];
+
     my $state = 1;
     my $str   = '+';
     my @m     = split /\s+/, $modestr;
+
     letter: foreach my $letter (split //, $m[0]) {
         if ($letter eq '+') {
             $str .= '+' unless $state;
@@ -143,7 +148,7 @@ sub handle_mode_string {
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = channel::modes::fire($channel, $server, $source, $state, $name, $parameter);
+            my $win = channel::modes::fire($channel, $server, $source, $state, $name, $parameter, $parameters);
             if (!$force) {
                 next unless $win
             }
@@ -162,10 +167,11 @@ sub handle_mode_string {
     $str =~ s/\-\+/\+/g;
 
     log2("end of mode handle");
-    return $str
+    return join ' ', $str, @$parameters
 }
 
 # returns a +modes string
+# TODO parameters
 sub mode_string {
     my ($channel, $server) = @_;
     my $string = q(+);

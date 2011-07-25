@@ -27,12 +27,12 @@ my %commands = (
         forward => 1,
         code    => \&nick
     },
-    BURST    => {
+    BURST => {
         params  => 0,
         forward => 1,
         code    => \&burst
     },
-    ENDBURST    => {
+    ENDBURST => {
         params  => 0,
         forward => 1,
         code    => \&endburst
@@ -165,16 +165,7 @@ sub nick {
     my $user = user::lookup_by_id(col($args[0]));
 
     # tell ppl
-    my %sent = ( $user => 1);
-    foreach my $channel (values %channel::channels) {
-        next unless $channel->has_user($user);
-        foreach my $usr (@{$channel->{users}}) {
-            next unless $usr->is_local;
-            next if $sent{$usr};
-            $usr->sendfrom($user->full, "NICK $args[2]");
-            $sent{$usr} = 1
-        }
-    }
+    $user->channel::mine::send_all_user("NICK $args[2]");
 
     $user->change_nick($args[2])
 }
@@ -313,7 +304,11 @@ sub cmode {
         $channel->set_time($args[3]);
     }
 
-    $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1);
+    my $result = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1);
+    return 1 if !$result || $result =~ m/^(\+|\-)$/;
+
+    my $from = $source->isa('user') ? $source->{nick} : $source->isa('server') ? $source->{name} : 'magicalUnknownFairyPrincess';
+    $channel->channel::mine::send_all("$from MODE $$channel{name} $result");
 }
 
 1

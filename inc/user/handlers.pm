@@ -154,17 +154,7 @@ sub nick {
     }
 
     # tell ppl
-    $user->sendfrom($user->full, "NICK $newnick");
-    my %sent = ( $user => 1);
-    foreach my $channel (values %channel::channels) {
-        next unless $channel->has_user($user);
-        foreach my $usr (@{$channel->{users}}) {
-            next unless $usr->is_local;
-            next if $sent{$usr};
-            $usr->sendfrom($user->full, "NICK $newnick");
-            $sent{$usr} = 1
-        }
-    }
+    $user->channel::mine::send_all_user("NICK $newnick");
 
     # change it
     $user->change_nick($newnick);
@@ -209,7 +199,14 @@ sub mode {
 
     # is it a channel, then?
     if (my $channel = channel::lookup_by_name($args[1])) {
-        # TODO
+        my $modestr = join ' ', @args[2..$#args];
+        my $result  = $channel->handle_mode_string($user->{server}, $user, $modestr);
+        return if !$result || $result =~ m/^(\-|\+)$/; # nothing changed
+
+        # tell the channel users
+        $user->channel::mine::send_all("MODE $$channel{name} $result");
+        server::outgoing::cmode_all($user, $channel, $channel->{time}, $user->{server}->{sid}, $result);
+
         return 1
     }
 
