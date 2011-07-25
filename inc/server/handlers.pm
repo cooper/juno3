@@ -76,6 +76,16 @@ my %commands = (
         params  => 0,
         forward => 1,
         code    => \&return_away
+    },
+    ADDCMODE => {
+        params  => 2,
+        forward => 1,
+        code    => \&addcmode
+    },
+    CMODE => {
+        params  => 4,
+        forward => 1,
+        code    => \&cmode
     }
 );
 
@@ -282,6 +292,28 @@ sub return_away {
     my ($server, $data, @args) = @_;
     my $user = user::lookup_by_id(col($args[0]));
     $user->return_away();
+}
+
+# add a channel mode
+sub addcmode {
+    my ($server, $data, @args) = @_;
+    my $serv = server::lookup_by_id(col($args[0]));
+    $serv->add_cmode($args[2], $args[3]);
+}
+
+# set a mode on a channel
+sub cmode {
+    my ($server, $data, @args) = @_;
+    my $source      = utils::global_lookup(col($args[0]));
+    my $channel     = channel::lookup_by_id($args[2]);
+    my $perspective = server::lookup_by_id($args[4]);
+
+    # take the lower time
+    if ($args[3] < $channel->{time}) {
+        $channel->set_time($args[3]);
+    }
+
+    $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1);
 }
 
 1

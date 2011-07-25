@@ -115,7 +115,7 @@ sub set_time {
 # returns the mode string,
 # or '+' if no changes were made.
 sub handle_mode_string {
-    my ($channel, $server, $modestr, $force) = @_;
+    my ($channel, $server, $source, $modestr, $force) = @_;
     log2("set $modestr on $$channel{name} from $$server{name}");
     my $state = 1;
     my $str   = '+';
@@ -136,12 +136,6 @@ sub handle_mode_string {
                 next
             }
 
-            # ignore stupid mode changes
-            if ($state && $channel->is_mode($name) ||
-              !$state && !$channel->is_mode($name)) {
-                next
-            }
-
             my $parameter = undef;
             if ($server->cmode_takes_parameter($name, $state)) {
                 $parameter = shift @m || undef
@@ -149,7 +143,7 @@ sub handle_mode_string {
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = channel::modes::fire($channel, $server, $state, $name, $parameter);
+            my $win = channel::modes::fire($channel, $server, $source, $state, $name, $parameter);
             if (!$force) {
                 next unless $win
             }

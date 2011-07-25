@@ -315,7 +315,7 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
-            $channel->handle_mode_string($user->{server}, conf('channels', 'automodes'));
+            $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
         }
         return if $channel->has_user($user);
         $channel->channel::mine::join($user, $time);

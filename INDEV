@@ -431,3 +431,5 @@ CHANGES:
 
         2. added ADDCMODE and CMODE server commands.
            burst ADDCMODE and CMODE.
+
+        3. added handlers for ADDCMODE and CMODE.
