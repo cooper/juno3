@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '1.3.7' }
+sub VERSION () { '1.4.0' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -44,17 +44,8 @@ BEGIN {
 use POSIX;
 use connection;
 use server;
-use server::mine;
-use server::linkage;
-use server::handlers;
-use server::outgoing;
 use user;
-use user::mine;
-use user::handlers;
-use user::numerics;
-use user::modes;
 use channel;
-use channel::mine;
 use utils qw[conf lconf log2 fatal];
 
 my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
@@ -242,8 +233,9 @@ sub start {
     # how is this possible?!?!
     $utils::GV{server}{parent} = $utils::GV{server};
 
-    # register user modes
+    # register modes
     $utils::GV{server}->user::modes::add_internal_modes();
+    $utils::GV{server}->channel::modes::add_internal_modes();
 
     load_requirements();
     create_sockets();

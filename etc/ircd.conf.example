@@ -43,7 +43,16 @@
     description: "juno development server"      # the description of the server
     sex: "male"                                 # the server's sex (preferably male or female)
     id: 0                                       # the SID
-                                                #   must be unique to the network
+                                                #   must be unique to the network or things *WILL* screw up
+
+[ users ]
+
+    automodes: "+i"     # modes set to users on connect
+
+[ channels ]
+
+    automodes: "+nt"    # modes set on channel creation
+
 
 [ flood ]
 

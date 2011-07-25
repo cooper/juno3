@@ -5,6 +5,10 @@ package server;
 use warnings;
 use strict;
 
+use server::mine;
+use server::linkage;
+use server::handlers;
+use server::outgoing;
 use utils qw[log2];
 
 our %server;
@@ -18,7 +22,7 @@ sub new {
     $server->{$_} = $ref->{$_} foreach qw[sid name proto ircd desc time parent source];
 
     $server->{umodes}       = {}; ################
-    $server->{chmodes}      = {}; # named modes! #
+    $server->{cmodes}       = {}; # named modes! #
                                   ################
     $server{$server->{sid}} = $server;
     log2("new server $$server{sid}:$$server{name} $$server{proto}-$$server{ircd} parent:$$server{parent}{name} [$$server{desc}]");
@@ -62,17 +66,10 @@ sub lookup_by_id {
 
 # add a user mode
 sub add_umode {
-    my ($server, $name, $mode) = (shift, shift, shift);
-    if ($server->is_local) {
-        foreach my $test (@_) {
-            if (!$test || ref $test ne 'CODE') {
-                $test = sub {1};
-            }
-            $server->{umode_tests}->{$name} = [] if !$server->{umode_tests}->{$name};
-            push @{$server->{umode_tests}->{$name}}, $test;
-        }
-    }
-    $server->{umodes}->{$name} = $mode;
+    my ($server, $name, $mode) = @_;
+    $server->{umodes}->{$name} = {
+        letter => $mode
+    };
     log2("$$server{name} registered $mode:$name");
     return 1
 }
@@ -81,7 +78,7 @@ sub add_umode {
 sub umode_name {
     my ($server, $mode) = @_;
     foreach my $name (keys %{$server->{umodes}}) {
-        return $name if $mode eq $server->{umodes}->{$name}
+        return $name if $mode eq $server->{umodes}->{$name}->{letter}
     }
     return
 }
@@ -89,7 +86,38 @@ sub umode_name {
 # umode name to letter
 sub umode_letter {
     my ($server, $name) = @_;
-    return $server->{umodes}->{$name}
+    return $server->{umodes}->{$name}->{letter}
+}
+
+# add a channel mode
+# types:
+#   0: normal
+#   1: parameter
+# I was gonna make a separate type for status modes but
+# i don't if that's necessary
+sub add_cmode {
+    my ($server, $name, $mode, $type) = @_;
+    $server->{cmodes}->{$name} = {
+        letter => $mode,
+        type   => $type
+    };
+    log2("$$server{name} registered $mode:$name");
+    return 1
+}
+
+# cmode letter to name
+sub cmode_name {
+    my ($server, $mode) = @_;
+    foreach my $name (keys %{$server->{cmodes}}) {
+        return $name if $mode eq $server->{cmodes}->{$name}->{letter}
+    }
+    return
+}
+
+# cmode name to letter
+sub cmode_letter {
+    my ($server, $name) = @_;
+    return $server->{cmodes}->{$name}->{letter}
 }
 
 sub is_local {

@@ -5,6 +5,10 @@ package user;
 use warnings;
 use strict;
 
+use user::mine;
+use user::handlers;
+use user::numerics;
+use user::modes;
 use utils qw[log2];
 
 our %user;
@@ -65,7 +69,6 @@ sub quit {
     # search for local users that know this client
     # and send the quit to them.
 
-    # XXX y u no mine.pm
     foreach my $channel (values %channel::channels) {
         next unless $channel->has_user($user);
         $channel->remove($user);

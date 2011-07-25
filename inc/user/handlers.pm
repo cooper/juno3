@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[col log2 lceq lconf match cut_to_limit];
+use utils qw[col log2 lceq lconf match cut_to_limit conf];
 
 my %commands = (
     PING => {
@@ -307,7 +307,7 @@ sub cjoin {
 
         # if the channel exists, just join
         my $channel = channel::lookup_by_name($chname);
-        my $time = time;
+        my $time    = time;
 
         # otherwise create a new one
         if (!$channel) {
@@ -315,6 +315,7 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
+            $channel->handle_mode_string($user->{server}, conf('channels', 'automodes'));
         }
         return if $channel->has_user($user);
         $channel->channel::mine::join($user, $time);

@@ -20,7 +20,7 @@ my %modes = (
 # mode is associated with what letter
 sub add_internal_modes {
     my $server = shift;
-    log2("registering internal modes");
+    log2("registering internal user modes");
     foreach my $name (keys %modes) {
         $server->add_umode($name, $modes{$name});
     }

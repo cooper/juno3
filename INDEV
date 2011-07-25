@@ -2,6 +2,7 @@ Development log
 ---------------
 
 TODO:
+
     [H] RPL_ISUPPORT
     [H] look in to movement of modes from server to server- i think it fails.
     [M] LUSERS
@@ -376,7 +377,7 @@ CHANGES:
 
         0. removed LUSERS temporarily because it sucks.
            added OPER command, oper blocks, and oper classes!
-             see the example configuration.[
+             see the example configuration.
            user->handle_mode_string now takes an optional 'force' argument that, when true, skips the mode tests.
            this new argument is now used in the linking protocol, that way servers can force users to oper up.
 
@@ -419,3 +420,8 @@ CHANGES:
         6. Added QUIT command (both as a normal command a pre-registration command.)
 
         7. might as well use the magic provided by IO::Handle.
+
+    4. July 25, 2011
+
+        0. added base of channel modes and mode handler.
+           removed useless mode test code (which was replace by mode blocks in user/modes.pm)
