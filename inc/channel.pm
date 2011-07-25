@@ -174,8 +174,8 @@ sub handle_mode_string {
 # returns a +modes string
 sub mode_string {
     my ($channel, $server) = @_;
-    my $string = q..;
-    foreach my $name (@{$channel->{modes}}) {
+    my $string = q(+);
+    foreach my $name (keys %{$channel->{modes}}) {
         $string .= $server->cmode_letter($name)
     }
     return $string

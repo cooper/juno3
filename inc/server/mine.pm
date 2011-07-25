@@ -107,8 +107,14 @@ sub send_burst {
 
     # send MY user mode names
     foreach my $name (keys %{$utils::GV{server}->{umodes}}) {
-        my $mode = $utils::GV{server}->{umodes}->{$name};
+        my $mode = $utils::GV{server}->umode_letter($name);
         $server->server::outgoing::addumode($utils::GV{server}, $name, $mode);
+    }
+
+    # send MY channel mode names
+    foreach my $name (keys %{$utils::GV{server}->{cmodes}}) {
+        my $mode = $utils::GV{server}->cmode_letter($name);
+        $server->server::outgoing::addcmode($utils::GV{server}, $name, $mode);
     }
 
     # child servers
@@ -138,15 +144,22 @@ sub send_burst {
             $server->server::outgoing::oper($user, @{$user->{flags}});
         }
 
+        # away reason
         if (exists $user->{away}) {
             $server->server::outgoing::away($user);
         }
     }
 
-    # channels (joins)
+    # channels
     foreach my $channel (values %channel::channels) {
         foreach my $user (@{$channel->{users}}) {
             $server->server::outgoing::join($user, $channel, $channel->{time});
+        }
+
+        # modes
+        my $str = $channel->mode_string($utils::GV{server});
+        if ($str && $str ne '+') {
+            $server->server::outgoing::cmode($utils::GV{server}, $channel, $channel->{time}, $utils::GV{server}{sid}, $str);
         }
     }
 

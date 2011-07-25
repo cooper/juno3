@@ -41,6 +41,17 @@ sub addumode_all {
     server::mine::sendfrom_children(undef, $serv->{sid}, "ADDUMODE $name $mode");
 }
 
+sub addcmode {
+    my ($server, $serv, $name, $mode) = @_;
+    $server->sendfrom($serv->{sid}, "ADDCMODE $name $mode");
+}
+
+sub addcmode_all {
+    my ($serv, $name, $mode) = @_;
+    server::mine::sendfrom_children(undef, $serv->{sid}, "ADDCMODE $name $mode");
+}
+
+
 #########
 # users #
 #########
@@ -147,6 +158,22 @@ sub return_away {
 sub return_away_all {
     my $user = shift;
     server::mine::sendfrom_children($user->{uid}, 'RETURN');
+}
+
+########
+# both #
+########
+
+# channel mode change
+
+sub cmode {
+    my ($server, $source, $channel, $time, $perspective, $modestr) = @_;
+    $server->sendfrom($source->id, "CMODE $$channel{name} $time $perspective :$modestr")
+}
+
+sub cmode_all {
+    my ($source, $channel, $time, $perspective, $modestr) = @_;
+    server::mine::send_from_children($source->id, "CMODE $$channel{name} $time $perspective :$modestr")
 }
 
 1

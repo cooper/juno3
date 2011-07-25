@@ -428,3 +428,6 @@ CHANGES:
 
         1. made several improvements to the channel mode handler and channel/modes.pm.
            fixed a bug in the user mode handler where force didn't apply blocks.
+
+        2. added ADDCMODE and CMODE server commands.
+           burst ADDCMODE and CMODE.
