@@ -296,7 +296,7 @@ sub addcmode {
 sub cmode {
     my ($server, $data, @args) = @_;
     my $source      = utils::global_lookup(col($args[0]));
-    my $channel     = channel::lookup_by_id($args[2]);
+    my $channel     = channel::lookup_by_name($args[2]);
     my $perspective = server::lookup_by_id($args[4]);
 
     # take the lower time
