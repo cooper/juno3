@@ -437,3 +437,5 @@ CHANGES:
         4. MODE handler now handles channel mode strings.
            when modes are set to channels, they should properly be sent in MODE messages to both local and non-local members.
            cleaned up a bit in server/handlers.
+
+        5. MODE now accepts a channel with no other parameters.

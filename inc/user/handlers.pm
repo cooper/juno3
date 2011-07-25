@@ -40,7 +40,7 @@ my %commands = (
         desc   => 'display IRCd information'
     },
     MODE => {
-        params => 2,
+        params => 1,
         code   => \&mode,
         desc   => 'view or change user and channel modes'
     },
@@ -190,8 +190,9 @@ sub mode {
 
     # is it the user himself?
     if (lceq $user->{nick} => $args[1]) {
+        return unless defined $args[2]; # TODO
         my $result = $user->handle_mode_string($args[2]);
-        return if $result =~ m/^(\-|\+)$/;
+        return if !$result || $result =~ m/^(\-|\+)$/;
         $user->sendfrom($user->full, "MODE $$user{nick} $result");
         server::outgoing::umode_all($user, $result);
         return 1
@@ -199,12 +200,20 @@ sub mode {
 
     # is it a channel, then?
     if (my $channel = channel::lookup_by_name($args[1])) {
+
+        # viewing
+        if (!defined $args[2]) {
+            $channel->channel::mine::modes($user);
+            return 1
+        }
+
+        # setting
         my $modestr = join ' ', @args[2..$#args];
         my $result  = $channel->handle_mode_string($user->{server}, $user, $modestr);
         return if !$result || $result =~ m/^(\-|\+)$/; # nothing changed
 
         # tell the channel users
-        $user->channel::mine::send_all("MODE $$channel{name} $result");
+        $channel->channel::mine::send_all(':'.$user->full." MODE $$channel{name} $result");
         server::outgoing::cmode_all($user, $channel, $channel->{time}, $user->{server}->{sid}, $result);
 
         return 1

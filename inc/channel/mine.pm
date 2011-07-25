@@ -27,7 +27,6 @@ sub join {
 
     names($channel, $user);
     $user->numeric('RPL_ENDOFNAMES', $channel->{name});
-    $user->numeric('RPL_CREATIONTIME', $channel->{name}, $channel->{time});
 
     return $channel->{time};
 }
@@ -39,6 +38,12 @@ sub names {
         $str .= $usr->{nick}.q( )
     }
     $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $str) if $str ne '';
+}
+
+sub modes {
+    my ($channel, $user) = @_;
+    $user->numeric('RPL_CHANNELMODEIS', $channel->{name}, $channel->mode_string($user->{server}));
+    $user->numeric('RPL_CREATIONTIME', $channel->{name}, $channel->{time});
 }
 
 sub send_all {

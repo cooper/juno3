@@ -20,7 +20,6 @@ my %blocks;
 #   normal (0)
 #   parameter (1)
 #   parameter_set (2)
-# I was gonna make a separate type for status modes but
 my %modes = (
     no_ext        => [normal, 'n'],
     protect_topic => [normal, 't'],
@@ -54,6 +53,7 @@ sub register_block {
     return 1
 }
 
+# TODO
 sub fire {
     my ($channel, $server, $state, $name, $parameter) = @_;
     

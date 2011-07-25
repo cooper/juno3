@@ -171,15 +171,20 @@ sub handle_mode_string {
 }
 
 # returns a +modes string
-# TODO parameters
 sub mode_string {
     my ($channel, $server) = @_;
-    my $string = q(+);
+    my (@modes, @params);
     foreach my $name (keys %{$channel->{modes}}) {
-        $string .= $server->cmode_letter($name)
+        push @modes, $server->cmode_letter($name);
+        if (my $param = $channel->{modes}->{$name}->{parameter}) {
+            push @params, $param
+        }
     }
-    return $string
+    @modes = sort { $a cmp $b } @modes; # alphabetize
+    return '+'.join(' ', join('', @modes), @params)
 }
+
+# TODO mode_string_all (includes list modes, status modes, etc.)
 
 # find a channel by its name
 sub lookup_by_name {
