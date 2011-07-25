@@ -4,6 +4,7 @@ package server;
 
 use warnings;
 use strict;
+use feature 'switch';
 
 use server::mine;
 use server::linkage;
@@ -93,6 +94,7 @@ sub umode_letter {
 # types:
 #   0: normal
 #   1: parameter
+#   2: parameter only when set
 # I was gonna make a separate type for status modes but
 # i don't if that's necessary
 sub add_cmode {
@@ -118,6 +120,24 @@ sub cmode_name {
 sub cmode_letter {
     my ($server, $name) = @_;
     return $server->{cmodes}->{$name}->{letter}
+}
+
+sub cmode_takes_parameter {
+    my ($server, $name, $state) = @_;
+    given ($server->{cmodes}->{$name}->{type}) {
+        # always give a parameter
+        when (1) {
+            return 1
+        }
+
+        # only give a parameter when setting
+        when (2) {
+            return 1 if $state
+        }
+    }
+
+    # or give nothing
+    return
 }
 
 sub is_local {

@@ -425,3 +425,6 @@ CHANGES:
 
         0. added base of channel modes and mode handler.
            removed useless mode test code (which was replace by mode blocks in user/modes.pm)
+
+        1. made several improvements to the channel mode handler and channel/modes.pm.
+           fixed a bug in the user mode handler where force didn't apply blocks.

@@ -19,7 +19,7 @@ sub new {
     bless my $channel = {}, $class;
     $channel->{$_}    = $ref->{$_} foreach qw/name time/;
     $channel->{users} = []; # array ref of user objects
-    $channel->{modes} = []; # named modes
+    $channel->{modes} = {}; # named modes
 
     # make sure it doesn't exist already
     if (exists $channels{lc($ref->{name})}) {
@@ -37,8 +37,8 @@ sub new {
 # named mode stuff
 
 sub is_mode {
-    my ($channel, $mode) = @_;
-    $mode ~~ @{$channel->{modes}}
+    my ($channel, $name) = @_;
+    return exists $channel->{modes}->{$name}
 }
 
 sub unset_mode {
@@ -50,16 +50,24 @@ sub unset_mode {
     }
 
     # it is, so remove it
+    delete $channel->{modes}->{$name};
     log2("$$channel{name} -$name");
-    @{$channel->{modes}} = grep { $_ ne $name } @{$channel->{modes}}
-
+    return 1
 }
 
+# set channel modes
+# takes an optional parameter
+# $channel->set_mode('moderated');
+# $channel->set_mode('ban', '*!*@google.com');
 sub set_mode {
-    my ($channel, $name) = @_;
+    my ($channel, $name, $parameter) = @_;
     return if $channel->is_mode($name);
+    $channel->{modes}->{$name} = {
+        parameter => $parameter,
+        time      => time
+    };
     log2("$$channel{name} +$name");
-    push @{$channel->{modes}}, $name
+    return 1
 }
 
 # user joins channel
@@ -134,10 +142,16 @@ sub handle_mode_string {
                 next
             }
 
+            my $parameter = undef;
+            if ($server->cmode_takes_parameter($name, $state)) {
+                $parameter = shift @m || undef
+            }
+
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
+            my $win = channel::modes::fire($channel, $server, $state, $name, $parameter);
             if (!$force) {
-                next unless channel::modes::fire($channel, $server, $state, $name)
+                next unless $win
             }
 
             my $do = $state ? 'set_mode' : 'unset_mode';
@@ -155,6 +169,16 @@ sub handle_mode_string {
 
     log2("end of mode handle");
     return $str
+}
+
+# returns a +modes string
+sub mode_string {
+    my ($channel, $server) = @_;
+    my $string = q..;
+    foreach my $name (@{$channel->{modes}}) {
+        $string .= $server->cmode_letter($name)
+    }
+    return $string
 }
 
 # find a channel by its name

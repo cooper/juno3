@@ -130,8 +130,9 @@ sub handle_mode_string {
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided. generally ou want to use
             # tests only is local, since servers can do whatever.
+            my $win = user::modes::fire($user, $state, $name);
             if (!$force) {
-                next unless user::modes::fire($user, $state, $name)
+                next unless $win
             }
 
             my $do = $state ? 'set_mode' : 'unset_mode';
