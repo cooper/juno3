@@ -441,3 +441,5 @@ CHANGES:
         5. MODE now accepts a channel with no other parameters.
 
         6. this should fix a few things.
+
+        7. fixed bug. now the channel modes should be sent among servers.

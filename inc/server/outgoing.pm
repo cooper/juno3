@@ -173,7 +173,7 @@ sub cmode {
 
 sub cmode_all {
     my ($source, $channel, $time, $perspective, $modestr) = @_;
-    server::mine::sendfrom_children($source->id, "CMODE $$channel{name} $time $perspective :$modestr")
+    server::mine::sendfrom_children(undef, $source->id, "CMODE $$channel{name} $time $perspective :$modestr")
 }
 
 1
