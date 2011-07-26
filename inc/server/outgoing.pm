@@ -42,13 +42,13 @@ sub addumode_all {
 }
 
 sub addcmode {
-    my ($server, $serv, $name, $mode) = @_;
-    $server->sendfrom($serv->{sid}, "ADDCMODE $name $mode");
+    my ($server, $serv, $name, $mode, $type) = @_;
+    $server->sendfrom($serv->{sid}, "ADDCMODE $name $mode $type");
 }
 
 sub addcmode_all {
-    my ($serv, $name, $mode) = @_;
-    server::mine::sendfrom_children(undef, $serv->{sid}, "ADDCMODE $name $mode");
+    my ($serv, $name, $mode, $type) = @_;
+    server::mine::sendfrom_children(undef, $serv->{sid}, "ADDCMODE $name $mode $type");
 }
 
 

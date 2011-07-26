@@ -114,7 +114,8 @@ sub send_burst {
     # send MY channel mode names
     foreach my $name (keys %{$utils::GV{server}->{cmodes}}) {
         my $mode = $utils::GV{server}->cmode_letter($name);
-        $server->server::outgoing::addcmode($utils::GV{server}, $name, $mode);
+        my $type = $utils::GV{server}->cmode_type($name);
+        $server->server::outgoing::addcmode($utils::GV{server}, $name, $mode, $type);
     }
 
     # child servers

@@ -78,7 +78,7 @@ my %commands = (
         code    => \&return_away
     },
     ADDCMODE => {
-        params  => 2,
+        params  => 3,
         forward => 1,
         code    => \&addcmode
     },
@@ -286,7 +286,7 @@ sub return_away {
 sub addcmode {
     my ($server, $data, @args) = @_;
     my $serv = server::lookup_by_id(col($args[0]));
-    $serv->add_cmode($args[2], $args[3]);
+    $serv->add_cmode($args[2], $args[3], $args[4]);
 }
 
 # set a mode on a channel

@@ -124,6 +124,12 @@ sub cmode_letter {
     return $server->{cmodes}->{$name}->{letter}
 }
 
+# type
+sub cmode_type {
+    my ($server, $name) = @_;
+    return $server->{cmodes}->{$name}->{type}
+}
+
 # XXX mine.pm?
 sub cmode_takes_parameter {
     my ($server, $name, $state) = @_;

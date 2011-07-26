@@ -457,3 +457,5 @@ CHANGES:
            Now we know that this IRCd still has hope to become usable.
 
         1. fixed a couple of crash bugs in channel communication.
+
+        2. send CMODE types from server-to-server.
