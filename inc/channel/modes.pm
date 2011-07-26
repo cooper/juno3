@@ -11,6 +11,8 @@ use utils 'log2';
 sub normal        () { 0 }
 sub parameter     () { 1 }
 sub parameter_set () { 2 }
+sub list          () { 3 }
+sub status        () { 4 }
 
 my %blocks;
 
@@ -20,7 +22,9 @@ my %blocks;
 #   normal (0)
 #   parameter (1)
 #   parameter_set (2)
-my %modes = (
+#   list (3)
+#   status (4)
+our %modes = (
     no_ext        => [normal, 'n'],
     protect_topic => [normal, 't'],
     moderated     => [normal, 'm']

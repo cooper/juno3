@@ -443,3 +443,5 @@ CHANGES:
         6. this should fix a few things.
 
         7. fixed bug. now the channel modes should be sent among servers.
+
+        8. CHANMODES is now accurate!

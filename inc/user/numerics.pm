@@ -67,7 +67,7 @@ sub rpl_isupport {
     my %things = (
         PREFIX      => '(qaohv)~&@%+',              # TODO 
         CHANTYPES   => '#',                         # TODO
-        CHANMODES   => ',,,',                       # TODO
+        CHANMODES   => &chanmodes,
         MODES       => 0,                           # TODO
         CHANLIMIT   => '#:0',                       # TODO
         NICKLEN     => conf('limit', 'nick'),
@@ -98,6 +98,30 @@ sub rpl_isupport {
     }
 
     $user->numeric('RPL_ISUPPORT', $_) foreach @lines
+}
+
+sub chanmodes {
+    #   normal (0)
+    #   parameter (1)
+    #   parameter_set (2)
+    #   list (3)
+    #   status (4)
+    my %m;
+    foreach my $name (keys %channel::modes::modes) {
+        my ($type, $letter) = @{$channel::modes::modes{$name}};
+        $m{$type} = [] unless $m{$type};
+        push @{$m{$type}}, $letter
+    }
+
+    my @a;
+
+    # alphabetize
+    foreach my $type (keys %m) {
+        my @alphabetized = sort { $a cmp $b } @{$m{$type}};
+        $a[$type] = join '', @alphabetized
+    }
+
+    return "$a[3],$a[1],$a[2],$a[0]"
 }
 
 1

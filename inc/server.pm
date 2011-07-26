@@ -95,6 +95,8 @@ sub umode_letter {
 #   0: normal
 #   1: parameter
 #   2: parameter only when set
+#   3: list
+#   4: status
 # I was gonna make a separate type for status modes but
 # i don't if that's necessary
 sub add_cmode {
