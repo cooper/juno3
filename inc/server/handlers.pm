@@ -295,6 +295,7 @@ sub cmode {
     my $source      = utils::global_lookup(col($args[0]));
     my $channel     = channel::lookup_by_name($args[2]);
     my $perspective = server::lookup_by_id($args[4]);
+    return unless $channel; #XXX
 
     # take the lower time
     if ($args[3] < $channel->{time}) {
