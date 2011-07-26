@@ -51,6 +51,7 @@ my %numerics = (
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],
     ERR_ERRONEUSNICKNAME => ['432', '%s: Erroneous nickname'],
     ERR_NICKNAMEINUSE    => ['433', '%s :Nickname in use'],
+    ERR_USERNOTINCHANNEL => ['441', '%s %s :isn\'t on that channel'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister'],
     ERR_NOOPERHOST       => ['491', ':No oper blocks for your host'],
@@ -65,7 +66,7 @@ sub rpl_isupport {
     my $user = shift;
 
     my %things = (
-        PREFIX      => '(qaohv)~&@%+',              # TODO 
+        PREFIX      => &prefix,
         CHANTYPES   => '#',                         # TODO
         CHANMODES   => &chanmodes,
         MODES       => 0,                           # TODO
@@ -100,6 +101,7 @@ sub rpl_isupport {
     $user->numeric('RPL_ISUPPORT', $_) foreach @lines
 }
 
+# CHANMODES in RPL_ISUPPORT
 sub chanmodes {
     #   normal (0)
     #   parameter (1)
@@ -121,6 +123,25 @@ sub chanmodes {
     }
 
     return "$a[3],$a[1],$a[2],$a[0]"
+}
+
+# PREFIX in RPL_ISUPPORT
+sub prefix {
+    my $modes =
+      $channel::modes::modes{owner}[1]  .
+      $channel::modes::modes{admin}[1]  .
+      $channel::modes::modes{op}[1]     .
+      $channel::modes::modes{halfop}[1] .
+      $channel::modes::modes{voice}[1]  ;
+
+    my $prefixes =
+      $channel::mine::prefix{owner}  .
+      $channel::mine::prefix{admin}  .
+      $channel::mine::prefix{op}     .
+      $channel::mine::prefix{halfop} .
+      $channel::mine::prefix{voice}  ;
+
+    return "($modes)$prefixes"
 }
 
 1

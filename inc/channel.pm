@@ -73,7 +73,7 @@ sub set_mode {
 sub list_has {
     my ($channel, $name, $what) = @_;
     return unless exists $channel->{modes}->{$name};
-    $what ~~ @{$channel->{modes}->{$name}->{list}}
+    return 1 if grep { $_ == $what } @{$channel->{modes}->{$name}->{list}}
 }
 
 # adds something to a list mode (such as ban)
@@ -130,6 +130,8 @@ sub remove {
     log2("removing $$user{nick} from $$channel{name}");
     my @new = grep { $_ != $user } @{$channel->{users}};
     $channel->{users} = \@new
+    # TODO delete data if last user
+    # TODO delete user's status
 }
 
 # user is on channel
@@ -165,11 +167,11 @@ sub handle_mode_string {
 
     letter: foreach my $letter (split //, shift @m) {
         if ($letter eq '+') {
-            $str .= '+' unless $state;
+            $str  .= '+' unless $state;
             $state = 1
         }
         elsif ($letter eq '-') {
-            $str .= '-' if $state;
+            $str  .= '-' if $state;
             $state = 0
         }
         else {
@@ -186,13 +188,16 @@ sub handle_mode_string {
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters);
+            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters, $force);
             if (!$force) {
                 next unless $win
             }
 
-            my $do = $state ? 'set_mode' : 'unset_mode';
-            $channel->$do($name);
+            # if it is just a normal mode, set it
+            if ($server->cmode_type($name) == 0) {
+                my $do = $state ? 'set_mode' : 'unset_mode';
+                $channel->$do($name);
+            }
             $str .= $letter
         }
     }

@@ -10,6 +10,14 @@ use strict;
 
 use utils;
 
+our %prefix = (
+    owner  => '~',
+    admin  => '&',
+    op     => '@',
+    halfop => '%',
+    voice  => '+'
+);
+
 # omg hax
 # it has the same name as the one in channel.pm.
 # the only difference is that this one sends
@@ -35,7 +43,15 @@ sub names {
     my ($channel, $user) = @_;
     my $str = '';
     foreach my $usr (@{$channel->{users}}) {
-        $str .= $usr->{nick}.q( )
+        # find their prefix
+        my $prefix =
+          $channel->list_has('owner',  $usr) ? $prefix{owner}  :
+          $channel->list_has('admin',  $usr) ? $prefix{admin}  :
+          $channel->list_has('op',     $usr) ? $prefix{op}     :
+          $channel->list_has('halfop', $usr) ? $prefix{halfop} :
+          $channel->list_has('voice',  $usr) ? $prefix{voice}  : q..;
+
+        $str .= $prefix.$usr->{nick}.q( )
     }
     $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $str) if $str ne '';
 }

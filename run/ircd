@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '1.5.4' }
+sub VERSION () { '1.5.5' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -241,9 +241,14 @@ sub start {
 
     $select = new IO::Select @sel;
 
+    log2("server initialization complete");
+
     # auto server connect
     while (my ($name, $serv) = each %{$utils::conf{connect}}) {
-        server::linkage::connect_server($name) if $serv->{autoconnect}
+        if ($serv->{autoconnect}) {
+            log2("autoconnecting to $name...");
+            server::linkage::connect_server($name)
+        }
     }
 
 }

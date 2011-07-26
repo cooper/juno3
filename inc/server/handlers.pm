@@ -306,7 +306,7 @@ sub cmode {
 
     # convert it to our view
     $result  = $perspective->convert_cmode_string($utils::GV{server}, $result);
-    my $from = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'magicalFairyPrincess';
+    my $from = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'MagicalFairyPrincess';
     $channel->channel::mine::send_all(":$from MODE $$channel{name} $result");
 }
 
