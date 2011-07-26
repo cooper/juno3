@@ -136,7 +136,7 @@ sub convert_cmode_string {
     my $string = q..;
     my @m      = split / /, $modestr;
 
-    foreach my $letter (split //, $m[0]) {
+    foreach my $letter (split //, shift @m) {
         my $new = $letter;
 
         # translate it
@@ -145,8 +145,9 @@ sub convert_cmode_string {
         $string .= $new
     }
 
-    log2("converted $m[0] to $string");
-    return $string
+    my $newstring = join ' ', $string, @m;
+    log2("converted \"$modestr\" to \"$newstring\"");
+    return $newstring
 }
 
 # XXX mine.pm?

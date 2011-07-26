@@ -461,3 +461,5 @@ CHANGES:
         2. send CMODE types from server-to-server.
 
         3. added CMODE converter to translate names to modes.
+
+        4. fixed bug in the new mode converter.
