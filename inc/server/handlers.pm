@@ -259,10 +259,7 @@ sub sjoin {
     $channel->cjoin($user, $time);
 
     # for each user in the channel
-    foreach my $usr (@{$channel->{users}}) {
-        next unless $usr->is_local;
-        $usr->sendfrom($user->full, "JOIN $$channel{name}")
-    }
+    $channel->channel::mine::sendall(q(:).$user->full." JOIN $$channel{name}");
 }
 
 # add user flags
