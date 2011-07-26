@@ -114,12 +114,12 @@ sub privmsgnotice_all {
 
 # channel join
 
-sub join {
+sub sjoin {
     my ($server, $user, $channel, $time) = @_;
     $server->sendfrom($user->{uid}, "JOIN $$channel{name} $time");
 }
 
-sub join_all {
+sub sjoin_all {
     my ($user, $channel, $time) = @_;
     server::mine::sendfrom_children(undef, $user->{uid}, "JOIN $$channel{name} $time");
 }

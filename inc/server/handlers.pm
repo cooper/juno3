@@ -259,7 +259,7 @@ sub sjoin {
     $channel->cjoin($user, $time);
 
     # for each user in the channel
-    $channel->channel::mine::sendall(q(:).$user->full." JOIN $$channel{name}");
+    $channel->channel::mine::send_all(q(:).$user->full." JOIN $$channel{name}");
 }
 
 # add user flags

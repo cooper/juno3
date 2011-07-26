@@ -153,7 +153,7 @@ sub send_burst {
     # channels
     foreach my $channel (values %channel::channels) {
         foreach my $user (@{$channel->{users}}) {
-            $server->server::outgoing::join($user, $channel, $channel->{time});
+            $server->server::outgoing::sjoin($user, $channel, $channel->{time});
         }
 
         # modes

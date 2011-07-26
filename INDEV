@@ -455,3 +455,5 @@ CHANGES:
 
         0. FINALLY fixed the ridiculous bug that made the IRCd unpractical for use.
            Now we know that this IRCd still has hope to become usable.
+
+        1. fixed a couple of crash bugs in channel communication.

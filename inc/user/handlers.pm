@@ -314,6 +314,7 @@ sub cjoin {
         # if the channel exists, just join
         my $channel = channel::lookup_by_name($chname);
         my $time    = time;
+        my $result;
 
         # otherwise create a new one
         if (!$channel) {
@@ -321,12 +322,13 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
-            my $result = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
-            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result)
+            $result = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
+            
         }
         return if $channel->has_user($user);
         $channel->channel::mine::cjoin($user, $time);
-        server::outgoing::join_all($user, $channel, $time);
+        server::outgoing::sjoin_all($user, $channel, $time);
+        server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result) if $result
     }
 }
 
