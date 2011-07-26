@@ -459,3 +459,5 @@ CHANGES:
         1. fixed a couple of crash bugs in channel communication.
 
         2. send CMODE types from server-to-server.
+
+        3. added CMODE converter to translate names to modes.
