@@ -439,3 +439,5 @@ CHANGES:
            cleaned up a bit in server/handlers.
 
         5. MODE now accepts a channel with no other parameters.
+
+        6. this should fix a few things.

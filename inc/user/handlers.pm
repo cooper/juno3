@@ -214,7 +214,7 @@ sub mode {
 
         # tell the channel users
         $channel->channel::mine::send_all(':'.$user->full." MODE $$channel{name} $result");
-        server::outgoing::cmode_all($user, $channel, $channel->{time}, $user->{server}->{sid}, $result);
+        $user->server::outgoing::cmode_all($channel, $channel->{time}, $user->{server}->{sid}, $result);
 
         return 1
     }

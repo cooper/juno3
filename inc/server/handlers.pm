@@ -307,8 +307,8 @@ sub cmode {
     my $result = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1);
     return 1 if !$result || $result =~ m/^(\+|\-)$/;
 
-    my $from = $source->isa('user') ? $source->{nick} : $source->isa('server') ? $source->{name} : 'magicalUnknownFairyPrincess';
-    $channel->channel::mine::send_all("$from MODE $$channel{name} $result");
+    my $from = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'magicalFairyPrincess';
+    $channel->channel::mine::send_all(":$from MODE $$channel{name} $result");
 }
 
 1
