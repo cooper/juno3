@@ -14,10 +14,10 @@ use utils;
 # it has the same name as the one in channel.pm.
 # the only difference is that this one sends
 # the mode changes around
-sub join {
+sub cjoin {
     my ($channel, $user, $time) = @_;
     return if $channel->has_user($user);
-    $channel->join($user, $time);
+    $channel->cjoin($user, $time);
 
     # for each user in the channel
     foreach my $usr (@{$channel->{users}}) {

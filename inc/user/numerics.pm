@@ -73,8 +73,8 @@ sub rpl_isupport {
         NICKLEN     => conf('limit', 'nick'),
         MAXLIST     => 'beIZ:0',                    # TODO
         NETWORK     => $utils::GV{network},
-        EXCEPTS     => 'e',
-        INVEX       => 'I',
+        EXCEPTS     => 'e',                         # TODO
+        INVEX       => 'I',                         # TODO
         CASEMAPPING => 'rfc1459',
         TOPICLEN    => conf('limit', 'topic'),
         KICKLEN     => conf('limit', 'kickmsg'),
@@ -106,14 +106,13 @@ sub chanmodes {
     #   parameter_set (2)
     #   list (3)
     #   status (4)
-    my %m;
+    my (%m, @a);
+    @a[3, 1, 2, 0] = (0, 0, 0, 0);
     foreach my $name (keys %channel::modes::modes) {
         my ($type, $letter) = @{$channel::modes::modes{$name}};
         $m{$type} = [] unless $m{$type};
         push @{$m{$type}}, $letter
     }
-
-    my @a;
 
     # alphabetize
     foreach my $type (keys %m) {

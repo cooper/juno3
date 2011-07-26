@@ -321,10 +321,11 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
-            $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
+            my $result = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
+            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $modestr)
         }
         return if $channel->has_user($user);
-        $channel->channel::mine::join($user, $time);
+        $channel->channel::mine::cjoin($user, $time);
         server::outgoing::join_all($user, $channel, $time);
     }
 }
@@ -383,14 +384,7 @@ sub oper {
     my $crypt = lconf('oper', $args[1], 'encryption');
 
     # so now let's check if the password is right
-    given ($crypt) {
-        when ('sha1')   { $supplied = Digest::SHA::sha1_hex($supplied)   }
-        when ('sha224') { $supplied = Digest::SHA::sha224_hex($supplied) }
-        when ('sha256') { $supplied = Digest::SHA::sha256_hex($supplied) }
-        when ('sha384') { $supplied = Digest::SHA::sha384_hex($supplied) }
-        when ('sha512') { $supplied = Digest::SHA::sha512_hex($supplied) }
-        when ('md5')    { $supplied = Digest::MD5::md5_hex($supplied)    }
-    }
+    $supplied = utils::crypt($supplied, $crypt);
 
     # incorrect
     if ($supplied ne $password) {

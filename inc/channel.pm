@@ -71,7 +71,7 @@ sub set_mode {
 }
 
 # user joins channel
-sub join {
+sub cjoin {
     my ($channel, $user, $time) = @_;
 
     # the channel TS will change
@@ -125,7 +125,7 @@ sub handle_mode_string {
     my $str   = '+';
     my @m     = split /\s+/, $modestr;
 
-    letter: foreach my $letter (split //, $m[0]) {
+    letter: foreach my $letter (split //, shift @m) {
         if ($letter eq '+') {
             $str .= '+' unless $state;
             $state = 1
@@ -140,15 +140,15 @@ sub handle_mode_string {
                 log2("unknown mode $letter!");
                 next
             }
-
             my $parameter = undef;
             if ($server->cmode_takes_parameter($name, $state)) {
-                $parameter = shift @m || undef
+                $parameter = shift @m;
+                next letter unless defined $parameter
             }
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = channel::modes::fire($channel, $server, $source, $state, $name, $parameter, $parameters);
+            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters);
             if (!$force) {
                 next unless $win
             }

@@ -256,7 +256,7 @@ sub sjoin {
         });
     }
     return if $channel->has_user($user);
-    $channel->join($user, $time);
+    $channel->cjoin($user, $time);
 
     # for each user in the channel
     foreach my $usr (@{$channel->{users}}) {

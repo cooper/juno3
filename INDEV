@@ -445,3 +445,8 @@ CHANGES:
         7. fixed bug. now the channel modes should be sent among servers.
 
         8. CHANMODES is now accurate!
+
+
+        July 26, 2011
+
+        9. fixed a few more things with channel modes and stuff.

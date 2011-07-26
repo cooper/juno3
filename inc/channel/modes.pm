@@ -25,9 +25,10 @@ my %blocks;
 #   list (3)
 #   status (4)
 our %modes = (
-    no_ext        => [normal, 'n'],
-    protect_topic => [normal, 't'],
-    moderated     => [normal, 'm']
+    no_ext        => [normal,    'n'],
+    protect_topic => [normal,    't'],
+    moderated     => [normal,    'm'],
+    testing       => [parameter, 'T']
 );
 
 # this just tells the internal server what
@@ -59,8 +60,33 @@ sub register_block {
 
 # TODO
 sub fire {
-    my ($channel, $server, $state, $name, $parameter) = @_;
-    
+    my ($channel, $server, $source, $state, $name, $parameter, $parameters) = @_;
+    if (!exists $blocks{$name}) {
+        # nothing to do
+        return 1
+    }
+    foreach my $block (values %{$blocks{$name}}) {
+        return unless $block->($channel, {
+            server => $server,
+            source => $source,
+            state  => $state,
+            param  => $parameter,
+            params => $parameters
+        })
+    }
+    return 1
 }
+
+# blocks
+
+log2("registering internal mode blocks");
+
+register_block('testing', 'internal_test', sub {
+    my ($channel, $mode) = @_;
+    push @{$mode->{params}}, $mode->{param};
+    return 1
+});
+
+log2("end of internal mode blocks");
 
 1

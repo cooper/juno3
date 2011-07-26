@@ -134,7 +134,7 @@ sub cmode_takes_parameter {
 
         # only give a parameter when setting
         when (2) {
-            return 1 if $state
+            return $state
         }
     }
 
