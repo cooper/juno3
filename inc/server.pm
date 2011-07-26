@@ -124,6 +124,7 @@ sub cmode_letter {
     return $server->{cmodes}->{$name}->{letter}
 }
 
+# XXX mine.pm?
 sub cmode_takes_parameter {
     my ($server, $name, $state) = @_;
     given ($server->{cmodes}->{$name}->{type}) {
@@ -135,6 +136,17 @@ sub cmode_takes_parameter {
         # only give a parameter when setting
         when (2) {
             return $state
+        }
+
+        # lists like +b always want a parameter
+        # keep in mind that these view lists when there isn't one, though
+        when (3) {
+            return 1
+        }
+
+        # status modes always want a parameter
+        when (4) {
+            return 1
         }
     }
 

@@ -190,16 +190,7 @@ sub ready {
     elsif (exists $connection->{name}) {
 
         # check for valid password.
-        my $password;
-
-        given (conn($connection->{name}, 'encryption')) {
-            when ('sha1')   { $password = Digest::SHA::sha1_hex($connection->{pass})   }
-            when ('sha224') { $password = Digest::SHA::sha224_hex($connection->{pass}) }
-            when ('sha256') { $password = Digest::SHA::sha256_hex($connection->{pass}) }
-            when ('sha384') { $password = Digest::SHA::sha384_hex($connection->{pass}) }
-            when ('sha512') { $password = Digest::SHA::sha512_hex($connection->{pass}) }
-            when ('md5')    { $password = Digest::MD5::md5_hex($connection->{pass})    }
-        }
+        my $password = utils::crypt($connection->{pass}, conn($connection->{name}, 'encryption'));
 
         if ($password ne conn($connection->{name}, 'receive_password')) {
             $connection->done('Invalid credentials');
@@ -269,7 +260,7 @@ sub lookup {
 
 sub done {
 
-    my ($connection, $reason) = @_;
+    my ($connection, $reason, $silent) = @_;
 
     log2("Closing connection from $$connection{ip}: $reason");
 
@@ -281,7 +272,7 @@ sub done {
         $connection->{type}->quit($reason)
     }
 
-    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ) unless eof $connection->{obj};
+    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ) unless $silent;
 
     # remove from connection list
     delete $connection{$connection->{obj}};

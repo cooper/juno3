@@ -58,16 +58,51 @@ sub unset_mode {
 # set channel modes
 # takes an optional parameter
 # $channel->set_mode('moderated');
-# $channel->set_mode('ban', '*!*@google.com');
 sub set_mode {
     my ($channel, $name, $parameter) = @_;
-    return if $channel->is_mode($name);
     $channel->{modes}->{$name} = {
         parameter => $parameter,
         time      => time
+        # list for list modes and status
     };
     log2("$$channel{name} +$name");
     return 1
+}
+
+# list has something
+sub list_has {
+    my ($channel, $name, $what) = @_;
+    return unless exists $channel->{modes}->{$name};
+    $what ~~ @{$channel->{modes}->{$name}->{list}}
+}
+
+# adds something to a list mode (such as ban)
+sub add_to_list {
+    my ($channel, $name, $parameter) = @_;
+    $channel->{modes}->{$name} = {
+        time => time,
+        list => []
+    } unless exists $channel->{modes}->{$name};
+
+    # no duplicates plz
+    if ($channel->list_has($name, $parameter)) {
+        return
+    }
+
+    log2("$$channel{name}: adding $parameter to $name list");
+    push @{$channel->{modes}->{$name}->{list}}, $parameter;
+    return 1
+}
+
+# removes something from a list
+sub remove_from_list {
+    my ($channel, $name, $what) = @_;
+    return unless $channel->list_has($name, $what);
+
+    my @old = @{$channel->{modes}->{$name}->{list}};
+    my @new = grep { $_ ne $what } @old;
+    $channel->{modes}->{$name}->{list} = \@new;
+    log2("$$channel{name}: removing $what from $name list");
 }
 
 # user joins channel
@@ -109,6 +144,9 @@ sub has_user {
 # set the channel time
 sub set_time {
     my ($channel, $time) = @_;
+    if ($time > $channel->{time}) {
+        log2("warning: setting time to a lower time from $$channel{time} to $time");
+    }
     $channel->{time} = $time
 }
 

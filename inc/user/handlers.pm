@@ -322,7 +322,7 @@ sub cjoin {
                 'time' => $time
             });
             my $result = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
-            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $modestr)
+            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result)
         }
         return if $channel->has_user($user);
         $channel->channel::mine::cjoin($user, $time);

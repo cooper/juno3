@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature 'say';
 
-sub VERSION () { '1.4.8' }
+sub VERSION () { '1.5.0' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -106,7 +106,7 @@ mainloop: for (;;) {
             # can't read the data
 
             else {
-                $conn->done('Connection closed');
+                $conn->done('Connection closed', 1);
                 next in
             }
 
@@ -129,12 +129,10 @@ mainloop: for (;;) {
 
         }
 
-        my $connection = $connection::connection{$socket};
-
         # they've reached their limit; force them to quit
         if (length $inbuffer{$socket} > conf qw[flood bytes]) {
-            if ((exists $connection->{type} && !$connection->{type}->isa('server')) || !exists $connection->{type}) {
-                $connection->done(conf qw[flood message])
+            if (!exists $conn->{type} || !$conn->{type}->isa('server')) {
+                $conn->done(conf qw[flood message], 1)
             }
         }
 
@@ -181,7 +179,7 @@ mainloop: for (;;) {
             $msg     = 'Ping timeout'
         }
 
-        if ((time-$conn->{last_response}) >= $timeout) {
+        if ((time - $conn->{last_response}) >= $timeout) {
 
             # too late; making them quit
             $conn->done($msg);
@@ -203,7 +201,7 @@ mainloop: for (;;) {
 
     }
 
-    # run through the registered loop
+    # run through the registered loops
     loop: while (my @loop = each %loop) {
         $loop[1]->{code}($loop[0])
     }
@@ -227,7 +225,7 @@ sub start {
         ircd   => $VERSION,
         time   => time,
         source => $utils::GV{serverid},
-        parent => {name => 'self'}
+        parent => { name => 'self' }
     });
 
     # how is this possible?!?!

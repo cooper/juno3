@@ -450,3 +450,8 @@ CHANGES:
         July 26, 2011
 
         9. fixed a few more things with channel modes and stuff.
+
+    5. July 26, 2011
+
+        0. FINALLY fixed the ridiculous bug that made the IRCd unpractical for use.
+           Now we know that this IRCd still has hope to become usable.

@@ -197,6 +197,20 @@ sub cut_to_limit {
     return $string
 }
 
+# encrypt something
+sub crypt {
+    my ($what, $crypt) = @_;
+    given ($crypt) {
+        when ('sha1')   { $what = Digest::SHA::sha1_hex($what)   }
+        when ('sha224') { $what = Digest::SHA::sha224_hex($what) }
+        when ('sha256') { $what = Digest::SHA::sha256_hex($what) }
+        when ('sha384') { $what = Digest::SHA::sha384_hex($what) }
+        when ('sha512') { $what = Digest::SHA::sha512_hex($what) }
+        when ('md5')    { $what = Digest::MD5::md5_hex($what)    }
+    }
+    return $what
+}
+
 # for configuration values
 sub on  () { 1 }
 sub off () { 0 }

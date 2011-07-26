@@ -65,14 +65,15 @@ sub fire {
         # nothing to do
         return 1
     }
+    my %this = (
+        server => $server,
+        source => $source,
+        state  => $state,
+        param  => $parameter,
+        params => $parameters
+    );
     foreach my $block (values %{$blocks{$name}}) {
-        return unless $block->($channel, {
-            server => $server,
-            source => $source,
-            state  => $state,
-            param  => $parameter,
-            params => $parameters
-        })
+        return unless $block->($channel, \%this)
     }
     return 1
 }
@@ -81,10 +82,23 @@ sub fire {
 
 log2("registering internal mode blocks");
 
-register_block('testing', 'internal_test', sub {
+# test mode
+register_block('testing', 'internal', sub {
     my ($channel, $mode) = @_;
     push @{$mode->{params}}, $mode->{param};
     return 1
+});
+
+# channel bans
+register_block('ban', 'internal', sub {
+    my ($channel, $mode) = @_;
+    if ($mode->{state}) {
+        $channel->add_to_list('ban', $mode->{param});
+    }
+    else {
+        $channel->remove_from_list('ban', $mode->{param});
+    }
+    push @{$mode->{params}}, $mode->{param};
 });
 
 log2("end of internal mode blocks");
