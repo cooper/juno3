@@ -465,3 +465,5 @@ CHANGES:
         4. fixed bug in the new mode converter.
 
         5. made several major improvements to status modes!
+
+        6. added support for five prefixes.

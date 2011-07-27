@@ -108,33 +108,35 @@ register_block('ban', 'internal', sub {
 });
 
 
-# channel operators
-register_block('op', 'internal', sub {
-    my ($channel, $mode) = @_;
-    my $source = $mode->{source};
-    my $target = user::lookup_by_nick($mode->{param});
+# status modes
+foreach my $modename (qw(owner admin op halfop voice)) {
+    register_block($modename, 'internal', sub {
+        my ($channel, $mode) = @_;
+        my $source = $mode->{source};
+        my $target = user::lookup_by_nick($mode->{param});
 
-    # make sure the target user exists
-    if (!$target) {
-        if (!$mode->{force} && $source->isa('user') && $source->is_local) {
-            $source->numeric('ERR_NOSUCHNICK', $mode->{param});
+        # make sure the target user exists
+        if (!$target) {
+            if (!$mode->{force} && $source->isa('user') && $source->is_local) {
+                $source->numeric('ERR_NOSUCHNICK', $mode->{param});
+            }
+            return
         }
-        return
-    }
 
-    # and also make sure he is on the channel
-    if (!$channel->has_user($target)) {
-        if (!$mode->{force} && $source->isa('user') && $source->is_local) {
-            $source->numeric('ERR_USERNOTINCHANNEL', $target->{nick}, $channel->{name});
+        # and also make sure he is on the channel
+        if (!$channel->has_user($target)) {
+            if (!$mode->{force} && $source->isa('user') && $source->is_local) {
+                $source->numeric('ERR_USERNOTINCHANNEL', $target->{nick}, $channel->{name});
+            }
+            return
         }
-        return
-    }
 
-    push @{$mode->{params}}, $target->{nick};
-    my $do = $mode->{state} ? 'add_to_list' : 'remove_from_list';
-    $channel->$do('op', $target);
-    return 1
-});
+        push @{$mode->{params}}, $target->{nick};
+        my $do = $mode->{state} ? 'add_to_list' : 'remove_from_list';
+        $channel->$do($modename, $target);
+        return 1
+    });
+}
 
 log2("end of internal mode blocks");
 
