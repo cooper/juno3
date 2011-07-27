@@ -109,7 +109,7 @@ sub chanmodes {
     #   list (3)
     #   status (4)
     my (%m, @a);
-    @a[3, 1, 2, 0] = (0, 0, 0, 0);
+    @a[3, 1, 2, 0] = (q.., q.., q.., q..);
     foreach my $name (keys %channel::modes::modes) {
         my ($type, $letter) = @{$channel::modes::modes{$name}};
         $m{$type} = [] unless $m{$type};

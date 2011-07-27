@@ -209,12 +209,12 @@ sub mode {
 
         # setting
         my $modestr = join ' ', @args[2..$#args];
-        my $result  = $channel->handle_mode_string($user->{server}, $user, $modestr);
-        return if !$result || $result =~ m/^(\-|\+)$/; # nothing changed
+        my ($user_result, $server_result) = $channel->handle_mode_string($user->{server}, $user, $modestr);
+        return if (!$user_result || $user_result =~ m/^(\-|\+)$/); # nothing changed
 
         # tell the channel users
-        $channel->channel::mine::send_all(':'.$user->full." MODE $$channel{name} $result");
-        $user->server::outgoing::cmode_all($channel, $channel->{time}, $user->{server}->{sid}, $result);
+        $channel->channel::mine::send_all(':'.$user->full." MODE $$channel{name} $user_result");
+        $user->server::outgoing::cmode_all($channel, $channel->{time}, $user->{server}->{sid}, $server_result);
 
         return 1
     }
@@ -322,8 +322,8 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
-            $result = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
-            
+            $channel->add_to_list($_, $user) foreach qw/owner op/;
+            $result  = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
         }
         return if $channel->has_user($user);
         $channel->channel::mine::cjoin($user, $time);

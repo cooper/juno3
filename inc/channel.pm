@@ -5,6 +5,7 @@ package channel;
 
 use warnings;
 use strict;
+use feature 'switch';
 
 use channel::mine;
 use channel::modes;
@@ -73,7 +74,7 @@ sub set_mode {
 sub list_has {
     my ($channel, $name, $what) = @_;
     return unless exists $channel->{modes}->{$name};
-    return 1 if grep { $_ == $what } @{$channel->{modes}->{$name}->{list}}
+    return 1 if grep { $_ eq $what } @{$channel->{modes}->{$name}->{list}}
 }
 
 # adds something to a list mode (such as ban)
@@ -155,7 +156,7 @@ sub set_time {
 # returns the mode string,
 # or '+' if no changes were made.
 sub handle_mode_string {
-    my ($channel, $server, $source, $modestr, $force) = @_;
+    my ($channel, $server, $source, $modestr, $force, $over_protocol) = @_;
     log2("set $modestr on $$channel{name} from $$server{name}");
 
     # array reference passed to mode blocks and used in the return
@@ -188,7 +189,7 @@ sub handle_mode_string {
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters, $force);
+            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters, $force, $over_protocol);
             if (!$force) {
                 next unless $win
             }
@@ -209,8 +210,28 @@ sub handle_mode_string {
     $str =~ s/\+\-/\-/g;
     $str =~ s/\-\+/\+/g;
 
+    # make it change array refs to separate params for servers
+    # [USER RESPONSE, SERVER RESPONSE]
+    my @user_params;
+    my @server_params;
+    foreach my $param (@$parameters) {
+        if (ref $param eq 'ARRAY') {
+            push @user_params, $param->[0];
+            push @server_params, $param->[1]
+        }
+
+        # not an array ref
+        else {
+            push @user_params, $param;
+            push @server_params, $param
+        }
+    }
+
+    my $user_string   = join ' ', $str, @user_params;
+    my $server_string = join ' ', $str, @server_params;
+
     log2("end of mode handle");
-    return join ' ', $str, @$parameters
+    return ($user_string, $server_string)
 }
 
 # returns a +modes string
@@ -218,6 +239,14 @@ sub mode_string {
     my ($channel, $server) = @_;
     my (@modes, @params);
     foreach my $name (keys %{$channel->{modes}}) {
+        given ($server->cmode_type($name)) {
+            when (0) { }
+            when (1) { }
+            when (2) { }
+            default {
+                next
+            }
+        }
         push @modes, $server->cmode_letter($name);
         if (my $param = $channel->{modes}->{$name}->{parameter}) {
             push @params, $param

@@ -254,6 +254,7 @@ sub sjoin {
             name   => $chname,
             'time' => $time
         });
+        $channel->add_to_list($_, $user) foreach qw/owner op/;
     }
     return if $channel->has_user($user);
     $channel->cjoin($user, $time);
@@ -302,13 +303,13 @@ sub cmode {
         $channel->set_time($args[3]);
     }
 
-    my $result = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1);
-    return 1 if !$result || $result =~ m/^(\+|\-)$/;
+    my ($user_result, $server_result) = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1, 1);
+    return 1 if !$user_result || $user_result =~ m/^(\+|\-)$/;
 
     # convert it to our view
-    $result  = $perspective->convert_cmode_string($utils::GV{server}, $result);
-    my $from = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'MagicalFairyPrincess';
-    $channel->channel::mine::send_all(":$from MODE $$channel{name} $result");
+    $user_result  = $perspective->convert_cmode_string($utils::GV{server}, $user_result);
+    my $from      = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'MagicalFairyPrincess';
+    $channel->channel::mine::send_all(":$from MODE $$channel{name} $user_result");
 }
 
 1

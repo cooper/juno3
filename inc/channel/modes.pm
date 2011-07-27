@@ -65,7 +65,7 @@ sub register_block {
 
 # TODO
 sub fire {
-    my ($channel, $server, $source, $state, $name, $parameter, $parameters, $force) = @_;
+    my ($channel, $server, $source, $state, $name, $parameter, $parameters, $force, $over_protocol) = @_;
     if (!exists $blocks{$name}) {
         # nothing to do
         return 1
@@ -76,7 +76,8 @@ sub fire {
         state  => $state,
         param  => $parameter,
         params => $parameters,
-        force  => $force
+        force  => $force,
+        proto  => $over_protocol
     );
     foreach my $block (values %{$blocks{$name}}) {
         return unless $block->($channel, \%this)
@@ -109,11 +110,22 @@ register_block('ban', 'internal', sub {
 
 
 # status modes
-foreach my $modename (qw(owner admin op halfop voice)) {
+
+my %needs = (
+    owner  => ['owner'],
+    admin  => ['owner', 'admin'],
+    op     => ['owner', 'admin', 'op'],
+    halfop => ['owner', 'admin', 'op'],
+    voice  => ['owner', 'admin', 'op', 'halfop']
+);
+
+foreach my $modename (keys %needs) {
+
+    # registers the main mode stuff
     register_block($modename, 'internal', sub {
         my ($channel, $mode) = @_;
         my $source = $mode->{source};
-        my $target = user::lookup_by_nick($mode->{param});
+        my $target = $mode->{proto} ? user::lookup_by_id($mode->{param}) : user::lookup_by_nick($mode->{param});
 
         # make sure the target user exists
         if (!$target) {
@@ -131,7 +143,23 @@ foreach my $modename (qw(owner admin op halfop voice)) {
             return
         }
 
-        push @{$mode->{params}}, $target->{nick};
+        if (!$mode->{force} && $source->is_local) {
+
+            # for each need, check if the user has it
+            my $check_needs = sub {
+                foreach my $need (@{$needs{$modename}}) {
+                    return 1 if $channel->list_has($need, $source);
+                }
+                return
+            };
+
+            # they don't have any of the needs
+            return unless $check_needs->();
+
+        }
+
+        # [USER RESPONSE, SERVER RESPONSE]
+        push @{$mode->{params}}, [$target->{nick}, $target->{uid}];
         my $do = $mode->{state} ? 'add_to_list' : 'remove_from_list';
         $channel->$do($modename, $target);
         return 1
