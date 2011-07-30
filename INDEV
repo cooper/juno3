@@ -3,6 +3,7 @@ Development log
 
 TODO:
 
+    [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
     [H] look in to movement of modes from server to server- i think it fails.
     [M] LUSERS
@@ -471,3 +472,7 @@ CHANGES:
     6. July 27, 2011
 
         0. This is too big of an update to explain in a few lines.
+
+        July 30, 2011
+
+        1. fixed a number of bugs in the burst with modes, etc.

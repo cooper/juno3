@@ -105,33 +105,27 @@ sub send_burst {
 
     $server->sendme('BURST');
 
-    # send MY user mode names
-    foreach my $name (keys %{$utils::GV{server}->{umodes}}) {
-        my $mode = $utils::GV{server}->umode_letter($name);
-        $server->server::outgoing::addumode($utils::GV{server}, $name, $mode);
-    }
-
-    # send MY channel mode names
-    foreach my $name (keys %{$utils::GV{server}->{cmodes}}) {
-        my $mode = $utils::GV{server}->cmode_letter($name);
-        my $type = $utils::GV{server}->cmode_type($name);
-        $server->server::outgoing::addcmode($utils::GV{server}, $name, $mode, $type);
-    }
-
-    # child servers
+    # servers and mode names
     foreach my $serv (values %server::server) {
-        # the server already knows of thse
-        if ($server == $serv ||
-          $serv == $utils::GV{server} || 
-          $server->{sid} == $serv->{source}) {
-            next
-        }
-        $server->server::outgoing::sid($serv);
 
-        # send user modes of other servers names :)
-        while (my ($name, $mode) = each %{$serv->{umodes}}) {
-            $server->server::outgoing::addumode($serv, $name, $mode);
+        # the server already knows *everything* about itself!
+        next if $serv == $server;
+
+        # the server already knows about me.
+        if ($serv != $utils::GV{server}) {
+            $server->server::outgoing::sid($serv);
         }
+
+        # send user modenames
+        foreach my $name (keys %{$serv->{umodes}}) {
+            $server->server::outgoing::addumode($serv, $name, $serv->umode_letter($name));
+        }
+
+        # send channel modenames
+        foreach my $name (keys %{$serv->{cmodes}}) {
+            $server->server::outgoing::addcmode($serv, $name, $serv->cmode_letter($name), $serv->cmode_type($name));
+        }
+
     }
 
     # users

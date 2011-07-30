@@ -235,6 +235,11 @@ sub handle_mode_string {
 }
 
 # returns a +modes string
+#   normal (0)
+#   parameter (1)
+#   parameter_set (2)
+#   list (3)
+#   status (4)
 sub mode_string {
     my ($channel, $server) = @_;
     my (@modes, @params);
@@ -243,9 +248,7 @@ sub mode_string {
             when (0) { }
             when (1) { }
             when (2) { }
-            default {
-                next
-            }
+            default  { next }
         }
         push @modes, $server->cmode_letter($name);
         if (my $param = $channel->{modes}->{$name}->{parameter}) {
