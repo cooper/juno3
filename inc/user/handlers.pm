@@ -342,7 +342,7 @@ sub cjoin {
             $channel->add_to_list($_, $user) foreach qw/owner op/;
             my $owner = $utils::GV{server}->cmode_letter('owner');
             my $op    = $utils::GV{server}->cmode_letter('op');
-            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, "+$owner$op");
+            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, "+$owner$op $$user{sid} $$user{sid}");
         }
 
         $channel->channel::mine::cjoin($user, $time)
