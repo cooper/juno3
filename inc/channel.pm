@@ -306,7 +306,7 @@ sub mode_string_all {
             }
 
             # lists of users
-            when (3) {
+            when (4) {
                 foreach my $user (@{$channel->{modes}->{$name}->{list}}) {
                     push @modes,         $letter;
                     push @user_params,   $user->{nick};

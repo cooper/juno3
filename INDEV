@@ -491,3 +491,5 @@ CHANGES:
            channel user lists should be 100% accurate at all times now.
 
         7. hopefully this will fix a few bugs in channel mode syncing.
+
+        8. after all that debugging.. it turned out to be the smallest typo ever.
