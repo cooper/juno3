@@ -86,6 +86,11 @@ my %commands = (
         params  => 4,
         forward => 1,
         code    => \&cmode
+    },
+    PART => {
+        params  => 1,
+        forward => 1,
+        code    => \&part
     }
 );
 
@@ -317,6 +322,29 @@ sub cmode {
     $user_result  = $perspective->convert_cmode_string($utils::GV{server}, $user_result);
     my $from      = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'MagicalFairyPrincess';
     $channel->channel::mine::send_all(":$from MODE $$channel{name} $user_result");
+}
+
+sub part {
+    my ($server, $data, @args) = @_;
+    my $user    = user::lookup_by_id(col($args[0]));
+    my @m       = split /\s+/, $data, 5;
+    my $reason  = $args[2] ? col($m[4]) : q();
+    my $channel = channel::lookup_by_name($args[1]);
+
+    # take the lower time
+    $channel->channel::mine::take_lower_time($args[3]);
+
+    # ?!?!!?!
+    if (!$channel->has_user($user)) {
+        log2("attempting to remove $$user{nick} from $$channel{name} but that user isn't on that channel");
+        return
+    }
+
+    # remove the user and tell the local channel users
+    $channel->remove($user);
+    my $sreason = $reason ? " :$reason" : q();
+    $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$sreason");
+    return 1
 }
 
 1

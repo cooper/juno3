@@ -485,3 +485,7 @@ CHANGES:
         4. remove users from status lists when they quit/part/etc.
 
         5. delete channel data if the last user leaves the channel.
+
+        6. added PART user command.
+           added PART server command.
+           channel user lists should be 100% accurate at all times now.

@@ -157,7 +157,21 @@ sub return_away {
 
 sub return_away_all {
     my $user = shift;
-    server::mine::sendfrom_children($user->{uid}, 'RETURN');
+    server::mine::sendfrom_children(undef, $user->{uid}, 'RETURN');
+}
+
+# leave a channel
+
+sub part {
+    my ($server, $user, $channel, $time, $reason) = @_;
+    my $sreason = $reason ? " :$reason" : q();
+    $server->sendfrom($user->{uid}, "PART $$channel{name} $time$sreason");
+}
+
+sub part_all {
+    my ($user, $channel, $time, $reason) = @_;
+    my $sreason = $reason ? " :$reason" : q();
+    server::mine::sendfrom_children(undef, $user->{uid}, "PART $$channel{name} $time$sreason");
 }
 
 ########

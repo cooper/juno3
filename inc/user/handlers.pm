@@ -99,6 +99,11 @@ my %commands = (
         params => 0,
         code   => \&quit,
         desc   => 'disconnect from network'
+    },
+    PART => {
+        params => 1,
+        code   => \&part,
+        desc   => 'leave a channel'
     }
 );
 
@@ -552,6 +557,35 @@ sub quit {
     }
 
     $user->{conn}->done("Quit: $reason");
+}
+
+sub part {
+    my ($user, $data, @args) = @_;
+    my @m = split /\s+/, $data, 3;
+    my $reason = $args[2] ? col($m[2]) : q();
+
+    foreach my $chname (split ',', $args[1]) {
+        my $channel = channel::lookup_by_name($chname);
+
+        # channel doesn't exist
+        if (!$channel) {
+            $user->numeric('ERR_NOSUCHCHANNEL', $chname);
+            return
+        }
+
+        # user isn't on channel
+        if (!$channel->has_user($user)) {
+            $user->numeric('ERR_NOTONCHANNEL', $channel->{name});
+            return
+        }
+
+        # remove the user and tell the other channel's users and servers
+        my $ureason = $reason ? " :$reason" : q();
+        $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$ureason");
+        $user->server::outgoing::part_all($channel, $channel->{time}, $reason);
+        $channel->remove($user);
+
+    }
 }
 
 1
