@@ -243,20 +243,29 @@ sub sjoin {
     my ($server, $data, @args) = @_;
     my $user    = user::lookup_by_id(col($args[0]));
     my $chname  = $args[2];
-
-    # if the channel exists, just join
     my $channel = channel::lookup_by_name($chname);
-    my $time = $args[3];
+    my $time    = $args[3];
 
-    # otherwise create a new one
-    if (!$channel) {
+    # the channel exists, so just join
+    if ($channel) {
+        return if $channel->has_user($user);
+
+        # take the lower time
+        $channel->channel::mine::take_lower_time($time);
+
+    }
+
+    # channel doesn't exist; make a new one
+    else {
         $channel = channel->new({
             name   => $chname,
             'time' => $time
         });
+
+        # XXX assume they automatically get owner and op
         $channel->add_to_list($_, $user) foreach qw/owner op/;
     }
-    return if $channel->has_user($user);
+
     $channel->cjoin($user, $time);
 
     # for each user in the channel
@@ -299,9 +308,7 @@ sub cmode {
     return unless $channel; #XXX
 
     # take the lower time
-    if ($args[3] < $channel->{time}) {
-        $channel->set_time($args[3]);
-    }
+    $channel->channel::mine::take_lower_time($args[3]);
 
     my ($user_result, $server_result) = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1, 1);
     return 1 if !$user_result || $user_result =~ m/^(\+|\-)$/;

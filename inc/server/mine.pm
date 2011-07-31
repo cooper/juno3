@@ -152,7 +152,7 @@ sub send_burst {
         }
 
         # modes
-        my $str = $channel->mode_string_all($utils::GV{server});
+        my $str = ($channel->mode_string_all($utils::GV{server}))[1];
         if ($str && $str !~ m/^(\+|\-)$/) {
             $server->server::outgoing::cmode($utils::GV{server}, $channel, $channel->{time}, $utils::GV{server}{sid}, $str);
         }
@@ -206,11 +206,7 @@ sub sendme {
 # send data from a UID or SID
 sub sendfrom {
     my ($server, $from) = (shift, shift);
-    my @lines = ();
-    foreach my $line (@_) {
-        push @lines, ":$from $line"
-    }
-    $server->send(@lines)
+    $server->send(map { ":$from $_" } @_)
 }
 
 1

@@ -8,7 +8,7 @@ package channel::mine;
 use warnings;
 use strict;
 
-use utils;
+use utils qw[log2 conf];
 
 our %prefix = (
     owner  => '~',
@@ -72,6 +72,17 @@ sub send_all {
     return 1
 }
 
+# send a notice to every user
+sub notice_all {
+    my ($channel, $what, $ignore) = @_;
+    foreach my $user (@{$channel->{users}}) {
+        next unless $user->is_local;
+        next if defined $ignore && $ignore == $user;
+        $user->send(":$utils::GV{server}{name} NOTICE $$channel{name} :*** $what");
+    }
+    return 1
+}
+
 # send to all members of channels in common
 # with a user, but only once.
 sub send_all_user {
@@ -91,6 +102,22 @@ sub send_all_user {
         }
 
     }
+}
+
+# take the lower time of a channel and unset higher time stuff
+sub take_lower_time {
+    my ($channel, $time) = @_;
+    return if $time >= $channel->{time}; # never take a time that isn't lower
+    log2("locally resetting $$channel{name} time to $time");
+    my $amount = $channel->{time} - $time;
+    $channel->set_time($time);
+
+    # unset all channel modes
+    my $modestring = $channel->mode_string_all($utils::GV{server});
+    $modestring =~ s/\+/\-/;
+    notice_all($channel, "channel TS set back $amount seconds");
+    send_all($channel, ":$utils::GV{server}{name} MODE $$channel{name} $modestring");
+    $channel->{modes} = {};
 }
 
 1

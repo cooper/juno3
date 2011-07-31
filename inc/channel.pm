@@ -260,10 +260,10 @@ sub mode_string {
 }
 
 # includes ALL modes
-# this is intended for servers, so it probably uses UIDs and stuff like that
+# returns a string for users and a string for servers
 sub mode_string_all {
     my ($channel, $server) = @_;
-    my (@modes, @params);
+    my (@modes, @user_params, @server_params);
 
     foreach my $name (keys %{$channel->{modes}}) {
         my $letter = $server->cmode_letter($name);
@@ -277,22 +277,25 @@ sub mode_string_all {
 
             # modes with ONE parameter
             when ([1, 2]) {
-                push @params, $channel->{modes}->{$name}->{parameter}
+                push @user_params,   $channel->{modes}->{$name}->{parameter};
+                push @server_params, $channel->{modes}->{$name}->{parameter}
             }
 
             # lists
             when (3) {
                 foreach my $thing (@{$channel->{modes}->{$name}->{list}}) {
-                    push @modes,  $letter;
-                    push @params, $thing
+                    push @modes,         $letter;
+                    push @user_params,   $thing;
+                    push @server_params, $thing
                 }
             }
 
             # lists of users
-            when (4) {
+            when (3) {
                 foreach my $user (@{$channel->{modes}->{$name}->{list}}) {
-                    push @modes,  $letter;
-                    push @params, $user->{uid}
+                    push @modes,         $letter;
+                    push @user_params,   $user->{nick};
+                    push @server_params, $user->{uid}
                 }
             }
 
@@ -303,8 +306,12 @@ sub mode_string_all {
 
     @modes = sort { $a cmp $b } @modes; # alphabetize
 
-    my $string = '+'.join(' ', join('', @modes), @params);
-    return $string
+    # make +modes params strings
+    my $user_string   = '+'.join(' ', join('', @modes), @user_params);
+    my $server_string = '+'.join(' ', join('', @modes), @server_params);
+
+    # returns both a user string and a server string
+    return ($user_string, $server_string)
 }
 
 # find a channel by its name
