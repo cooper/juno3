@@ -146,21 +146,26 @@ sub nick {
     my ($user, $data, @args) = @_;
     my $newnick = col($args[1]);
 
-    # ignore stupid nick changes
-    if (lceq $user->{nick} => $newnick) {
-        return
+    if ($newnick eq '0') {
+        $newnick = $user->{uid}
     }
+    else {
+        # ignore stupid nick changes
+        if (lceq $user->{nick} => $newnick) {
+            return
+        }
 
-    # check for valid nick
-    if (!utils::validnick($newnick)) {
-        $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
-        return
-    }
+        # check for valid nick
+        if (!utils::validnick($newnick)) {
+            $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
+            return
+        }
 
-    # check for existing nick
-    if (user::lookup_by_nick($newnick)) {
-        $user->numeric('ERR_NICKNAMEINUSE', $newnick);
-        return
+        # check for existing nick
+        if (user::lookup_by_nick($newnick)) {
+            $user->numeric('ERR_NICKNAMEINUSE', $newnick);
+            return
+        }
     }
 
     # tell ppl

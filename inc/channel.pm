@@ -270,7 +270,7 @@ sub mode_string {
             push @params, $param
         }
     }
-    @modes = sort { $a cmp $b } @modes; # alphabetize
+
     return '+'.join(' ', join('', @modes), @params)
 }
 
@@ -318,8 +318,6 @@ sub mode_string_all {
             default  { next }
         }
     }
-
-    @modes = sort { $a cmp $b } @modes; # alphabetize
 
     # make +modes params strings
     my $user_string   = '+'.join(' ', join('', @modes), @user_params);
