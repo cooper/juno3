@@ -161,6 +161,11 @@ sub send_burst {
     $server->sendme('ENDBURST');
     $server->{i_sent_burst} = 1;
 
+    # ask this server to send burst
+    if (!$server->{sent_burst}) {
+        $server->send('READY');
+    }
+
     return 1
 }
 

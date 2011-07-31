@@ -104,6 +104,11 @@ my %commands = (
         params => 1,
         code   => \&part,
         desc   => 'leave a channel'
+    },
+    CONNECT => {
+        params => 1,
+        code   => \&sconnect,
+        desc   => 'connect to a server'
     }
 );
 
@@ -597,6 +602,28 @@ sub part {
         $user->server::outgoing::part_all($channel, $channel->{time}, $reason);
         $channel->remove($user);
 
+    }
+}
+
+sub sconnect {
+    my ($user, $data, @args) = @_;
+
+    my $server = $args[1];
+
+    # make sure they have connect flag
+    if (!$user->has_flag('connect')) {
+        $user->numeric('ERR_NOPRIVILEGES');
+        return
+    }
+
+    # make sure the server exists
+    if (!exists $utils::conf{connect}{$server}) {
+        $user->server_notice('no such server '.$server);
+        return
+    }
+
+    if (!server::linkage::connect_server($server)) {
+        $user->server_notice('couldn\'t connect to '.$server);
     }
 }
 

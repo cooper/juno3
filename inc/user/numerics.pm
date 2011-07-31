@@ -55,6 +55,7 @@ my %numerics = (
     ERR_NOTONCHANNEL     => ['442', '%s :you\'re not on that channel'],
     ERR_NEEDMOREPARAMS   => ['461', '%s :Not enough parameters'],
     ERR_ALREADYREGISTRED => ['462', ':You may not reregister'],
+    ERR_NOPRIVILEGES     => ['481', ':Permission denied'],
     ERR_NOOPERHOST       => ['491', ':No oper blocks for your host'],
     ERR_USERSDONTMATCH   => ['502', ':Can\'t change mode for other users']
 );
