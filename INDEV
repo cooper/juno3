@@ -3,14 +3,16 @@ Development log
 
 TODO:
 
+    [H] fix nick collision/UID collision bugs
+    [H] fix server SID/name collision bugs
     [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
     [H] look in to movement of modes from server to server- i think it fails.
     [M] LUSERS
-    [M] make modes like o remove flags when unsetting from another server.
+    [M] WHO
     [L] idle time in WHOIS
-    [L] local mode letters shouldn't be in modes.pm.
     [L] finish RPL_WELCOME
+    [L] invisible NAMES
 
 PLANS:
 
@@ -499,3 +501,6 @@ CHANGES:
     7. July 28, 2011
 
         0. this bug makes me so extremely angry.
+
+        1. don't allow to /connect to a server that is already connected.
+           close connection to a server if it isn't who we thought it was.

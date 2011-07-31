@@ -623,12 +623,18 @@ sub sconnect {
 
     # make sure the server exists
     if (!exists $utils::conf{connect}{$server}) {
-        $user->server_notice('no such server '.$server);
+        $user->server_notice('CONNECT', 'no such server '.$server);
+        return
+    }
+
+    # make sure it's not already connected
+    if (server::lookup_by_name($server)) {
+        $user->server_notice('CONNECT', "$server is already connected.");
         return
     }
 
     if (!server::linkage::connect_server($server)) {
-        $user->server_notice('couldn\'t connect to '.$server);
+        $user->server_notice('CONNECT', 'couldn\'t connect to '.$server);
     }
 }
 

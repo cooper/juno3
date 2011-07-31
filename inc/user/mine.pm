@@ -114,11 +114,7 @@ sub sendfrom {
         log2("can't send data to a nonlocal user! please report this error by $sub. $$user{nick}");
         return
     }
-    my @send = ();
-    foreach my $line (@_) {
-        push @send, ":$source $line"
-    }
-    $user->{conn}->send(@send)
+    $user->{conn}->send(map { ":$source $_" } @_)
 }
 
 # send data with this server as the source
@@ -129,22 +125,19 @@ sub sendserv {
         log2("can't send data to a nonlocal user! please report this error by $sub. $$user{nick}");
         return
     }
-    my @send = ();
-    foreach my $line (@_) {
-        push @send, ":$utils::GV{servername} $line"
-    }
-    $user->{conn}->send(@send)
+    $user->{conn}->send(map { ":$utils::GV{servername} $_" } @_)
 }
 
 # a notice from server
 sub server_notice {
-    my $user = shift;
+    my ($user, @args) = @_;
     if (!$user->{conn}) {
         my $sub = (caller 1)[3];
         log2("can't send data to a nonlocal user! please report this error by $sub. $$user{nick}");
         return
     }
-    $user->{conn}->send(map { ":$utils::GV{servername} NOTICE $$user{nick} :$_" } @_)
+    my $msg = $args[1] ? "*** $args[0]: $args[1]" : $args[0];
+    $user->{conn}->send(":$utils::GV{servername} NOTICE $$user{nick} :$msg")
 }
 
 sub numeric {

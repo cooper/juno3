@@ -64,6 +64,14 @@ sub lookup_by_id {
     return
 }
 
+# find by name
+sub lookup_by_name {
+    my $name = shift;
+    foreach my $server (values %server) {
+        return $server if lc $server->{name} eq $name
+    }
+    return
+}
 
 # add a user mode
 sub add_umode {

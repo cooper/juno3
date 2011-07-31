@@ -109,6 +109,13 @@ sub handle {
             $connection->{$_}   = shift @args foreach qw[sid name proto ircd];
             $connection->{desc} = col(join ' ', @args);
 
+            # if this was by our request (as in an autoconnect or /connect or something)
+            # don't accept any server except the one we asked for.
+            if (exists $connection->{want} && lc $connection->{want} ne lc $connection->{name}) {
+                $connection->done('unexpected server');
+                return
+            }
+
             # find a matching server
 
             if (defined ( my $addr = conn($connection->{name}, 'address') )) {

@@ -35,7 +35,7 @@ sub connect_server {
     log2("Connection established to $server");
 
     # add the socket to select
-    connection->new($socket)->{sent_creds} = 1;
+    my $connection = connection->new($socket);
 
     # send server credentials.
     main::sendpeer($socket,
@@ -43,8 +43,10 @@ sub connect_server {
         "PASS $serv{send_password}"
     );
 
+    $connection->{sent_creds} = 1;
+    $connection->{want} = $server;
 
-    return 1
+    return $connection
 
 }
 
