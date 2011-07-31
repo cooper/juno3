@@ -309,6 +309,7 @@ sub cmap {
 sub cjoin {
     my ($user, $data, @args) = @_;
     foreach my $chname (split ',', $args[1]) {
+        my $new = 0;
 
         # make sure it's a valid name
         if (!utils::validchan($chname)) {
@@ -327,13 +328,24 @@ sub cjoin {
                 name   => $chname,
                 'time' => $time
             });
-            $channel->add_to_list($_, $user) foreach qw/owner op/;
+            $new     = 1;
             $result  = $channel->handle_mode_string($user->{server}, $user->{server}, conf('channels', 'automodes'), 1);
         }
         return if $channel->has_user($user);
-        $channel->channel::mine::cjoin($user, $time);
+
+        # tell servers that the user joined and the automatic modes were set
         server::outgoing::sjoin_all($user, $channel, $time);
-        server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result) if $result
+        server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result) if $result;
+
+        # tell servers that this user gets owner
+        if ($new) {
+            $channel->add_to_list($_, $user) foreach qw/owner op/;
+            my $owner = $utils::GV{server}->cmode_letter('owner');
+            my $op    = $utils::GV{server}->cmode_letter('op');
+            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, "+$owner$op");
+        }
+
+        $channel->channel::mine::cjoin($user, $time)
     }
 }
 

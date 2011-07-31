@@ -489,3 +489,5 @@ CHANGES:
         6. added PART user command.
            added PART server command.
            channel user lists should be 100% accurate at all times now.
+
+        7. hopefully this will fix a few bugs in channel mode syncing.

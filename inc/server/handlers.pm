@@ -266,9 +266,6 @@ sub sjoin {
             name   => $chname,
             'time' => $time
         });
-
-        # XXX assume they automatically get owner and op
-        $channel->add_to_list($_, $user) foreach qw/owner op/;
     }
 
     $channel->cjoin($user, $time);
