@@ -130,9 +130,15 @@ sub remove {
     my ($channel, $user) = @_;
     log2("removing $$user{nick} from $$channel{name}");
     my @new = grep { $_ != $user } @{$channel->{users}};
-    $channel->{users} = \@new
+    $channel->{users} = \@new;
+
+    # remove the user from status lists
+    foreach my $name (keys %{$channel->{modes}}) {
+        if ($user->{server}->cmode_type($name) == 4) {
+            $channel->remove_from_list($name, $user);
+        }
+    }
     # TODO delete data if last user
-    # TODO delete user's status
 }
 
 # user is on channel

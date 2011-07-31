@@ -481,3 +481,5 @@ CHANGES:
            hopefully this will make channels stay in sync with modes (except during netsplits where the lower TS should be taken, but I'll get to that soon.)
 
         3. more improvements in taking the lower TS.
+
+        4. remove users from status lists when they quit/part/etc.
