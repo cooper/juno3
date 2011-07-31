@@ -328,8 +328,8 @@ sub part {
     my ($server, $data, @args) = @_;
     my $user    = user::lookup_by_id(col($args[0]));
     my @m       = split /\s+/, $data, 5;
-    my $reason  = $args[2] ? col($m[4]) : q();
-    my $channel = channel::lookup_by_name($args[1]);
+    my $reason  = $args[4] ? col($m[4]) : q();
+    my $channel = channel::lookup_by_name($args[2]);
 
     # take the lower time
     $channel->channel::mine::take_lower_time($args[3]);
