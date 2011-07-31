@@ -138,7 +138,16 @@ sub remove {
             $channel->remove_from_list($name, $user);
         }
     }
-    # TODO delete data if last user
+
+    # delete the channel if this is the last user
+    if (!scalar @{$channel->{users}}) {
+        delete $channels{lc($channel->{name})};
+        log2("deleted $$channel{name} data");
+        undef $channel;
+        return
+    }
+
+    return 1
 }
 
 # user is on channel

@@ -241,19 +241,14 @@ sub send {
 # find by a user or server object
 
 sub lookup {
-
     my $obj = shift;
-
     foreach my $conn (values %connection) {
-
         # found a match
         return $conn if $conn->{type} == $obj
-
     }
 
     # no matches
     return
-
 }
 
 # end a connection
