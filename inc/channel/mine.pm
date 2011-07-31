@@ -77,7 +77,7 @@ sub send_all {
 sub send_all_user {
     my ($user, $what) = @_;
     $user->sendfrom($user->full, $what);
-    my %sent = ( $user => 1);
+    my %sent = ( $user => 1 );
 
     foreach my $channel (values %channel::channels) {
         next unless $channel->has_user($user);

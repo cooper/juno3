@@ -476,3 +476,6 @@ CHANGES:
         July 30, 2011
 
         1. fixed a number of bugs in the burst with modes, etc.
+
+        2. added mode_string_all, which is the same as mode_string except it sends ALL modes, including status modes and list modes.
+           hopefully this will make channels stay in sync with modes (except during netsplits where the lower TS should be taken, but I'll get to that soon.)

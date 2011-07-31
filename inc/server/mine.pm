@@ -152,8 +152,8 @@ sub send_burst {
         }
 
         # modes
-        my $str = $channel->mode_string($utils::GV{server});
-        if ($str && $str ne '+') {
+        my $str = $channel->mode_string_all($utils::GV{server});
+        if ($str && $str !~ m/^(\+|\-)$/) {
             $server->server::outgoing::cmode($utils::GV{server}, $channel, $channel->{time}, $utils::GV{server}{sid}, $str);
         }
     }

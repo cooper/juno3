@@ -259,7 +259,53 @@ sub mode_string {
     return '+'.join(' ', join('', @modes), @params)
 }
 
-# TODO mode_string_all (includes list modes, status modes, etc.)
+# includes ALL modes
+# this is intended for servers, so it probably uses UIDs and stuff like that
+sub mode_string_all {
+    my ($channel, $server) = @_;
+    my (@modes, @params);
+
+    foreach my $name (keys %{$channel->{modes}}) {
+        my $letter = $server->cmode_letter($name);
+        given ($server->cmode_type($name)) {
+
+            # modes with 0 or 1 parameters
+            when ([0, 1, 2]) {
+                push @modes, $letter;
+                continue
+            }
+
+            # modes with ONE parameter
+            when ([1, 2]) {
+                push @params, $channel->{modes}->{$name}->{parameter}
+            }
+
+            # lists
+            when (3) {
+                foreach my $thing (@{$channel->{modes}->{$name}->{list}}) {
+                    push @modes,  $letter;
+                    push @params, $thing
+                }
+            }
+
+            # lists of users
+            when (4) {
+                foreach my $user (@{$channel->{modes}->{$name}->{list}}) {
+                    push @modes,  $letter;
+                    push @params, $user->{uid}
+                }
+            }
+
+            # idk
+            default  { next }
+        }
+    }
+
+    @modes = sort { $a cmp $b } @modes; # alphabetize
+
+    my $string = '+'.join(' ', join('', @modes), @params);
+    return $string
+}
 
 # find a channel by its name
 sub lookup_by_name {

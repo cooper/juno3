@@ -33,7 +33,8 @@ our %modes = (
     admin         => [status,    'a'],
     op            => [status,    'o'],
     halfop        => [status,    'h'],
-    voice         => [status,    'v']
+    voice         => [status,    'v'],
+    ban           => [list,      'b']
 );
 
 # this just tells the internal server what
@@ -93,6 +94,7 @@ log2("registering internal mode blocks");
 register_block('testing', 'internal', sub {
     my ($channel, $mode) = @_;
     push @{$mode->{params}}, $mode->{param};
+    $channel->set_mode('testing', $mode->{param});
     return 1
 });
 
