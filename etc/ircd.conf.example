@@ -80,7 +80,7 @@
 [ ping: user ]
 
     message: "Ping timeout"     # user ping section:
-    frequency: 30                   defaults are usually sufficient.
+    frequency: 30                   # defaults are usually sufficient.
     timeout: 120
 
 
