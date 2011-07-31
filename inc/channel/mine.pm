@@ -113,7 +113,7 @@ sub take_lower_time {
     $channel->set_time($time);
 
     # unset all channel modes
-    my $modestring = $channel->mode_string_all($utils::GV{server});
+    my $modestring = ($channel->mode_string_all($utils::GV{server}))[0];
     $modestring =~ s/\+/\-/;
     notice_all($channel, "channel TS set back $amount seconds");
     send_all($channel, ":$utils::GV{server}{name} MODE $$channel{name} $modestring");

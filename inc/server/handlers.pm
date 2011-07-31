@@ -309,6 +309,9 @@ sub cmode {
     my $perspective = server::lookup_by_id($args[4]);
     return unless $channel; #XXX
 
+    # ignore if time is older
+    return if $args[3] > $channel->{time};
+
     # take the lower time
     $channel->channel::mine::take_lower_time($args[3]);
 
