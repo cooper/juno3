@@ -1,6 +1,7 @@
 etc/*.conf
 etc/*.db
 etc/*.pid
+etc/HUP
 .gedit
 dev/
 *~

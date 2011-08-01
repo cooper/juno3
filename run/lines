@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "There are `cat inc/*.pm inc/*/*.pm run/ircd | wc -l` lines of Perl in the core of juno-ircd"
+echo "This does not include modules or utilities (except for the res module)"

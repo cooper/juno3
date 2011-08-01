@@ -518,3 +518,6 @@ CHANGES:
 
         5. seeing as the IRCd is beginning to fill out, I added a start/stop/rehash/etc script.
            I might even start changing the version numbers! (the protocol version has been .1 this whole time LoL)
+
+        6. added ./juno lines to count the number of lines in your copy.
+           added ./juno mkpasswd to run the password generator.
