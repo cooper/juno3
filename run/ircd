@@ -3,9 +3,9 @@
 
 use warnings;
 use strict;
-use feature 'say';
+use feature qw|switch say|;
 
-sub VERSION () { '1.7.4' }
+sub VERSION () { '1.7.5' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -13,6 +13,11 @@ our $VERSION = 'juno-3.'.VERSION;
 our $PROTO   = PROTO;
 our $START   = time;
 my  $NOFORK  = 'NOFORK' ~~ @ARGV;
+
+# signals
+$SIG{TERM} = \&terminate;
+$SIG{KILL} = \&terminate;
+$SIG{HUP}  = \&signalhup;
 
 our $run_dir;
 
@@ -52,6 +57,7 @@ my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
 our ($select, $socket_class);
 my  $loopid = 0;
 
+log2('this is juno-ircd version 3.'.VERSION);
 start();
 
 if (!$NOFORK) {
@@ -64,11 +70,10 @@ if (!$NOFORK) {
     open STDERR, '>', '/dev/null' or fatal("Can't write /dev/null: $!");
 
     # write the PID file that is used by the start/stop/rehash script.
-    open my $pidfh, '>', "$run_dir/etc/juno3.pid" or fatal("Can't write $run_dir/etc/juno3.pid");
+    open my $pidfh, '>', "$run_dir/etc/juno.pid" or fatal("Can't write $run_dir/etc/juno.pid");
     $PID = fork;
     say $pidfh $PID if $PID;
     close $pidfh
-
 }
 
 exit if $PID;
@@ -210,7 +215,7 @@ mainloop: for (;;) {
 
 sub start {
 
-    log2('Started at '.localtime time);
+    log2('Started at '.localtime $START);
 
     # parse the configuration, load the required modules, and listen
 
@@ -343,4 +348,48 @@ sub delete_loop {
     }
     log2("attempted to delete loop $id which does not exist");
     return
+}
+
+# stop the ircd
+sub terminate {
+
+    log2("removing all connections for server shutdown");
+
+    # delete all users/servers/other
+    foreach my $connection (values %connection::connection) {
+        $connection->done('shutting down');
+    }
+
+    log2("deleting PID file");
+
+    # delete the PID file
+    unlink 'etc/juno.pid' or fatal("Can't remove PID file");
+
+    log2("shutting down");
+    exit
+}
+
+# handle a HUP
+sub signalhup {
+
+    # find out what is wanted
+    open my $hup, 'etc/HUP' or log2('can\'t open HUP file') and return;
+
+    while (my $line = <$hup>) {
+        my @s = split /\s+/, $line;
+        given ($s[0]) {
+            when ('rehash') {
+                log2("reloading server configuration file by request of HUP signal");
+                utils::parse_config('etc/ircd.conf') or log2("configuration error");
+                log2("finished rehashing");              
+            }
+            when ('terminate') {
+                log2("terminating by request of HUP signal");
+                terminate();
+            }
+            deafult { return }
+        }
+    }
+
+    return 1
 }
