@@ -172,21 +172,26 @@ sub send_burst {
 # send data to all of my children
 sub send_children {
     my $ignore = shift;
+
     foreach my $server (values %server::server) {
-        next unless $server->{conn};
-        next if defined $ignore && $server == $ignore;
-        $server->send(@_)
+
+        # don't send to ignored
+        if (defined $ignore && $server == $ignore) {
+            next
+        }
+
+        # don't try to send to non-locals
+        next unless $server->is_local;
+
+        $server->send(@_);
     }
+
     return 1
 }
 
 sub sendfrom_children {
-    my $ignore = shift;
-    foreach my $server (values %server::server) {
-        next unless $server->{conn};
-        next if defined $ignore && $server == $ignore;
-        $server->sendfrom(@_)
-    }
+    my ($ignore, $from) = (shift, shift);
+    send_children($ignore, map { ":$from $_" } @_);
     return 1
 }
 

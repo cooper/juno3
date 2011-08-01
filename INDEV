@@ -504,3 +504,5 @@ CHANGES:
 
         1. don't allow to /connect to a server that is already connected.
            close connection to a server if it isn't who we thought it was.
+
+        2. hopefully this fixes things.
