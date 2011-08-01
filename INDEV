@@ -512,3 +512,6 @@ CHANGES:
 
         3. only ops can set channel modes now.
            also, I'm pretty sure that all of the bugs causing crashes because of unrecognized clients are fixed.
+
+        4. fixed a small bug in the mode handler that leaves an extra + or - on the end of mode strings.
+           please don't laugh at how i fixed it.
