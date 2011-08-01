@@ -181,7 +181,7 @@ sub send_children {
         }
 
         # don't try to send to non-locals
-        next unless $server->is_local;
+        next unless exists $server->{conn};
 
         $server->send(@_);
     }
