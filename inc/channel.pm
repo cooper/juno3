@@ -327,6 +327,24 @@ sub mode_string_all {
     return ($user_string, $server_string)
 }
 
+# returns true only if the passed user is in
+# the passed status list.
+sub user_is {
+    my ($channel, $user, $what) = @_;
+    return 1 if $channel->list_has($what, $user);
+    return
+}
+
+# returns true value only if the passed user has status
+# greater than voice (halfop, op, admin, owner)
+sub user_has_basic_status {
+    my ($channel, $user) = @_;
+    foreach my $status (qw|owner admin op halfop|) {
+        return 1 if $channel->user_is($user, $status);
+    }
+    return
+}
+
 # find a channel by its name
 sub lookup_by_name {
     my $name = lc shift;

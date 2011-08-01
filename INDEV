@@ -7,12 +7,13 @@ TODO:
     [H] fix server SID/name collision bugs
     [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
-    [H] look in to movement of modes from server to server- i think it fails.
+    [M] compact server commands
     [M] LUSERS
     [M] WHO
     [L] idle time in WHOIS
     [L] finish RPL_WELCOME
     [L] invisible NAMES
+    [L] MOTD server parameter
 
 PLANS:
 
@@ -20,6 +21,8 @@ PLANS:
 
         create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
         the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
+
+        module: fake ban
 
     LINKING:
 
@@ -506,3 +509,6 @@ CHANGES:
            close connection to a server if it isn't who we thought it was.
 
         2. hopefully this fixes things.
+
+        3. only ops can set channel modes now.
+           also, I'm pretty sure that all of the bugs causing crashes because of unrecognized clients are fixed.

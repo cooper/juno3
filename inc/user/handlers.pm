@@ -223,6 +223,13 @@ sub mode {
         }
 
         # setting
+
+        # does he have op?
+        if (!$channel->user_has_basic_status($user)) {
+            $user->numeric('ERR_CHANOPRIVSNEEDED', $channel->{name});
+            return
+        }
+
         my $modestr = join ' ', @args[2..$#args];
         my ($user_result, $server_result) = $channel->handle_mode_string($user->{server}, $user, $modestr);
         return if (!$user_result || $user_result =~ m/^(\-|\+)$/); # nothing changed
