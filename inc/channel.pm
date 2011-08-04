@@ -348,6 +348,16 @@ sub user_has_basic_status {
     return
 }
 
+# returns true if the two passed users have a channel in common
+# well actually it returns the first match found
+sub in_common {
+    my ($user1, $user2) = @_;
+    foreach my $channel (values %channels) {
+        return $channel if $channel->has_user($user1) && $channel->has_user($user2)
+    }
+    return
+}
+
 # find a channel by its name
 sub lookup_by_name {
     my $name = lc shift;

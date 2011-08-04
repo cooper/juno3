@@ -109,12 +109,18 @@ my %commands = (
         params => 1,
         code   => \&sconnect,
         desc   => 'connect to a server'
+    },
+    WHO => {
+        params => 1,
+        code   => \&who,
+        desc   => 'familiarize your client with users matching a pattern'
     }
 );
 
 log2("registering core user handlers");
 user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}, $commands{$_}{desc}) foreach keys %commands;
 log2("end of core handlers");
+undef %commands;
 
 sub ping {
     my ($user, $data, @s) = @_;
@@ -668,6 +674,80 @@ sub sconnect {
     if (!server::linkage::connect_server($server)) {
         $user->server_notice('CONNECT', 'couldn\'t connect to '.$server);
     }
+}
+
+#########################################################################
+#                           WHO query :(                                #
+#-----------------------------------------------------------------------#
+#                                                                       #
+# I'll try to do what rfc2812 says this time.                           #
+#                                                                       #
+# The WHO command is used by a client to generate a query which returns #
+# a list of information which 'matches' the <mask> parameter given by   #
+# the client.  In the absence of the <mask> parameter, all visible      #
+# (users who aren't invisible (user mode +i) and who don't have a       #
+# common channel with the requesting client) are listed.  The same      #
+# result can be achieved by using a <mask> of "0" or any wildcard which #
+# will end up matching every visible user.                              #
+#                                                                       #
+# by the looks of it, we can match a username, nickname, real name,     #
+# host, or server name.                                                 #
+#########################################################################
+
+sub who {
+    my ($user, $data, @args) = @_;
+    my $query                = $args[1];
+    my $match_pattern        = '*';
+    my %matches;
+
+    # match all, like the above note says
+    if ($query eq '0') {
+        foreach my $quser (values %user::user) {
+            $matches{$quser->{uid}} = $quser
+        }
+        # I used UIDs so there are no duplicates
+    }
+
+    # match an exact channel name
+    elsif (my $channel = channel::lookup_by_name($query)) {
+        $match_pattern = $channel->{name};
+        foreach my $quser (@{$channel->{users}}) {
+            $matches{$quser->{uid}} = $quser;
+            $quser->{who_flags}     = $channel->channel::mine::prefix($quser);
+        }
+    }
+
+    # match a pattern
+    else {
+        foreach my $quser (values %user::user) {
+            foreach my $pattern ($quser->{nick}, $quser->{ident}, $quser->{host},
+              $quser->{real}, $quser->{server}->{name}) {
+                $matches{$quser->{uid}} = $quser if match($pattern, $query);
+            }
+        }
+        # this doesn't have to match anyone
+    }
+
+    # weed out invisibles
+    foreach my $uid (keys %matches) {
+        my $quser     = $matches{$uid};
+        my $who_flags = delete $quser->{who_flags} || '';
+
+        # weed out invisibles
+        next if ($quser->is_mode('invisible') && !channel::in_common($user, $quser));
+
+        # rfc2812:
+        # If the "o" parameter is passed only operators are returned according
+        # to the <mask> supplied.
+        next if (defined $args[2] && $args[2] =~ m/o/ && !$quser->is_mode('ircop'));
+
+        # found a match
+        $who_flags .= (defined $quser->{away} ? 'G' : 'H') . ($quser->is_mode('ircop') ? '*' : q||);
+        $user->numeric('RPL_WHOREPLY', $match_pattern, $quser->{ident}, $quser->{host}, $quser->{server}->{name}, $quser->{nick}, $who_flags, $quser->{real});
+    }
+
+    $user->numeric('RPL_ENDOFWHO', $query);
+    return 1
 }
 
 1

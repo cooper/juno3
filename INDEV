@@ -15,7 +15,8 @@ TODO:
     [L] invisible NAMES
     [L] MOTD server parameter
     [L] make umode invisible work
-    [L] make cmodes protect_topic, and ban work
+    [L] make cmodes protect_topic and ban work
+    [L] add modes secret and private and then make NAMES accurate to them
 
 TODO for stability:
 
@@ -562,3 +563,5 @@ CHANGES:
         1. channel moderation actually works now.
 
         2. fixed channel mode alphabetization.
+
+        3. added WHO command.

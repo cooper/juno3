@@ -17,7 +17,6 @@ sub status        () { 4 }
 my %blocks;
 
 # local modes
-# eventually this will all be in utils.pm # TODO
 # types:
 #   normal (0)
 #   parameter (1)

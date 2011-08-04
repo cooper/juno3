@@ -43,15 +43,7 @@ sub names {
     my ($channel, $user) = @_;
     my $str = '';
     foreach my $usr (@{$channel->{users}}) {
-        # find their prefix
-        my $prefix =
-          $channel->list_has('owner',  $usr) ? $prefix{owner}  :
-          $channel->list_has('admin',  $usr) ? $prefix{admin}  :
-          $channel->list_has('op',     $usr) ? $prefix{op}     :
-          $channel->list_has('halfop', $usr) ? $prefix{halfop} :
-          $channel->list_has('voice',  $usr) ? $prefix{voice}  : q..;
-
-        $str .= $prefix.$usr->{nick}.q( )
+        $str .= prefix($channel, $usr).$usr->{nick}.q( )
     }
     $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $str) if $str ne '';
 }
@@ -118,6 +110,17 @@ sub take_lower_time {
     notice_all($channel, "channel TS set back $amount seconds");
     send_all($channel, ":$utils::GV{server}{name} MODE $$channel{name} $modestring");
     $channel->{modes} = {};
+}
+
+# returns the highest prefix a user has
+sub prefix {
+    my ($channel, $user) = @_;
+    return
+      $channel->list_has('owner',  $user) ? $prefix{owner}  :
+      $channel->list_has('admin',  $user) ? $prefix{admin}  :
+      $channel->list_has('op',     $user) ? $prefix{op}     :
+      $channel->list_has('halfop', $user) ? $prefix{halfop} :
+      $channel->list_has('voice',  $user) ? $prefix{voice}  : q..;
 }
 
 1
