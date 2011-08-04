@@ -14,22 +14,49 @@ TODO:
     [L] finish RPL_WELCOME
     [L] invisible NAMES
     [L] MOTD server parameter
+    [L] make umode invisible work
+    [L] make cmodes no_ext, protect_topic, moderated, and ban work
+
+TODO for stability:
+
+    maximum connection settings
+    maximum connections in x seconds
+    maxperip, globally and locally
+    connection throttle
 
 PLANS:
 
     GENERAL:
 
-        create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
-        the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
-
-        module: fake ban
+        none yet
 
     LINKING:
 
         rather than remote includes, send certain configuration values over the linking protocol
         modes to be known by their names, types, or levels rather than letters
+        make the linking protocol more compact by combining commands
 
     CHANNELS:
+
+        internally support many of the channel modes provided by charybdis
+
+API PLANS:
+
+    GENERAL:
+
+        create a module API similar to juno v2's, except with the ability to "override" commands, modes, etc.
+        the ability to connect to a juno module server and automatically install updates, as well as notifying when the version of the ircd is no longer supported
+        support modules written in JavaScript, Ruby, and Perl.
+
+        module: fake ban
+
+    LINKING:
+
+        none yet
+
+    CHANNELS:
+
+        support many of the channel modes provided by unrealircd and inspircd modules
 
         module: channel mode to show invite notices
 
@@ -521,3 +548,5 @@ CHANGES:
 
         6. added ./juno lines to count the number of lines in your copy.
            added ./juno mkpasswd to run the password generator.
+
+        7. I thought about this, and I think that while might be better than for here.

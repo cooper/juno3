@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature qw|switch say|;
 
-sub VERSION () { '1.7.5' }
+sub VERSION () { '1.7.7' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno3';
@@ -81,7 +81,7 @@ POSIX::setsid();
 
 # main loop
 
-mainloop: for (;;) {
+mainloop: while (1) {
 
     # incoming
 
