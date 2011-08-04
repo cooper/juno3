@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature qw|switch say|;
 
-sub VERSION () { '1.8.1' }
+sub VERSION () { '1.8.2' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno';

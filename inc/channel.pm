@@ -259,7 +259,8 @@ sub handle_mode_string {
 sub mode_string {
     my ($channel, $server) = @_;
     my (@modes, @params);
-    foreach my $name (keys %{$channel->{modes}}) {
+    my @set_modes = sort { $a cmp $b } keys %{$channel->{modes}};
+    foreach my $name (@set_modes) {
         given ($server->cmode_type($name)) {
             when (0) { }
             when (1) { }
@@ -280,8 +281,9 @@ sub mode_string {
 sub mode_string_all {
     my ($channel, $server) = @_;
     my (@modes, @user_params, @server_params);
+    my @set_modes = sort { $a cmp $b } keys %{$channel->{modes}};
 
-    foreach my $name (keys %{$channel->{modes}}) {
+    foreach my $name (@set_modes) {
         my $letter = $server->cmode_letter($name);
         given ($server->cmode_type($name)) {
 

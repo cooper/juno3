@@ -15,7 +15,7 @@ TODO:
     [L] invisible NAMES
     [L] MOTD server parameter
     [L] make umode invisible work
-    [L] make cmodes protect_topic, moderated, and ban work
+    [L] make cmodes protect_topic, and ban work
 
 TODO for stability:
 
@@ -560,3 +560,5 @@ CHANGES:
         0. channel mode no_ext (no external messages) actually works now.
 
         1. channel moderation actually works now.
+
+        2. fixed channel mode alphabetization.
