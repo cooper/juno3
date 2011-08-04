@@ -181,7 +181,7 @@ sub info {
     my $user = shift;
     my @info = (
         "",
-        "\2***\2 this is \2juno-ircd\2 version \0023.".main::VERSION."\2.\2 ***\2",
+        "\2***\2 this is \2$main::NAME\2 version \2$main::VERSION\2.\2 ***\2",
         "",
         "Copyright (c) 2011, Mitchell Cooper",
         "",
@@ -205,12 +205,21 @@ sub mode {
 
     # is it the user himself?
     if (lceq $user->{nick} => $args[1]) {
-        return unless defined $args[2]; # TODO
-        my $result = $user->handle_mode_string($args[2]);
-        return if !$result || $result =~ m/^(\-|\+)$/;
-        $user->sendfrom($user->full, "MODE $$user{nick} $result");
-        server::outgoing::umode_all($user, $result);
-        return 1
+
+        # mode change
+        if (defined $args[2]) {
+            my $result = $user->handle_mode_string($args[2]);
+            return if !$result || $result =~ m/^(\-|\+)$/;
+            $user->sendfrom($user->{nick}, "MODE $$user{nick} :$result");
+            server::outgoing::umode_all($user, $result);
+            return 1
+        }
+
+        # mode view
+        else {
+            $user->numeric('RPL_UMODEIS', $user->mode_string);
+            return 1
+        }
     }
 
     # is it a channel, then?
@@ -480,7 +489,7 @@ sub oper {
     my $result = $user->handle_mode_string('+'.$user->{server}->umode_letter('ircop'), 1);
     if ($result && $result ne '+') {
         server::outgoing::umode_all($user, $result);
-        $user->sendfrom($user->full, "MODE $$user{nick} $result");
+        $user->sendfrom($user->{nick}, "MODE $$user{nick} :$result");
     }
 
     $user->numeric('RPL_YOUREOPER');

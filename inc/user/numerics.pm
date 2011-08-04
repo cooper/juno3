@@ -15,6 +15,7 @@ my %numerics = (
     RPL_ISUPPORT         => ['005', '%s:are supported by this server'],
     RPL_MAP              => ['015', ':%s'],
     RPL_MAPEND           => ['017', ':End of /MAP'],
+    RPL_UMODEIS          => ['221', '%s'],
     RPL_LUSERCLIENT      => ['251', ':There are %d users and %d invisible on %d servers'],
     RPL_LUSEROP          => ['252', '%d :operators online'], # non-zero
     RPL_LUSERUNKNOWN     => ['253', '%d :unknown connections'],

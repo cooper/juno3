@@ -550,3 +550,5 @@ CHANGES:
            added ./juno mkpasswd to run the password generator.
 
         7. I thought about this, and I think that while might be better than for here.
+
+        8. fixed a couple of things with user modes.

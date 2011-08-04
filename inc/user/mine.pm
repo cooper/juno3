@@ -154,21 +154,16 @@ sub numeric {
 sub new_connection {
     my $user = shift;
     $user->numeric('RPL_WELCOME', $utils::GV{network}, $user->{nick}, $user->{ident}, $user->{host});
-    $user->numeric('RPL_YOURHOST', $utils::GV{servername}, $main::VERSION);
+    $user->numeric('RPL_YOURHOST', $utils::GV{servername}, $main::NAME.q(-).$main::VERSION);
     $user->numeric('RPL_CREATED', POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime $main::START));
-    $user->numeric('RPL_MYINFO', $utils::GV{servername}, $main::VERSION, user::modes::mode_string(), 'i'); # TODO
+    $user->numeric('RPL_MYINFO', $utils::GV{servername}, $main::NAME.q(-).$main::VERSION, user::modes::mode_string(), 'i'); # TODO
     $user->user::numerics::rpl_isupport();
     $user->handle('LUSERS');
     $user->handle('MOTD');
 
     # set modes
     $user->handle_mode_string(conf qw/users automodes/);
-    send_modechange($user, $user->full, $user->mode_string);
-}
-
-sub send_modechange {
-    my ($user, $source, $modestr) = @_;
-    $user->sendfrom($source, "MODE $$user{nick} $modestr");
+    $user->sendfrom($user->{nick}, "MODE $$user{nick} :".$user->mode_string);
 }
 
 1
