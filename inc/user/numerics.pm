@@ -47,6 +47,7 @@ my %numerics = (
     RPL_YOUREOPER        => ['381', ':You are now an IRC operator'],
     ERR_NOSUCHNICK       => ['401', '%s :No such nick/channel'],
     ERR_NOSUCHCHANNEL    => ['403', '%s :No such channel'],
+    ERR_CANNOTSENDTOCHAN => ['404', '%s :%s'],
     ERR_NOTEXTTOSEND     => ['412', ':No text to send'],
     ERR_UNKNOWNCOMMAND   => ['421', '%s :Unknown command'],
     ERR_NOMOTD           => ['422', ':MOTD file is missing'],

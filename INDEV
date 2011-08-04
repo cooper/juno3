@@ -546,9 +546,15 @@ CHANGES:
         5. seeing as the IRCd is beginning to fill out, I added a start/stop/rehash/etc script.
            I might even start changing the version numbers! (the protocol version has been .1 this whole time LoL)
 
+        somewhere in here I skipped like 5 days so I actually did the below in August
+
         6. added ./juno lines to count the number of lines in your copy.
            added ./juno mkpasswd to run the password generator.
 
         7. I thought about this, and I think that while might be better than for here.
 
         8. fixed a couple of things with user modes.
+
+    8. August 4, 2011
+
+        0. channel mode no_ext (no external messages) actually works now.

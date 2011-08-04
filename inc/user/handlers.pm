@@ -303,6 +303,13 @@ sub privmsgnotice {
     # must be a channel
     my $channel = channel::lookup_by_name($args[1]);
     if ($channel) {
+
+        # no external messages?
+        if ($channel->is_mode('no_ext') && !$channel->has_user($user)) {
+            $user->numeric('ERR_CANNOTSENDTOCHAN', $channel->{name}, 'no external messages');
+            return
+        }
+
         # tell local users
         $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
 
