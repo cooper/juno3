@@ -310,6 +310,15 @@ sub privmsgnotice {
             return
         }
 
+        # moderation and no voice?
+        if ($channel->is_mode('moderated')   &&
+          !$channel->user_is($user, 'voice') &&
+          !$channel->user_has_basic_status($user)) {
+            $user->numeric('ERR_CANNOTSENDTOCHAN', $channel->{name}, 'channel is moderated');
+            return
+        }
+                
+
         # tell local users
         $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
 
