@@ -81,7 +81,7 @@ sub handle {
                     $commands{$command}{$source}{code}($server, $line, @s)
                 }
                 else {
-                    log2("not enough parameters for $command");
+                    log2("not enough parameters for $command: $line");
                 }
             }
         }

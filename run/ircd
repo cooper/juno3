@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature qw|switch say|;
 
-sub VERSION () { '1.8.4' }
+sub VERSION () { '1.8.6' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno';
@@ -54,7 +54,7 @@ use user;
 use channel;
 use utils qw[conf lconf log2 fatal];
 
-my  (%listen, %outbuffer, %loop, @sel, $PID);
+my  (%listen, %inbuffer, %outbuffer, %loop, @sel, $PID);
 our ($select, $socket_class);
 my  $loopid = 0;
 
@@ -88,7 +88,9 @@ mainloop: while (1) {
     INCOMING: foreach my $socket ($select->can_read(1)) {
         # new request
         if ($listen{$socket}) {
-            connection->new($socket->accept);
+            my $new = $socket->accept;
+            $new->autoflush(0);
+            connection->new($new);
             next INCOMING;
         }
 
@@ -98,7 +100,8 @@ mainloop: while (1) {
 
             # attempt to read the data
             if ($socket->sysread(my $data, POSIX::BUFSIZ)) {
-                $connection->handle($_) foreach split /\n/, $data;
+                $inbuffer{$socket}  = q() unless defined $inbuffer{$socket};
+                $inbuffer{$socket} .= $data;
             }
 
             # couldn't read
@@ -106,8 +109,16 @@ mainloop: while (1) {
                 $connection->done('Connection closed', 1);
                 next INCOMING;
             }
-
         }
+    }
+
+    # handle incoming data
+    HANDLE:
+    foreach my $socket (keys %inbuffer) {
+        my $connection = connection::lookup_by_handle($socket);
+        next unless $inbuffer{$socket} =~ m/\n$/; # not ready
+        $connection->handle($_) foreach split /\n/, $inbuffer{$socket};
+        delete $inbuffer{$socket};
     }
 
     # send outgoing data

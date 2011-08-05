@@ -568,3 +568,7 @@ CHANGES:
 
         4. rewriting the main loop in order to hopefully fix some bugs and also support fakelag.
            the same flood protection and stuff has been in juno since pIRCd and definitely needs updated for efficiency and misc. bug fixes.
+
+        5. a few small improvements to handle a heavier load.
+
+        6. more improvements to the main loop.
