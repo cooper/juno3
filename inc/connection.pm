@@ -286,6 +286,7 @@ sub done {
     # remove from connection list
     delete $connection{$connection->{obj}};
     delete $main::outbuffer{$connection->{obj}};
+    delete $main::inbuffer{$connection->{obj}};
 
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
