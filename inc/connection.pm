@@ -12,6 +12,7 @@ our ($ID, %connection) = 0;
 
 sub new {
     my ($this, $peer) = @_;
+    return unless defined $peer;
 
     bless my $connection = {
         obj           => $peer,
@@ -285,7 +286,6 @@ sub done {
     # remove from connection list
     delete $connection{$connection->{obj}};
     delete $main::outbuffer{$connection->{obj}};
-    delete $main::timer{$connection->{obj}};
 
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;

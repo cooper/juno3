@@ -54,7 +54,7 @@ use user;
 use channel;
 use utils qw[conf lconf log2 fatal];
 
-my  (%listen, %inbuffer, %outbuffer, %timer, %loop, @sel, $PID);
+my  (%listen, %outbuffer, %loop, @sel, $PID);
 our ($select, $socket_class);
 my  $loopid = 0;
 
@@ -103,7 +103,7 @@ mainloop: while (1) {
 
             # couldn't read
             else {
-                $connection->done('Connection closed');
+                $connection->done('Connection closed', 1);
                 next INCOMING;
             }
 
@@ -114,7 +114,7 @@ mainloop: while (1) {
     OUTGOING: foreach my $socket ($select->can_write(0)) {
         while (my $data = shift @{$outbuffer{$socket}}) {
             if (!$socket->syswrite("$data\r\n", POSIX::BUFSIZ)) {
-                connection::lookup_by_handle($socket)->done('Write error');
+                connection::lookup_by_handle($socket)->done('Write error', 1);
                 next OUTGOING;
             }
         }

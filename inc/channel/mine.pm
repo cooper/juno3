@@ -41,11 +41,13 @@ sub cjoin {
 
 sub names {
     my ($channel, $user) = @_;
-    my $str = '';
+    my @str;
+    my $curr = 0;
     foreach my $usr (@{$channel->{users}}) {
-        $str .= prefix($channel, $usr).$usr->{nick}.q( )
+        $str[$curr] .= prefix($channel, $usr).$usr->{nick}.q( );
+        $curr++ if length $str[$curr] > 500
     }
-    $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $str) if $str ne '';
+    $user->numeric('RPL_NAMEREPLY', '=', $channel->{name}, $_) foreach @str
 }
 
 sub modes {
