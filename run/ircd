@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use feature qw|switch say|;
 
-sub VERSION () { '1.8.3' }
+sub VERSION () { '1.8.4' }
 sub PROTO   () { '0.0.1' }
 
 local $0     = 'juno';
@@ -84,133 +84,44 @@ POSIX::setsid();
 
 mainloop: while (1) {
 
-    # incoming
-
-    in: foreach my $socket ($select->can_read(1)) {
-
-        my ($time, $conn) = time;
-        $timer{$socket} = 0 unless $timer{$socket};
-
-        # new connection
-
-        if (exists $listen{$socket}) {
+    # read incoming data
+    INCOMING: foreach my $socket ($select->can_read(1)) {
+        # new request
+        if ($listen{$socket}) {
             connection->new($socket->accept);
-            next in
+            next INCOMING;
         }
 
-        # incoming data
-
+        # incoming data from an existing connection
         else {
+            my $connection = connection::lookup_by_handle($socket);
 
-            $timer{$socket} = $time if $timer{$socket} < $time;
-            $conn = $connection::connection{$socket};
-
+            # attempt to read the data
             if ($socket->sysread(my $data, POSIX::BUFSIZ)) {
-                $inbuffer{$socket} .= $data
+                $connection->handle($_) foreach split /\n/, $data;
             }
 
-            # can't read the data
-
+            # couldn't read
             else {
-                $conn->done('Connection closed', 1);
-                next in
+                $connection->done('Connection closed');
+                next INCOMING;
             }
 
         }
+    }
 
-        # flood check
-
-        my ($theline, $therest);
-
-        while ( ($timer{$socket}-(conf qw[flood lines]) <= $time ) &&
-          ( ($theline, $therest) = $inbuffer{$socket} =~ m/([^\n]*)\n(.*)/s) ) {
-
-            $inbuffer{$socket} = $therest;
-            $theline =~ s/\r$//;
-
-            # they're okay, so handle the data
-
-            $conn->handle($theline);
-            $timer{$socket}++
-
-        }
-
-        # they've reached their limit; force them to quit
-        if (length $inbuffer{$socket} > conf qw[flood bytes]) {
-            if (!exists $conn->{type} || !$conn->{type}->isa('server')) {
-                $conn->done(conf qw[flood message], 1)
+    # send outgoing data
+    OUTGOING: foreach my $socket ($select->can_write(0)) {
+        while (my $data = shift @{$outbuffer{$socket}}) {
+            if (!$socket->syswrite("$data\r\n", POSIX::BUFSIZ)) {
+                connection::lookup_by_handle($socket)->done('Write error');
+                next OUTGOING;
             }
         }
-
-    }
-
-    out: foreach my $socket ($select->can_write(0)) {
-
-        # nothing to write
-        next out unless exists $outbuffer{$socket};
-
-        # send the data
-        my $sent = $socket->syswrite($outbuffer{$socket}, POSIX::BUFSIZ);
-
-        if (defined $sent &&
-          $sent <= length $outbuffer{$socket}
-          || $! == POSIX::EWOULDBLOCK) {
-
-            (substr $outbuffer{$socket}, 0, $sent) = '';
-            delete $outbuffer{$socket} unless length $outbuffer{$socket}
-
-        }
-
-        # can't write to this socket, so give up and force the user to quit
-
-        else {
-            $connection::connection{$socket}->done('Write error')
-        }
-
-    }
-
-    # check for pending pings, ping timeouts, and registration timeouts
-
-    ping: foreach my $conn (values %connection::connection) {
-
-        my ($freq, $msg, $timeout); # what is the frequency/timeout/msg?
-        if (!exists $conn->{type} || $conn->{type}->isa('user')) {
-            $freq    = lconf qw/ping user frequency/;
-            $timeout = lconf qw/ping user timeout/;
-            $msg     = lconf qw/ping user message/
-        }
-        elsif ($conn->{type}->isa('server')) {
-            $freq    = lconf qw/ping server frequency/;
-            $timeout = lconf qw/ping server timeout/;
-            $msg     = 'Ping timeout'
-        }
-
-        if ((time - $conn->{last_response}) >= $timeout) {
-
-            # too late; making them quit
-            $conn->done($msg);
-            next ping
-
-        }
-
-        if ((time-$conn->{last_response}) > $freq) {
-
-            # send a PING command and reset the ping time
-            $conn->send("PING :$utils::GV{servername}") unless $conn->{ping_in_air};
-            $conn->{last_ping}   = time;
-            $conn->{ping_in_air} = 1;
-
-            # make sure that they aren't just sitting there without registering...
-            $conn->done('Registration timeout') unless $conn->{type}
-
-        }
-
     }
 
     # run through the registered loops
-    loop: while (my @loop = each %loop) {
-        $loop[1]->{code}($loop[0])
-    }
+    $loop{$_}{code}($_) foreach keys %loop;
 
 }
 
@@ -320,7 +231,7 @@ sub create_sockets {
 
 sub sendpeer {
     my $peer = shift;
-    $outbuffer{$peer} .= "$_\r\n" foreach @_
+    push @{$outbuffer{$peer}}, @_
 }
 
 # register a block of code to the main loop

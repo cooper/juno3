@@ -258,6 +258,12 @@ sub lookup {
     return
 }
 
+# find by a socket handle
+sub lookup_by_handle {
+    my $socket = shift;
+    return $connection{$socket};
+}
+
 # end a connection
 
 sub done {

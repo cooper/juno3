@@ -7,6 +7,8 @@ use strict;
 
 use utils qw/conf log2/;
 
+{
+
 my %numerics = (
                             #########################################################################
                             #                           core numerics list                          #
@@ -75,6 +77,8 @@ log2("registering core numerics");
 user::mine::register_numeric('core', $_, $numerics{$_}[0], $numerics{$_}[1]) foreach keys %numerics;
 log2("end of core numerics");
 undef %numerics;
+
+}
 
 sub rpl_isupport {
     my $user = shift;

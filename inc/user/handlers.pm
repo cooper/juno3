@@ -8,6 +8,8 @@ use feature 'switch';
 
 use utils qw[col log2 lceq lconf match cut_to_limit conf];
 
+{
+
 my %commands = (
     PING => {
         params => 1,
@@ -121,6 +123,8 @@ log2("registering core user handlers");
 user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}, $commands{$_}{desc}) foreach keys %commands;
 log2("end of core handlers");
 undef %commands;
+
+}
 
 sub ping {
     my ($user, $data, @s) = @_;

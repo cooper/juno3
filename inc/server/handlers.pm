@@ -6,6 +6,8 @@ use warnings;
 use strict;
 use utils qw[col log2];
 
+{
+
 my %commands = (
     SID => {
         params  => 6,
@@ -98,6 +100,8 @@ log2("registering core server handlers");
 server::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{forward}, $commands{$_}{code}) foreach keys %commands;
 log2("end of core handlers");
 undef %commands;
+
+}
 
 sub sid {
     my ($server, $data, @args) = @_;

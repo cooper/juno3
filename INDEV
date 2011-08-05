@@ -565,3 +565,6 @@ CHANGES:
         2. fixed channel mode alphabetization.
 
         3. added WHO command.
+
+        4. rewriting the main loop in order to hopefully fix some bugs and also support fakelag.
+           the same flood protection and stuff has been in juno since pIRCd and definitely needs updated for efficiency and misc. bug fixes.
