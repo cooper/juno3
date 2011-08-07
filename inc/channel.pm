@@ -9,7 +9,7 @@ use feature 'switch';
 
 use channel::mine;
 use channel::modes;
-use utils qw/log2/;
+use utils qw/log2 gv/;
 
 our %channels;
 
@@ -134,7 +134,7 @@ sub remove {
 
     # remove the user from status lists
     foreach my $name (keys %{$channel->{modes}}) {
-        if ($user->{server}->cmode_type($name) == 4) {
+        if (gv('SERVER')->cmode_type($name) == 4) {
             $channel->remove_from_list($name, $user);
         }
     }

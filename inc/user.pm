@@ -9,7 +9,7 @@ use user::mine;
 use user::handlers;
 use user::numerics;
 use user::modes;
-use utils qw[log2];
+use utils qw[log2 gv];
 
 our %user;
 
@@ -218,12 +218,17 @@ sub lookup_by_id {
 }
 
 sub is_local {
-    return shift->{server} == $utils::GV{server}
+    return shift->{server} == gv('SERVER')
 }
 
 sub full {
     my $user = shift;
     "$$user{nick}!$$user{ident}\@$$user{host}"
+}
+
+sub DESTROY {
+    my $user = shift;
+    log2("$user destroyed");
 }
 
 # local shortcuts

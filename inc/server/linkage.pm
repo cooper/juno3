@@ -5,7 +5,7 @@ package server::linkage;
 use warnings;
 use strict;
 
-use utils qw[conf log2];
+use utils qw[conf log2 gv];
 
 # connect to a server in the configuration
 
@@ -38,7 +38,7 @@ sub connect_server {
 
     # send server credentials.
     main::sendpeer($socket,
-        "SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}",
+        sprintf('SERVER %s %s %s %s :%s', gv('SERVER', 'sid'), gv('SERVER', 'name'), gv('PROTO'), gv('VERSION'), gv('SERVER', 'desc')),
         "PASS $serv{send_password}"
     );
 

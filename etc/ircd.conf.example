@@ -25,14 +25,6 @@
     md5: off        # probably less secure      (core Perl module)
     resolve: on     # enable hostname resolving (useful, but not light)
 
-[ class ]
-
-    normal_package: "IO::Socket"        # the package to require for listening
-    normal_class: "IO::Socket::INET"    # the package used to create the socket objects
-                                        #   any drop-in replacement for IO::Socket 
-                                        #   such as IO::Socket::INET6 or IO::Socket::IP
-                                        #   is valid in either of these options
-
 [ network ]
 
     name: "NoTrollPlzNet"

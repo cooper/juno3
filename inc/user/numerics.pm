@@ -91,7 +91,7 @@ sub rpl_isupport {
         CHANLIMIT   => '#:0',                       # TODO
         NICKLEN     => conf('limit', 'nick'),
         MAXLIST     => 'beIZ:0',                    # TODO
-        NETWORK     => $utils::GV{network},
+        NETWORK     => conf('network', 'name'),
         EXCEPTS     => 'e',                         # TODO
         INVEX       => 'I',                         # TODO
         CASEMAPPING => 'rfc1459',

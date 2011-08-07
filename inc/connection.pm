@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[log2 col conn conf match];
+use utils qw[log2 col conn conf match gv];
 
 our ($ID, %connection) = 0;
 
@@ -17,8 +17,7 @@ sub new {
     bless my $connection = {
         obj           => $peer,
         ip            => $peer->peerhost,
-        source        => $utils::GV{serverid},
-        ssl           => $peer->isa('IO::Socket::SSL'),
+        source        => gv('SERVER', 'sid'),
         last_ping     => time,
         time          => time,
         last_response => time
@@ -26,12 +25,12 @@ sub new {
 
     # resolve hostname
     if (conf qw/enabled resolve/) {
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Looking up your hostname...');
+        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** Looking up your hostname...');
         res::resolve_hostname($connection)
     }
     else {
         $connection->{host} = $connection->{ip};
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** hostname resolving is not enabled on this server')
+        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** hostname resolving is not enabled on this server')
     }
 
     log2("Processing connection from $$connection{ip}");    
@@ -65,13 +64,13 @@ sub handle {
 
             # nick exists
             if (user::lookup_by_nick($nick)) {
-                $connection->send(":$utils::GV{servername} 433 * $nick :Nickname is already in use.");
+                $connection->send(':'.gv('SERVER', 'name')." 433 * $nick :Nickname is already in use.");
                 return
             }
 
             # invalid chars
             if (!utils::validnick($nick)) {
-                $connection->send(":$utils::GV{servername} 432 * $nick :Erroneous nickname");
+                $connection->send(':'.gv('SERVER', 'name')." 432 * $nick :Erroneous nickname");
                 return
             }
 
@@ -172,7 +171,7 @@ sub handle {
 
 sub wrong_par {
     my ($connection, $cmd) = @_;
-    $connection->send(':'.$utils::GV{servername}.' 461 '
+    $connection->send(':'.gv('SERVER', 'name').' 461 '
       .($connection->{nick} ? $connection->{nick} : '*').
       " $cmd :Not enough parameters");
     return
@@ -183,9 +182,9 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
-        $connection->{uid}      = $utils::GV{serverid}.++$ID;
-        $connection->{server}   = $utils::GV{server};
-        $connection->{location} = $utils::GV{server};
+        $connection->{uid}      = gv('SERVER', 'sid').++$ID;
+        $connection->{server}   = gv('SERVER');
+        $connection->{location} = gv('SERVER');
         $connection->{cloak}    = $connection->{host};
         $connection->{modes}    = '';
         $connection->{type}     = user->new($connection);
@@ -205,13 +204,13 @@ sub ready {
             return
         }
 
-        $connection->{parent} = $utils::GV{server};
+        $connection->{parent} = gv('SERVER');
         $connection->{type}   = server->new($connection);
         server::outgoing::sid_all($connection->{type});
 
         # send server credentials
         if (!$connection->{sent_creds}) {
-            $connection->send("SERVER $utils::GV{serverid} $utils::GV{servername} $main::PROTO $main::VERSION :$utils::GV{serverdesc}");
+            $connection->send(sprintf 'SERVER %s %s %s %s :%s', gv('SERVER', 'sid'), gv('SERVER', 'name'), gv('PROTO'), gv('VERSION'), gv('SERVER', 'desc'));
             $connection->send('PASS '.conn($connection->{name}, 'send_password'))
         }
 
@@ -285,14 +284,23 @@ sub done {
 
     # remove from connection list
     delete $connection{$connection->{obj}};
-    delete $main::outbuffer{$connection->{obj}};
-    delete $main::inbuffer{$connection->{obj}};
 
     $main::select->remove($connection->{obj});
     $connection->{obj}->close;
-    undef $connection;
+
+    # fixes memory leak:
+    # referencing to ourself, etc.
+    # perl doesn't know to destroy unless we do this
+    delete $connection->{type}->{conn};
+    delete $connection->{type};
+
     return 1
 
+}
+
+sub DESTROY {
+    my $connection = shift;
+    log2("$connection destroyed");
 }
 
 1

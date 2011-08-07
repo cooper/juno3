@@ -4,7 +4,7 @@ package server::mine;
 
 use warnings;
 use strict;
-use utils qw[log2 col];
+use utils qw[log2 col gv];
 
 our %commands = ();
 
@@ -57,12 +57,6 @@ sub handle {
             next
         }
 
-        # end connection
-        #if (uc $s[0] eq 'ERROR') {
-        #    $server->{conn}->done(col(join ' ', @s[1..$#s]));
-        #    return
-        #}
-
         # server is ready for BURST
         if (uc $s[0] eq 'READY') {
             log2("sending burst to $$server{name}");
@@ -99,7 +93,7 @@ sub send_burst {
     my $server = shift;
 
     if ($server->{i_sent_burst}) {
-        log2("trying to send burst to a server we have already sent burst to?!");
+        log2("trying to send burst to a server we have already sent burst to. (no big deal, probably just lag)");
         return
     }
 
@@ -112,7 +106,7 @@ sub send_burst {
         next if $serv == $server;
 
         # the server already knows about me.
-        if ($serv != $utils::GV{server}) {
+        if ($serv != gv('SERVER')) {
             $server->server::outgoing::sid($serv);
         }
 
@@ -152,9 +146,9 @@ sub send_burst {
         }
 
         # modes
-        my $str = ($channel->mode_string_all($utils::GV{server}))[1];
+        my $str = ($channel->mode_string_all(gv('SERVER')))[1];
         if ($str && $str !~ m/^(\+|\-)$/) {
-            $server->server::outgoing::cmode($utils::GV{server}, $channel, $channel->{time}, $utils::GV{server}{sid}, $str);
+            $server->server::outgoing::cmode(gv('SERVER'), $channel, $channel->{time}, gv('SERVER', 'sid'), $str);
         }
     }
 
@@ -210,7 +204,7 @@ sub send {
 
 sub sendme {
     my $server = shift;
-    $server->sendfrom($utils::GV{serverid}, @_)
+    $server->sendfrom(gv('SERVER', 'sid'), @_)
 }
 
 # send data from a UID or SID

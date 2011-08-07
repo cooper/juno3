@@ -10,7 +10,7 @@ use server::mine;
 use server::linkage;
 use server::handlers;
 use server::outgoing;
-use utils qw[log2];
+use utils qw[log2 gv];
 
 our %server;
 
@@ -189,17 +189,18 @@ sub cmode_takes_parameter {
 }
 
 sub is_local {
-    return shift eq $utils::GV{server}
+    return shift == gv('SERVER')
 }
 
 # returns an array of child servers
 sub children {
     my $server = shift;
-    my @children = ();
-    foreach my $serv (values %server) {
-        push @children, $serv if $serv->{parent} == $server
-    }
-    return @children
+    return grep { $_->{parent} == $server } values %server;
+}
+
+sub DESTROY {
+    my $server = shift;
+    log2("$server destroyed");
 }
 
 # local shortcuts
@@ -210,7 +211,6 @@ sub sendme   { server::mine::sendme(@_)   }
 
 # other
 sub id { shift->{sid} }
-
 
 1
 

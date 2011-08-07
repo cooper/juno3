@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use feature 'switch';
 
-use utils qw[col log2 lceq lconf match cut_to_limit conf];
+use utils qw[col log2 lceq lconf match cut_to_limit conf gv];
 
 {
 
@@ -128,7 +128,7 @@ undef %commands;
 
 sub ping {
     my ($user, $data, @s) = @_;
-    $user->sendserv("PONG $utils::GV{servername} :".col($s[1]))
+    $user->sendserv('PONG '.gv('SERVER', 'name').' :'.col($s[1]))
 }
 
 sub fake_user {
@@ -139,12 +139,12 @@ sub fake_user {
 sub motd {
     # TODO <server> parameter
     my $user = shift;
-    if (!defined $utils::GV{motd}) {
+    if (!defined gv('MOTD')) {
         $user->numeric('ERR_NOMOTD');
         return
     }
-    $user->numeric('RPL_MOTDSTART', $utils::GV{servername});
-    foreach my $line (@{$utils::GV{motd}}) {
+    $user->numeric('RPL_MOTDSTART', gv('SERVER', 'name'));
+    foreach my $line (@{gv('MOTD')}) {
         $user->numeric('RPL_MOTD', $line)
     }
     $user->numeric('RPL_ENDOFMOTD');
@@ -191,7 +191,7 @@ sub info {
     my $user = shift;
     my @info = (
         "",
-        "\2***\2 this is \2$main::NAME\2 version \2$main::VERSION\2.\2 ***\2",
+        "\2***\2 this is \2".gv('name')."\2 version \2$main::VERSION\2.\2 ***\2",
         "",
         "Copyright (c) 2011, Mitchell Cooper",
         "",
@@ -387,14 +387,14 @@ sub cjoin {
 
         # tell servers that the user joined and the automatic modes were set
         server::outgoing::sjoin_all($user, $channel, $time);
-        server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, $result) if $result;
+        server::outgoing::cmode_all($user->{server}, $channel, $time, gv('SERVER', 'sid'), $result) if $result;
 
         # tell servers that this user gets owner
         if ($new) {
             $channel->add_to_list($_, $user) foreach qw/owner op/;
-            my $owner = $utils::GV{server}->cmode_letter('owner');
-            my $op    = $utils::GV{server}->cmode_letter('op');
-            server::outgoing::cmode_all($user->{server}, $channel, $time, $utils::GV{server}{sid}, "+$owner$op $$user{uid} $$user{uid}");
+            my $owner = gv('SERVER')->cmode_letter('owner');
+            my $op    = gv('SERVER')->cmode_letter('op');
+            server::outgoing::cmode_all($user->{server}, $channel, $time, gv('SERVER', 'sid'), "+$owner$op $$user{uid} $$user{uid}");
         }
 
         $channel->channel::mine::cjoin($user, $time)

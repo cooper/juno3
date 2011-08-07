@@ -4,7 +4,7 @@ package server::handlers;
 
 use warnings;
 use strict;
-use utils qw[col log2];
+use utils qw[col log2 gv];
 
 {
 
@@ -324,7 +324,7 @@ sub cmode {
     return 1 if !$user_result || $user_result =~ m/^(\+|\-)$/;
 
     # convert it to our view
-    $user_result  = $perspective->convert_cmode_string($utils::GV{server}, $user_result);
+    $user_result  = $perspective->convert_cmode_string(gv('SERVER'), $user_result);
     my $from      = $source->isa('user') ? $source->full : $source->isa('server') ? $source->{name} : 'MagicalFairyPrincess';
     $channel->channel::mine::send_all(":$from MODE $$channel{name} $user_result");
 }

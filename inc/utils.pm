@@ -8,7 +8,7 @@ use feature qw[switch say];
 use base 'Exporter';
 use Exporter;
 
-our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match cut_to_limit];
+our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match cut_to_limit gv set];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -55,18 +55,12 @@ sub parse_config {
     if (!eof $motd) {
         while (my $line = <$motd>) {
             chomp $line;
-            push @{$utils::GV{motd}}, $line
+            push @{$GV{MOTD}}, $line
         }
     }
     else {
-        $utils::GV{motd} = undef
+        $GV{MOTD} = undef
     }
-
-    # set some global variables
-    $utils::GV{servername} = conf('server', 'name');
-    $utils::GV{serverid}   = conf('server', 'id');
-    $utils::GV{serverdesc} = conf('server', 'description');
-    $utils::GV{network}    = conf('network', 'name');
 
     return 1
 
@@ -95,6 +89,7 @@ sub conn {
 # log errors/warnings
 
 sub log2 {
+    return if !$main::NOFORK  && defined $main::PID;
     my $line = shift;
     my $sub = (caller 1)[3];
     say(time.q( ).($sub && $sub ne '(eval)' ? "$sub():" : q([).(caller)[0].q(])).q( ).$line)
@@ -211,7 +206,29 @@ sub crypt {
     return $what
 }
 
+# GV
+
+sub gv {
+    my $found = do { given (scalar @_) {
+        when (1) { $GV{shift()}                   }
+        when (2) { $GV{shift()}{shift()}          }
+        when (3) { $GV{shift()}{shift()}{shift()} }
+        default  { undef                          }
+    } };
+    return $found;
+}
+
+sub set {
+    my $set = shift;
+    if (uc $set eq $set) {
+        log2("can't set $set");
+        return;
+    }
+    $GV{$set} = shift
+}
+
 # for configuration values
+
 sub on  () { 1 }
 sub off () { 0 }
 

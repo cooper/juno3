@@ -7,7 +7,7 @@ use strict;
 
 use Net::IP;
 use Net::DNS;
-use utils qw/log2/;
+use utils qw/log2 gv/;
 
 sub resolve_finish {
     my ($connection, $host) = @_;
@@ -15,13 +15,13 @@ sub resolve_finish {
         log2("could not resolve $$connection{ip}");
         $connection->{host} = $connection->{ip};
         delete $connection->{res_start};
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Could not resolve your hostname; using IP address instead')
+        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** Could not resolve your hostname; using IP address instead')
     }
     else {
         log2("$$connection{ip} -> $host");
         $connection->{host} = $host;
         my $time = time - delete $connection->{res_start};
-        $connection->send(':'.$utils::GV{servername}.' NOTICE * :*** Found your hostname in '.$time.' seconds ('.$host.')')
+        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** Found your hostname in '.$time.' seconds ('.$host.')')
     }
     $connection->ready if $connection->somewhat_ready;
     return 1

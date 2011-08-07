@@ -8,7 +8,7 @@ package channel::mine;
 use warnings;
 use strict;
 
-use utils qw[log2 conf];
+use utils qw[log2 conf gv];
 
 our %prefix = (
     owner  => '~',
@@ -72,7 +72,7 @@ sub notice_all {
     foreach my $user (@{$channel->{users}}) {
         next unless $user->is_local;
         next if defined $ignore && $ignore == $user;
-        $user->send(":$utils::GV{server}{name} NOTICE $$channel{name} :*** $what");
+        $user->send(":".gv('SERVER', 'name')." NOTICE $$channel{name} :*** $what");
     }
     return 1
 }
@@ -107,10 +107,10 @@ sub take_lower_time {
     $channel->set_time($time);
 
     # unset all channel modes
-    my $modestring = ($channel->mode_string_all($utils::GV{server}))[0];
+    my $modestring = ($channel->mode_string_all(gv('SERVER')))[0];
     $modestring =~ s/\+/\-/;
     notice_all($channel, "channel TS set back $amount seconds");
-    send_all($channel, ":$utils::GV{server}{name} MODE $$channel{name} $modestring");
+    send_all($channel, ":".gv('SERVER', 'name')." MODE $$channel{name} $modestring");
     $channel->{modes} = {};
 }
 
