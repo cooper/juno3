@@ -7,7 +7,6 @@ TODO:
     [H] fix server SID/name collision bugs
     [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
-    [H] user modes are wrong in server outgoing because it sends UID before changing mode
     [M] compact server commands
     [M] LUSERS
     [M] WHO
@@ -586,3 +585,6 @@ CHANGES:
            Data is now parsed immediately after it is received in full, so in cases like a large server burst the rest of the network doesn't just hang until it's over.
            juno is smart enough now to only parse data when it is fully received - sysread sometimes hands it more than it can take in one go.
            This is a huge update. There will probably be some more like this because I'm trying to make juno as efficient and memory-friendly as possible.
+
+        1. Fixed bug where UID was sent to servers before automatic modes were set.
+           Fixed RPL_MYINFO to have accurate channel modes.

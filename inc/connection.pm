@@ -190,7 +190,7 @@ sub ready {
         $connection->{type}     = user->new($connection);
 
         # tell my children
-        server::outgoing::uid_all($connection->{type})
+        
     }
 
     # must be a server
@@ -223,6 +223,7 @@ sub ready {
         # must be an intergalactic alien
     }
     
+    # memory leak (fixed)
     $connection->{type}->{conn} = $connection;
     user::mine::new_connection($connection->{type}) if $connection->{type}->isa('user');
     return $connection->{ready} = 1

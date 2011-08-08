@@ -168,6 +168,15 @@ foreach my $modename (keys %needs) {
 
 }
 
+# get a +modes string
+sub mode_string {
+    my $string = q();
+    foreach my $name (keys %modes) {
+        $string .= $channel::modes::modes{$name}[1];
+    }
+    $string
+}
+
 log2("end of internal mode blocks");
 
 1

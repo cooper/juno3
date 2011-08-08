@@ -153,17 +153,26 @@ sub numeric {
 # send welcomes
 sub new_connection {
     my $user = shift;
-    $user->numeric('RPL_WELCOME', conf('network', 'name'), $user->{nick}, $user->{ident}, $user->{host});
-    $user->numeric('RPL_YOURHOST', gv('SERVER', 'name'), gv('NAME').q(-).gv('VERSION'));
-    $user->numeric('RPL_CREATED', POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime gv('START')));
-    $user->numeric('RPL_MYINFO', gv('SERVER', 'name'), gv('NAME').q(-).gv('VERSION'), user::modes::mode_string(), 'i'); # TODO
-    $user->user::numerics::rpl_isupport();
-    $user->handle('LUSERS');
-    $user->handle('MOTD');
 
     # set modes
     $user->handle_mode_string(conf qw/users automodes/);
+
+    # send numerics
+    $user->numeric('RPL_WELCOME', conf('network', 'name'), $user->{nick}, $user->{ident}, $user->{host});
+    $user->numeric('RPL_YOURHOST', gv('SERVER', 'name'), gv('NAME').q(-).gv('VERSION'));
+    $user->numeric('RPL_CREATED', POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime gv('START')));
+    $user->numeric('RPL_MYINFO', gv('SERVER', 'name'), gv('NAME').q(-).gv('VERSION'), user::modes::mode_string(), channel::modes::mode_string());
+    $user->user::numerics::rpl_isupport();
+
+    # LUSERS and MOTD
+    $user->handle('LUSERS');
+    $user->handle('MOTD');
+
+    # send mode string
     $user->sendfrom($user->{nick}, "MODE $$user{nick} :".$user->mode_string);
+
+    # tell other servers
+    server::outgoing::uid_all($user);
 }
 
 1
