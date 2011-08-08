@@ -20,10 +20,10 @@ sub connect_server {
     my %serv = %{$utils::conf{connect}{$server}};
 
     # create the socket
-    my $socket = $main::socket_class->new(
+    my $socket = IO::Socket::IP->new(
         PeerAddr => $serv{address},
         PeerPort => $serv{port},
-        #Proto    => 'tcp'
+        Proto    => 'tcp'
     );
 
     if (!$socket) {
