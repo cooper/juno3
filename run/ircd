@@ -54,7 +54,7 @@ use user;
 use channel;
 use utils qw[conf lconf log2 fatal gv set];
 
-our ($select);
+our $select;
 
 log2("this is $global{NAME} version $global{VERSION}");
 %utils::GV = %global;
@@ -333,20 +333,18 @@ sub signalhup {
     open my $hup, 'etc/HUP' or log2('can\'t open HUP file') and return;
 
     while (my $line = <$hup>) {
-        my @s = split /\s+/, $line;
-        given ($s[0]) {
-            when ('rehash') {
-                log2("reloading server configuration file by request of HUP signal");
-                utils::parse_config('etc/ircd.conf') or log2("configuration error");
-                log2("finished rehashing");              
-            }
-            when ('terminate') {
-                log2("terminating by request of HUP signal");
-                terminate();
-            }
-            deafult { return }
+    given ((split /\s+/, $line)[0]) {
+        when ('rehash') {
+            log2("reloading server configuration file by request of HUP signal");
+            utils::parse_config('etc/ircd.conf') or log2("configuration error");
+            log2("finished rehashing");              
         }
-    }
+        when ('terminate') {
+            log2("terminating by request of HUP signal");
+            terminate();
+        }
+        deafult { return }
+    } }
 
     return 1
 }

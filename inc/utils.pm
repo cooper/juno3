@@ -195,14 +195,19 @@ sub cut_to_limit {
 # encrypt something
 sub crypt {
     my ($what, $crypt) = @_;
-    my $func = do { given ($crypt) {
-        when ('sha1')   { 'Digest::SHA::sha1_hex'   }
-        when ('sha224') { 'Digest::SHA::sha224_hex' }
-        when ('sha256') { 'Digest::SHA::sha256_hex' }
-        when ('sha384') { 'Digest::SHA::sha384_hex' }
-        when ('sha512') { 'Digest::SHA::sha512_hex' }
-        when ('md5')    { 'Digest::MD5::md5_hex'    }
-    } };
+
+    # no do { given { 
+    # compatibility XXX
+    my $func = 'die';
+    given ($crypt) {
+        when ('sha1')   { $func = 'Digest::SHA::sha1_hex'   }
+        when ('sha224') { $func = 'Digest::SHA::sha224_hex' }
+        when ('sha256') { $func = 'Digest::SHA::sha256_hex' }
+        when ('sha384') { $func = 'Digest::SHA::sha384_hex' }
+        when ('sha512') { $func = 'Digest::SHA::sha512_hex' }
+        when ('md5')    { $func = 'Digest::MD5::md5_hex'    }
+    }
+
     my $eval = "$func('$what')";
 
     # use eval to prevent crash if failed to load the module
@@ -219,13 +224,14 @@ sub crypt {
 # GV
 
 sub gv {
-    my $found = do { given (scalar @_) {
-        when (1) { $GV{shift()}                   }
-        when (2) { $GV{shift()}{shift()}          }
-        when (3) { $GV{shift()}{shift()}{shift()} }
-        default  { undef                          }
-    } };
-    return $found;
+    # can't use do{given{
+    # compatibility :| XXX
+    given (scalar @_) {
+        when (1) { return $GV{shift()}                   }
+        when (2) { return $GV{shift()}{shift()}          }
+        when (3) { return $GV{shift()}{shift()}{shift()} }
+    }
+    return
 }
 
 sub set {

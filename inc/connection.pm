@@ -221,6 +221,7 @@ sub ready {
     
     else {
         # must be an intergalactic alien
+        warn 'intergalactic alien has been found';
     }
     
     # memory leak (fixed)
@@ -281,7 +282,7 @@ sub done {
         $connection->{type}->quit($reason)
     }
 
-    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{ip} ($reason)\r\n", POSIX::BUFSIZ) unless $silent;
+    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{host} ($reason)\r\n", POSIX::BUFSIZ) unless $silent;
 
     # remove from connection list
     delete $connection{$connection->{obj}};
