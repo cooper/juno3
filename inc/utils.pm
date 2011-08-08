@@ -195,14 +195,24 @@ sub cut_to_limit {
 # encrypt something
 sub crypt {
     my ($what, $crypt) = @_;
-    given ($crypt) {
-        when ('sha1')   { $what = Digest::SHA::sha1_hex($what)   }
-        when ('sha224') { $what = Digest::SHA::sha224_hex($what) }
-        when ('sha256') { $what = Digest::SHA::sha256_hex($what) }
-        when ('sha384') { $what = Digest::SHA::sha384_hex($what) }
-        when ('sha512') { $what = Digest::SHA::sha512_hex($what) }
-        when ('md5')    { $what = Digest::MD5::md5_hex($what)    }
+    my $func = do { given ($crypt) {
+        when ('sha1')   { 'Digest::SHA::sha1_hex'   }
+        when ('sha224') { 'Digest::SHA::sha224_hex' }
+        when ('sha256') { 'Digest::SHA::sha256_hex' }
+        when ('sha384') { 'Digest::SHA::sha384_hex' }
+        when ('sha512') { 'Digest::SHA::sha512_hex' }
+        when ('md5')    { 'Digest::MD5::md5_hex'    }
+    } };
+    my $eval = "$func('$what')";
+
+    # use eval to prevent crash if failed to load the module
+    $what = eval $eval;
+
+    if (!defined($what)) {
+        log2("couldn't crypt to $crypt. you probably forgot to load it. $@");
+        return $what;
     }
+
     return $what
 }
 

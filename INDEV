@@ -588,3 +588,6 @@ CHANGES:
 
         1. Fixed bug where UID was sent to servers before automatic modes were set.
            Fixed RPL_MYINFO to have accurate channel modes.
+
+        2. Fixed the nick collision bug I think.
+           ircd no longer crashes if it tries to hash using an unloaded crypt.
