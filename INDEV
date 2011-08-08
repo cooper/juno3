@@ -3,7 +3,7 @@ Development log
 
 TODO:
 
-    [H] fix nick collision/UID collision bugs
+    [H] fix UID collision bugs
     [H] fix server SID/name collision bugs
     [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
