@@ -67,24 +67,34 @@ sub handle {
         next unless defined $s[1];
         my $command = uc $s[1];
 
+        # if it doesn't exist, ignore it and move on.
+        # it might make sense to assume incompatibility and drop the server,
+        # but I don't want to do that because
+        if (!$commands{$command}) {
+            log2("unknown command $command; ignoring it");
+            next
+        }
 
-        if ($commands{$command}) { # an existing handler
-            foreach my $source (keys %{$commands{$command}}) {
-                send_children($server, $line) if $commands{$command}{$source}{forward};
-                if ($#s >= $commands{$command}{$source}{params}) {
-                    $commands{$command}{$source}{code}($server, $line, @s)
-                }
-                else {
-                    log2("not enough parameters for $command: $line");
-                }
+        # it exists- parse it.
+        foreach my $source (keys %{$commands{$command}}) {
+
+            # tell the other servers if the forward is enabled
+            send_children($server, $line) if $commands{$command}{$source}{forward};
+
+            # are there enough parameters?
+            if ($#s >= $commands{$command}{$source}{params}) {
+                $commands{$command}{$source}{code}($server, $line, @s)
+            }
+
+            # do not allow incorrect parameter count
+            else {
+                log2("not enough parameters for $command: \"$line\"; dropping $$server{name}");
+                $server->{conn}->done('incorrect parameter count for command '.$command);
+                return
             }
         }
 
         # to make things prettier
-        else {
-            next
-        }
-
     }
     return 1
 }

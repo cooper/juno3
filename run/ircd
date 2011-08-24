@@ -33,7 +33,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.1.9.2',
+        VERSION => '3.1.9.4',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV
@@ -43,7 +43,7 @@ BEGIN {
 
 use POSIX;
 use IO::Select;
-use IO::Socket::IP;
+use IO::Socket::IP -register;
 # allowing to use any ::INET-like module was becoming confusing
 # in the configuration, so IO::Socket::IP is now a dependency
 # to make things simple.
@@ -91,7 +91,6 @@ MAIN: for (;;) {
         # new request
         if (${*$socket}{listen}) {
             my $new = $socket->accept;
-            $new->autoflush(0);
             $connection = connection->new($new);
             next INCOMING;
         }

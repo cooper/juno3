@@ -113,6 +113,13 @@ sub sid {
     $ref->{parent} = server::lookup_by_id(col($ref->{parent}));
     delete $ref->{dummy};
 
+    # do not allow SID or server name collisions
+    if (server::lookup_by_id($ref->{sid}) || server::lookup_by_name($ref->{name})) {
+        log2("duplicate SID $$ref{sid}; dropping $$server{name}");
+        $server->{conn}->done('attempted to introduce existing server');
+        return
+    }
+
     # create a new server
     my $serv = server->new($ref);
     return 1
@@ -313,7 +320,17 @@ sub cmode {
     my $source      = utils::global_lookup(col($args[0]));
     my $channel     = channel::lookup_by_name($args[2]);
     my $perspective = server::lookup_by_id($args[4]);
-    return unless $channel; #XXX
+
+    # channel doesn't exist?
+    if (!$channel) {
+        $server->{conn}->done("channel $args[2] doesn't exist");
+        return
+    }
+
+    # perspective doesn't exist?
+    if (!$perspective) {
+        $server->{conn}->done("server $args[4] doesn't exist");
+    }
 
     # ignore if time is older
     return if $args[3] > $channel->{time};
@@ -336,6 +353,12 @@ sub part {
     my @m       = split /\s+/, $data, 5;
     my $reason  = $args[4] ? col($m[4]) : q();
     my $channel = channel::lookup_by_name($args[2]);
+
+    # channel doesn't exist?
+    if (!$channel) {
+        $server->{conn}->done("channel $args[2] doesn't exist");
+        return
+    }
 
     # take the lower time
     $channel->channel::mine::take_lower_time($args[3]);

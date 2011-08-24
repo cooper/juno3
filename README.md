@@ -1,4 +1,4 @@
-# this is not a POE module
+# juno-ircd version 3
 
 This is (or will be) a fully-featured IRCd. Why is that so surprising? People keep saying, "omg there is a POE module for ircd y r u making 1,"
 but that fails and is very simple whereas this is completely customizable and packed with features. It's like asking one of the hundreds of 
@@ -70,3 +70,36 @@ have names. For example, someone might create an API module that allows anyone t
 To do this, their module would delete the check named "internal_must_have_op" for the INVITE command and register a new block that
 returns a true value if the channel mode that allows all users to invite is enabled or returns true if it is not but the user has op.
 juno will be heavily documented, and there will be guides to creating API modules to do exactly what you want.
+
+## how I code in Perl
+
+I try to be as "modern" as possible with my work.
+
+### Perl packages
+
+I do not like to use packages or libraries that:
+
+* claim to provide object-oriented Perl (such as Moose)
+* provide a base for several extensions, pretty much forcing your entire program to depend on the library (like POE)
+* attempt to make syntax prettier (like the Perl6::* modules)
+
+### wait, why not Moose?
+
+I don't get it. Many say that it is the object-oriented extension for Perl. I completely disagree. To me, it appears to have three main purposes:
+
+* shove as much data into the symbol table as possible
+* force your program to allocate so much memory that it refuses to run on systems with less than 9000 GB RAM
+* gain the winning title as the "number one useless memory-eating package" on CPAN
+
+In all seriousness, I do not see any advantage to using Moose. It is enormous and provides little functionality. See [[Perl: blessed references]]
+to learn about object-oriented Perl. If you don't know much about Perl or references, you should see [[Perl: references]] first.
+
+### things you might notice in my code
+
+**I like code references.** I use them *everywhere* for a couple of reasons:
+
+* they're reusable and interchangeable - they can be replaced, moved, and removed
+* references disappear when they're no longer in use - no data is lost, and no memory is wasted
+
+**I like to bless references.** *This* is the objective syntax that Perl offers. Moose isn't much more than that, which I described in a few
+paragraphs up.

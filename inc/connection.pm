@@ -8,7 +8,7 @@ use feature 'switch';
 
 use utils qw[log2 col conn conf match gv];
 
-our ($ID, %connection) = 0;
+our ($ID, %connection) = 'a';
 
 sub new {
     my ($this, $peer) = @_;
@@ -282,7 +282,7 @@ sub done {
         $connection->{type}->quit($reason)
     }
 
-    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{host} ($reason)\r\n", POSIX::BUFSIZ) unless $silent;
+    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{host} ($reason)\r\n") unless $silent;
 
     # remove from connection list
     delete $connection{$connection->{obj}};

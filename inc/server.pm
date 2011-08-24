@@ -34,12 +34,13 @@ sub new {
 
 sub quit {
     my ($server, $reason) = @_;
+    my $why = $server->{name}.q( ).$server->{parent}->{name};
 
     log2("server $$server{name} has quit: $reason");
 
     # delete all of the server's users
     foreach my $user (values %user::user) {
-        $user->quit('*.banana *.split') if $user->{server} == $server
+        $user->quit($why) if $user->{server} == $server
     }
 
     log2("server $$server{name}'s data has been deleted.");
