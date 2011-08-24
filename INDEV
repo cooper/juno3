@@ -593,9 +593,11 @@ CHANGES:
         2. Fixed the nick collision bug I think.
            ircd no longer crashes if it tries to hash using an unloaded crypt.
 
-        August 19, 2011
+        Apparently 3 and 4 were skipped...
 
-        3. Added the dependencies to IO::Socket::IP to dep/.
+        August 24, 2011
+
+        5. Added the dependencies to IO::Socket::IP to dep/.
            Improved security and stability in several places - especially in the linking protocol where incorrect data would cause the IRCd to crash before.
            I really need to stop doing enormous amounts of work without committing, because I end up with huge commits like this one.
            Once again, this is a huge update spanning for / I don't really know what all I changed.
