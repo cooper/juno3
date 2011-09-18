@@ -6,17 +6,19 @@ use warnings;
 use strict;
 use feature 'switch';
 
+use Socket::GetAddrInfo;
+
 use utils qw[log2 col conn conf match gv];
 
 our ($ID, %connection) = 'a';
 
 sub new {
-    my ($this, $peer) = @_;
-    return unless defined $peer;
+    my ($this, $stream) = @_;
+    return unless defined $stream;
 
     bless my $connection = {
-        obj           => $peer,
-        ip            => $peer->peerhost,
+        stream        => $stream,
+        ip            => $stream->{write_handle}->peerhost,
         source        => gv('SERVER', 'sid'),
         last_ping     => time,
         time          => time,
@@ -24,18 +26,17 @@ sub new {
     }, $this;
 
     # resolve hostname
-    if (conf qw/enabled resolve/) {
-        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** Looking up your hostname...');
-        res::resolve_hostname($connection)
-    }
-    else {
+    #if (conf qw/enabled resolve/) {
+    #    $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** Looking up your hostname...');
+    #    res::resolve_address($connection)
+    #}
+    #else {
         $connection->{host} = $connection->{ip};
-        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** hostname resolving is not enabled on this server')
-    }
+        $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** hostname resolving is not enabled on this server');
+    #}
 
-    log2("Processing connection from $$connection{ip}");    
-    $main::select->add($peer);
-    return $connection{$peer} = $connection
+    log2("Processing connection from $$connection{ip}");
+    return $connection{$stream} = $connection
 }
 
 sub handle {
@@ -244,11 +245,10 @@ sub somewhat_ready {
 
 # send data to the socket
 sub send {
-    return main::sendpeer(shift->{obj}, @_)
+    return shift->{stream}->write(shift."\r\n");
 }
 
 # find by a user or server object
-
 sub lookup {
     my $obj = shift;
     foreach my $conn (values %connection) {
@@ -260,10 +260,10 @@ sub lookup {
     return
 }
 
-# find by a socket handle
-sub lookup_by_handle {
-    my $socket = shift;
-    return $connection{$socket};
+# find by a stream
+sub lookup_by_stream {
+    my $stream = shift;
+    return $connection{$stream};
 }
 
 # end a connection
@@ -281,14 +281,12 @@ sub done {
         # tell user.pm or server.pm that the connection is closed
         $connection->{type}->quit($reason)
     }
-
-    $connection->{obj}->syswrite("ERROR :Closing Link: $$connection{host} ($reason)\r\n") unless $silent;
+    $connection->send("ERROR :Closing Link: $$connection{host} ($reason)") unless $silent;
 
     # remove from connection list
-    delete $connection{$connection->{obj}};
+    delete $connection{$connection->{stream}}; # XXX select
 
-    $main::select->remove($connection->{obj});
-    $connection->{obj}->close;
+    $connection->{stream}->close_when_empty; # will close it WHEN the buffer is empty
 
     # fixes memory leak:
     # referencing to ourself, etc.
@@ -303,6 +301,11 @@ sub done {
 sub DESTROY {
     my $connection = shift;
     log2("$connection destroyed");
+}
+
+# get the IO object
+sub obj {
+    shift->{stream}->{write_handle} # XXX select
 }
 
 1

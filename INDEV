@@ -601,3 +601,11 @@ CHANGES:
            Improved security and stability in several places - especially in the linking protocol where incorrect data would cause the IRCd to crash before.
            I really need to stop doing enormous amounts of work without committing, because I end up with huge commits like this one.
            Once again, this is a huge update spanning for / I don't really know what all I changed.
+
+2. September 17, 2011
+
+    0. September 17, 2011
+
+        0. This is another large edit. juno3 has new dependencies, but only temporarily.
+           These dependencies are required in order to support servers with heavy traffic.
+           See README for more information.

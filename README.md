@@ -1,15 +1,21 @@
 # juno-ircd version 3
 
+## notice
+
+juno is designed to be ready out-of-the-box. You are likely to get tied of hearing that because I am quite sure that I have said
+that at least 10 other times in this file. However, recently juno has been dependent on several libraries for high efficiency.
+Soon, these options will be configurable. For small networks they don't do much more than waste resources, but for bigger networks
+they provide a notably large speed increase. Most IRC servers probably will do fine with the version that is a bit more resource-friendly
+but not quite as efficient as the version that depends on these large libraries.
+
+## about
+
 This is (or will be) a fully-featured IRCd. Why is that so surprising? People keep saying, "omg there is a POE module for ircd y r u making 1,"
 but that fails and is very simple whereas this is completely customizable and packed with features. It's like asking one of the hundreds of 
 people who have developed IRCds in C, "why are you writing an IRCd when there already is one?" I would guess that they were taking something and
 making it better and better. I have also been told that "I don't like it" isn't a good enough reason not to use something, and that I must explain
 why I don't like things. I guess I just never knew that I'm not allowed to create my own things if someone else has already created something
 similar. besides, I don't want to set up an IRCd for any particular reason. I want to make one, so that is what I'm doing. (and have been for over a year)
-
-## another good laugh
-
-parts of juno are written in JavaScript.
 
 ## also
 
@@ -26,14 +32,20 @@ connection is closed, a server leaves the network, etc.
 
 ## dependencies
 
+**Temporarily, several packages of the IO::Async library are required.**  
+  
+
+First of all, you need a machine that can run this (tested only on Linux; doubt it will work on Windows.)
 This IRCd is designed to be used out-of-the-box, using all core modules up until August 7, 2011 when IO::Socket::IP became the only Perl module
 not in Perl's core module list that juno relies on. Up until this change, you were able to specify a drop-in replacement for IO::Socket::INET
 or use IO::Socket::INET itself in the configuration for a socket class, but in order to clear confusion IO::Socket::IP is now required.
-IO::Socket::IP provides an interface to both IPv4 and an invisible interface to IPv6 (when available). IO::Socket::IP is included with juno that
-way the "use out-of-the-box" idea stays intact. IO::Socket::IP is the work of Paul Evans, see dep/IO/Socket/IP.pm for
-licensing information or view the module on [[CPAN|http://search.cpan.org/perldoc?IO::Socket::IP]].  
-  
+IO::Socket::IP provides an interface to both IPv4 and an invisible interface to IPv6 (when available).
+
 **tl;dr**: it works out of the box
+
+## another good laugh
+
+parts of juno are written in JavaScript.
 
 ## installation
 

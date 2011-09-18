@@ -8,11 +8,11 @@ use strict;
 use utils 'log2';
 
 # constants
-sub normal        () { 0 }
-sub parameter     () { 1 }
-sub parameter_set () { 2 }
-sub list          () { 3 }
-sub status        () { 4 }
+#sub normal        () { 0 }
+#sub parameter     () { 1 }
+#sub parameter_set () { 2 }
+#sub list          () { 3 }
+#sub status        () { 4 }
 
 my %blocks;
 
@@ -24,16 +24,16 @@ my %blocks;
 #   list (3)
 #   status (4)
 our %modes = (
-    no_ext        => [normal,    'n'],
-    protect_topic => [normal,    't'],
-    moderated     => [normal,    'm'],
-    testing       => [parameter, 'T'],
-    owner         => [status,    'q'],
-    admin         => [status,    'a'],
-    op            => [status,    'o'],
-    halfop        => [status,    'h'],
-    voice         => [status,    'v'],
-    ban           => [list,      'b']
+    no_ext        => [0, 'n'],
+    protect_topic => [0, 't'],
+    moderated     => [0, 'm'],
+    testing       => [1, 'T'],
+    owner         => [4, 'q'],
+    admin         => [4, 'a'],
+    op            => [4, 'o'],
+    halfop        => [4, 'h'],
+    voice         => [4, 'v'],
+    ban           => [3, 'b']
 );
 
 # this just tells the internal server what

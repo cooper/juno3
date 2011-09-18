@@ -9,31 +9,30 @@ local ($0,     $SIG{TERM},   $SIG{KILL}, $SIG{HUP},   $SIG{__WARN__}) =
       ('juno', \&terminate, \&terminate, \&signalhup, \&WARNING     );
 
 # temporary vars
-my (%global, @sel);
+my %global;
 our $run_dir;
 BEGIN {
 
     # find the directory to run from
 
-    if ($#ARGV < 0) {
+    if ( not defined ($run_dir = shift @ARGV) ) {
         die "No directory specified.\n"
     }
 
-    $run_dir = shift @ARGV;
     # make sure the run directory exists.
     if (!-d $run_dir) {
         die "Run directory does not exist.\n"
     }
 
     chdir $run_dir or die "Can't access run directory.\n";
-    unshift @INC, "$run_dir/inc", "$run_dir/dep";
+    unshift @INC, "$run_dir/inc";
 
     # set global variables
     # that will eventually be moved to GV after startup
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.1.9.5',
+        VERSION => '3.2.0.0',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV
@@ -41,12 +40,10 @@ BEGIN {
 
 }
 
-use POSIX;
-use IO::Select;
-use IO::Socket::IP -register;
-# allowing to use any ::INET-like module was becoming confusing
-# in the configuration, so IO::Socket::IP is now a dependency
-# to make things simple.
+use POSIX ();
+use IO::Async::Loop::Epoll; # XXX select
+use IO::Async::Listener;
+use IO::Socket::IP ();
 
 use connection;
 use server;
@@ -54,13 +51,14 @@ use user;
 use channel;
 use utils qw[conf lconf log2 fatal gv set];
 
-our $select;
+our $loop = IO::Async::Loop::Epoll->new;
 
 log2("this is $global{NAME} version $global{VERSION}");
 %utils::GV = %global;
 undef %global;
 start();
 
+# become a daemon
 if (!gv('NOFORK')) {
     log2('Becoming a daemon...');
 
@@ -80,102 +78,8 @@ if (!gv('NOFORK')) {
 exit if gv('PID');
 POSIX::setsid();
 
-# main loop
-
-MAIN: for (;;) {
-
-    # read incoming data
-    INCOMING: foreach my $socket ($select->can_read(1)) {
-        my $connection;
-
-        # new request
-        if (${*$socket}{listen}) {
-            my $new = $socket->accept;
-            $connection = connection->new($new);
-            next INCOMING;
-        }
-
-        # incoming data from an existing connection
-        else {
-            $connection = connection::lookup_by_handle($socket);
-
-            # attempt to read the data
-            if ($socket->sysread(my $data, POSIX::BUFSIZ)) {
-                ${*$socket}{inbuffer}  = q() unless defined ${*$socket}{inbuffer};
-                ${*$socket}{inbuffer} .= $data;
-            }
-
-            # couldn't read
-            else {
-                $connection->done('Connection closed', 1);
-                next INCOMING;
-            }
-        }
-
-        next unless length ${*$socket}{inbuffer};
-
-        # actually handle data that is ready to be handled
-        while (my ($line, $remainder) = ${*$socket}{inbuffer} =~ m/([^\n]*)\n(.*)/s) {
-            ${*$socket}{inbuffer} = $remainder;
-            $connection->handle($_) foreach split /\n/, $line
-        }
-    }
-
-    # send outgoing data
-    OUTGOING: foreach my $socket ($select->can_write(0)) {
-        while (my $data = shift @{${*$socket}{outbuffer}}) {
-            if (!$socket->syswrite("$data\r\n")) {
-                connection::lookup_by_handle($socket)->done('Write error', 1);
-                next OUTGOING;
-            }
-        }
-    }
-
-    # ping system
-    PING: foreach my $connection (values %connection::connection) {
-        my ($freq, $msg, $timeout);
-
-        # user limits and unknown connections
-        if (!exists $connection->{type} || $connection->{type}->isa('user')) {
-            $freq    = lconf qw/ping user frequency/;
-            $timeout = lconf qw/ping user timeout/;
-            $msg     = lconf qw/ping user message/
-        }
-
-        # server limits
-        elsif ($connection->{type}->isa('server')) {
-            $freq    = lconf qw/ping server frequency/;
-            $timeout = lconf qw/ping server timeout/;
-            $msg     = 'Ping timeout'
-        }
-
-        # too late; make him quit
-        if ((time - $connection->{last_response}) >= $timeout) {
-            $connection->done($msg);
-            next PING;
-        }
-
-        if ((time - $connection->{last_response}) > $freq) {
-
-            # make sure that they aren't just sitting there without registering...
-            $connection->done('Registration timeout') unless $connection->{type};
-            next PING;
-
-            # send a PING command and reset the ping time
-            $connection->send("PING :".gv('SERVER', 'name')) unless $connection->{ping_in_air};
-            $connection->{last_ping}   = time;
-            $connection->{ping_in_air} = 1;
-
-        }
-    }
-
-    # run through the registered loops
-    foreach (keys %{$utils::GV{LOOP}}) {
-        next if $_ eq 'ID';
-        $utils::GV{LOOP}{$_}{code}($_)
-    }
-
-}
+# start IO::Async's loop
+$loop->loop_forever; # XXX select
 
 sub start {
 
@@ -198,9 +102,7 @@ sub start {
     });
 
     # how is this possible?!?!
-    $server->{parent} = $server;
-
-    # set this as the G server
+    $server->{parent}  =
     $utils::GV{SERVER} = $server;
 
     # register modes
@@ -208,12 +110,7 @@ sub start {
     $server->channel::modes::add_internal_modes();
 
     load_requirements();
-
-    # listen and add sockets to IO::Select object
     create_sockets();
-    fatal('Not listening') if $#sel < 0;
-    $select = IO::Select->new(@sel);
-
     log2("server initialization complete");
 
     # auto server connect
@@ -242,68 +139,42 @@ sub load_requirements {
 
     if (conf qw[enabled md5]) {
         log2('Loading Digest::MD5');
-        require Digest::SHA
+        require Digest::MD5
     }
 
-    if (conf qw[enabled resolve]) {
-        log2('Loading res, Net::IP, Net::DNS');
-        require res
-    }
+    #if (conf qw[enabled resolve]) {
+    #    log2('Loading res, Net::IP, Net::DNS');
+    #    require res
+    #}
 
 }
 
+# XXX select
 sub create_sockets {
     foreach my $addr (keys %{$utils::conf{listen}}) {
     foreach my $port (@{$utils::conf{listen}{$addr}->{port}}) {
 
-        # create the socket and add it to the IO::Select object
+        # create the loop listener
+        my $listener = IO::Async::Listener->new(on_stream => \&handle_connect);
+        $loop->add($listener);
+
+        # create the socket
         my $socket = IO::Socket::IP->new(
             LocalAddr => $addr,
             LocalPort => $port,
             Listen    => 1,
             ReuseAddr => 1,
+            Type      => Socket::SOCK_STREAM,
             Proto     => 'tcp'
         ) or fatal("Couldn't listen on [$addr]:$port: $!");
 
+        # add to looped listener
+        $listener->listen(handle => $socket);
+
         log2("Listening on [$addr]:$port");
         ${*$socket}{listen} = 1;
-        push @sel, $socket;
     } }
     return 1
-}
-
-# add data to the outgoing buffer
-sub sendpeer {
-    my $peer = shift;
-    push @{${*$peer}{outbuffer}}, @_
-}
-
-# register a block of code to the main loop
-sub register_loop {
-    my ($name, $code) = @_;
-    if (ref $code ne 'CODE') {
-        log2("attempted to register a loop that is not CODE");
-        return
-    }
-    my $id = ++$utils::GV{LOOP}{ID};
-    $utils::GV{LOOP}{$id} = {
-        code => $code,
-        name => $name
-    };
-    log2("registered loop $id: $name");
-    return 1
-}
-
-# delete an existing loop
-sub delete_loop {
-    my $id = shift;
-    if (exists $utils::GV{LOOP}{$id}) {
-        log2("deleted loop $id ($utils::GV{LOOP}{$id}{name})");
-        delete $utils::GV{LOOP}{$id};
-        return 1
-    }
-    log2("attempted to delete loop $id which does not exist");
-    return
 }
 
 # stop the ircd
@@ -349,6 +220,30 @@ sub signalhup {
 }
 
 # handle warning
-sub WARNING {
-    log2(shift);
+sub WARNING { log2(shift) }
+
+# handle connecting user
+sub handle_connect {
+    my ($listener, $stream) = @_;
+
+    $stream->configure(
+        read_all => 0,
+        read_len => POSIX::BUFSIZ,
+        on_read  => \&handle_data
+    );
+
+    # create connection object
+    connection->new($stream);
+
+    $loop->add($stream);
+
+}
+
+# handle incoming data
+sub handle_data {
+    my ($stream, $buffer) = @_;
+    my $connection = connection::lookup_by_stream($stream);
+    while ($$buffer =~ s/^(.*?)\n//) {
+        $connection->handle($1)
+    }
 }
