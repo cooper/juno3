@@ -105,7 +105,7 @@ my %commands = (
     ACM => {
         params  => 1,
         forward => 1,
-        code    => \&aum
+        code    => \&acm
     },
     CUM => {
         params  => 4,

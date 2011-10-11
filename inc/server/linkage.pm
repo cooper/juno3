@@ -33,19 +33,40 @@ sub connect_server {
 
     log2("Connection established to $server");
 
-    # add the socket to select
-    my $connection = connection->new($socket);
-
-    # send server credentials.
-    main::sendpeer($socket,
-        sprintf('SERVER %s %s %s %s :%s', gv('SERVER', 'sid'), gv('SERVER', 'name'), gv('PROTO'), gv('VERSION'), gv('SERVER', 'desc')),
-        "PASS $serv{send_password}"
+    my $stream = IO::Async::Stream->new(
+        read_handle  => $socket,
+        write_handle => $socket
     );
 
-    $connection->{sent_creds} = 1;
-    $connection->{want} = $server;
+    # create connection object 
+    my $conn = connection->new($stream);
 
-    return $connection
+    $stream->configure(
+        read_all       => 0,
+        read_len       => POSIX::BUFSIZ,
+        on_read        => \&main::handle_data,
+        on_read_eof    => sub { $conn->done('connection closed')   },
+        on_read_error  => sub { $conn->done('read error: ' .$_[1]) },
+        on_write_error => sub { $conn->done('write error: '.$_[1]) }
+    );
+
+    $main::loop->add($stream);
+
+    # send server credentials.
+    $conn->send(sprintf('SERVER %s %s %s %s :%s',
+                        gv('SERVER', 'sid'),
+                        gv('SERVER', 'name'),
+                        gv('PROTO'),
+                        gv('VERSION'),
+                        gv('SERVER', 'desc')
+    ));
+
+    $conn->send("PASS $serv{send_password}");
+
+    $conn->{sent_creds} = 1;
+    $conn->{want}       = $server;
+
+    return $conn
 
 }
 
