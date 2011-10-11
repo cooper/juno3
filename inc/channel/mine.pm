@@ -112,6 +112,8 @@ sub take_lower_time {
     notice_all($channel, "channel TS set back $amount seconds");
     send_all($channel, ":".gv('SERVER', 'name')." MODE $$channel{name} $modestring");
     $channel->{modes} = {};
+
+    return $channel->{time}
 }
 
 # returns the highest prefix a user has

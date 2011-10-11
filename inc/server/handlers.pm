@@ -425,12 +425,14 @@ sub cum {
 
     # we cannot assume that this a new channel
     my $ts      = $args[3];
-    my $channel = channel::lookup_by_name($args[2]) || channel->new({ name => $args[2], $ts});
-    $channel->channel::mine::take_lower_time($ts);
+    my $channel = channel::lookup_by_name($args[2]) || channel->new({ name => $args[2], time => $ts});
+    my $newtime = $channel->channel::mine::take_lower_time($ts);
 
     # lazy mode handling.. # FIXME
-    my $modestr = col(join ' ', @args[5..$#args]);
-    $server->handle(":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr");
+    if ($newtime == $ts) { # won the time battle
+        my $modestr = col(join ' ', @args[5..$#args]);
+        $server->handle(":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr");
+    }
 
     # no users
     return 1 if $args[4] eq '-';
@@ -445,7 +447,8 @@ sub cum {
             $channel->channel::mine::send_all(q(:).$user->full." JOIN $$channel{name}");
         }
 
-        next USER unless $modes; # the mode part is obviously optional..
+        next USER unless $modes;      # the mode part is obviously optional..
+        next USER if $newtime != $ts; # the time battle was lost
 
         # lazy mode setting # FIXME
         # but I think it is a clever way of doing it.

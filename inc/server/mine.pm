@@ -57,6 +57,11 @@ sub handle {
             next
         }
 
+        if (uc $s[0] eq 'PONG') {
+            # don't care
+            next
+        }
+
         # server is ready for BURST
         if (uc $s[0] eq 'READY') {
             log2("sending burst to $$server{name}");
