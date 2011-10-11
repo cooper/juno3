@@ -5,8 +5,8 @@ use warnings;
 use strict;
 use feature qw|switch say|;
 
-local ($0,     $SIG{TERM},   $SIG{KILL}, $SIG{HUP},   $SIG{__WARN__}) =
-      ('juno', \&terminate, \&terminate, \&signalhup, \&WARNING     );
+local ($0,     $SIG{TERM},   $SIG{KILL}, $SIG{PIPE},   $SIG{HUP},   $SIG{__WARN__}) =
+      ('juno', \&terminate, \&terminate, \&signalpipe, \&signalhup, \&WARNING     );
 
 # temporary vars
 my %global;
@@ -36,13 +36,14 @@ BEGIN {
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV
-    );
+    )
 
 }
 
 use POSIX ();
-use IO::Async::Loop::Epoll; # XXX select
+use IO::Async::Loop::Epoll;
 use IO::Async::Listener;
+use IO::Async::Timer::Periodic; # for ping
 use IO::Socket::IP ();
 
 use connection;
@@ -79,11 +80,11 @@ exit if gv('PID');
 POSIX::setsid();
 
 # start IO::Async's loop
-$loop->loop_forever; # XXX select
+$loop->loop_forever;
 
 sub start {
 
-    log2('Started server at '.localtime gv('START'));
+    log2('Started server at '.scalar(localtime gv('START')));
 
     # parse the configuration, load the required modules, and listen
 
@@ -98,7 +99,7 @@ sub start {
         proto  => gv('PROTO'),
         ircd   => gv('VERSION'),
         time   => gv('START'),
-        parent => { name => 'self' }
+        parent => { name => 'self' } # temporary for logging
     });
 
     # how is this possible?!?!
@@ -111,6 +112,13 @@ sub start {
 
     load_requirements();
     create_sockets();
+    my $freq = lconf('ping', 'user', 'frequency');
+    my $timer = IO::Async::Timer::Periodic->new( 
+        interval       => 30,
+        on_tick        => \&ping_check
+    );
+    $loop->add($timer);
+    $timer->start;
     log2("server initialization complete");
 
     # auto server connect
@@ -149,10 +157,9 @@ sub load_requirements {
 
 }
 
-# XXX select
 sub create_sockets {
     foreach my $addr (keys %{$utils::conf{listen}}) {
-    foreach my $port (@{$utils::conf{listen}{$addr}->{port}}) {
+      foreach my $port (@{$utils::conf{listen}{$addr}->{port}}) {
 
         # create the loop listener
         my $listener = IO::Async::Listener->new(on_stream => \&handle_connect);
@@ -172,7 +179,6 @@ sub create_sockets {
         $listener->listen(handle => $socket);
 
         log2("Listening on [$addr]:$port");
-        ${*$socket}{listen} = 1;
     } }
     return 1
 }
@@ -207,36 +213,41 @@ sub signalhup {
         when ('rehash') {
             log2("reloading server configuration file by request of HUP signal");
             utils::parse_config('etc/ircd.conf') or log2("configuration error");
-            log2("finished rehashing");              
+            log2("finished rehashing")              
         }
         when ('terminate') {
             log2("terminating by request of HUP signal");
-            terminate();
+            terminate()
         }
-        deafult { return }
+        default { return }
     } }
 
     return 1
 }
 
+sub signalpipe {
+}
+
 # handle warning
 sub WARNING { log2(shift) }
 
-# handle connecting user
+# handle connecting user or server
 sub handle_connect {
     my ($listener, $stream) = @_;
 
+    # create connection object
+    my $conn = connection->new($stream);
+
     $stream->configure(
-        read_all => 0,
-        read_len => POSIX::BUFSIZ,
-        on_read  => \&handle_data
+        read_all       => 0,
+        read_len       => POSIX::BUFSIZ,
+        on_read        => \&handle_data,
+        on_read_eof    => sub { $conn->done('connection closed')   },
+        on_read_error  => sub { $conn->done('read error: ' .$_[1]) },
+        on_write_error => sub { $conn->done('write error: '.$_[1]) }
     );
 
-    # create connection object
-    connection->new($stream);
-
     $loop->add($stream);
-
 }
 
 # handle incoming data
@@ -247,3 +258,22 @@ sub handle_data {
         $connection->handle($1)
     }
 }
+
+# send out PINGs and check for timeouts
+sub ping_check {
+    foreach my $connection (values %connection::connection) {
+        if (!$connection->{type}) {
+            $connection->done('registration timeout') if time - $connection->{time} > 30;
+            next
+        }
+        my $type = $connection->isa('user') ? 'user' : 'server';
+        if (time - $connection->{last_ping} >= lconf('ping', $type, 'frequency')) {
+            $connection->send('PING :'.gv('SERVER')->{name}) unless $connection->{ping_in_air};
+            $connection->{ping_in_air} = 1
+        }
+        if (time - $connection->{last_response} >= lconf('ping', $type, 'timeout')) {
+            $connection->done('ping timeout: '.(time - $connection->{last_response}).' seconds')
+        }
+    }
+}
+

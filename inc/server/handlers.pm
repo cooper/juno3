@@ -93,6 +93,24 @@ my %commands = (
         params  => 1,
         forward => 1,
         code    => \&part
+    },
+
+    # compact
+
+    AUM => {
+        params  => 1,
+        forward => 1,
+        code    => \&aum
+    },
+    ACM => {
+        params  => 1,
+        forward => 1,
+        code    => \&aum
+    },
+    CUM => {
+        params  => 4,
+        forward => 1,
+        code    => \&cum
     }
 );
 
@@ -373,6 +391,69 @@ sub part {
     $channel->remove($user);
     my $sreason = $reason ? " :$reason" : q();
     $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$sreason");
+    return 1
+}
+
+# add user mode, compact AUM
+sub aum {
+    my ($server, $data, @args) = @_;
+    my $serv = server::lookup_by_id(col($args[0]));
+    foreach my $str (@args[2..$#args]) {
+        my ($name, $letter) = split /:/, $str;
+        next unless defined $letter; # just in case..
+        $serv->add_umode($name, $letter)
+    }
+    return 1
+}
+
+# add channel mode, compact ACM
+sub acm {
+    my ($server, $data, @args) = @_;
+    my $serv = server::lookup_by_id(col($args[0]));
+    foreach my $str (@args[2..$#args]) {
+        my ($name, $letter, $type) = split /:/, $str;
+        next unless defined $letter;
+        $serv->add_cmode($name, $letter, $type)
+    }
+    return 1
+}
+
+# channel user membership, compact CUM
+sub cum {
+    my ($server, $data, @args) = @_;
+    my $serv = server::lookup_by_id(col($args[0]));
+
+    # we cannot assume that this a new channel
+    my $ts      = $args[3];
+    my $channel = channel::lookup_by_name($args[2]) || channel->new({ name => $args[2], $ts});
+    $channel->channel::mine::take_lower_time($ts);
+
+    # lazy mode handling.. # FIXME
+    my $modestr = col(join ' ', @args[5..$#args]);
+    $server->handle(":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr");
+
+    # no users
+    return 1 if $args[4] eq '-';
+
+    USER: foreach my $str (split /,/, $args[4]) {
+        my ($uid, $modes) = split /!/, $str;
+        my $user          = user::lookup_by_id($uid) or next USER;
+
+        # join the new users
+        unless ($channel->has_user($user)) {
+            $channel->cjoin($user, $channel->{time});
+            $channel->channel::mine::send_all(q(:).$user->full." JOIN $$channel{name}");
+        }
+
+        next USER unless $modes; # the mode part is obviously optional..
+
+        # lazy mode setting # FIXME
+        # but I think it is a clever way of doing it.
+        my $final_modestr = $modes.' '.(($uid.' ') x length $modes);
+        my ($user_result, $server_result) = $channel->handle_mode_string($serv, $serv, $final_modestr, 1, 1);
+        $user_result  = $serv->convert_cmode_string(gv('SERVER'), $user_result);
+        $channel->channel::mine::send_all(":$$serv{name} MODE $$channel{name} $user_result");
+    }
     return 1
 }
 

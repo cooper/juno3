@@ -20,8 +20,8 @@ sub new {
         stream        => $stream,
         ip            => $stream->{write_handle}->peerhost,
         source        => gv('SERVER', 'sid'),
-        last_ping     => time,
         time          => time,
+        last_ping     => time,
         last_response => time
     }, $this;
 

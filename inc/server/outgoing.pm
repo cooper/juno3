@@ -5,6 +5,9 @@ package server::outgoing;
 
 use warnings;
 use strict;
+use feature 'switch';
+
+use utils qw(gv);
 
 ###########
 # servers #
@@ -188,6 +191,82 @@ sub cmode {
 sub cmode_all {
     my ($source, $channel, $time, $perspective, $modestr) = @_;
     server::mine::sendfrom_children(undef, $source->id, "CMODE $$channel{name} $time $perspective :$modestr")
+}
+
+####################
+# COMPACT commands #
+####################
+
+# channel user membership (channel burst)
+sub cum {
+    my ($server, $channel) = @_;
+    # modes are from the perspective of this server, gv:SERVER
+
+    my (%prefixes, @userstrs);
+
+    my (@modes, @user_params, @server_params);
+    my @set_modes = sort { $a cmp $b } keys %{$channel->{modes}};
+
+    foreach my $name (@set_modes) {
+      my $letter = gv('SERVER')->cmode_letter($name);
+      given (gv('SERVER')->cmode_type($name)) {
+
+        # modes with 0 or 1 parameters
+        when ([0, 1, 2]) { push @modes, $letter; continue }
+
+        # modes with EXACTLY ONE parameter
+        when ([1, 2]) { push @server_params, $channel->{modes}->{$name}->{parameter} }
+
+        # lists
+        when (3) {
+            foreach my $thing (@{$channel->{modes}->{$name}->{list}}) {
+                push @modes,         $letter;
+                push @server_params, $thing
+            }
+        }
+
+        # lists of users
+        when (4) {
+            foreach my $user (@{$channel->{modes}->{$name}->{list}}) {
+                if (exists $prefixes{$user}) { $prefixes{$user} .= $letter }
+                                        else { $prefixes{$user}  = $letter }
+            } # ugly br
+        } # ugly bracke
+    } } # ugly brackets 
+
+    # make +modes params string without status modes
+    my $modestr = '+'.join(' ', join('', @modes), @server_params);
+
+    # create an array of uid!status
+    foreach my $user (@{$channel->{users}}) {
+        my $str = $user->{uid};
+        $str .= '!'.$prefixes{$user} if exists $prefixes{$user};
+        push @userstrs, $str
+    }
+
+    # note: use "-" if no users present
+    $server->sendfrom(gv('SERVER')->{sid}, "CUM $$channel{name} $$channel{time} ".(join(',', @userstrs) || 
+'-')." :$modestr");
+}
+
+# add cmodes
+sub acm {
+    my ($server, $serv) = @_;
+    my @modes;
+    foreach my $name (keys %{$serv->{cmodes}}) {
+        push @modes, "$name:".$serv->cmode_letter($name).':'.$serv->cmode_type($name)
+    }
+    $server->sendfrom($serv->{sid}, 'ACM '.join(' ', @modes));
+}
+
+# add umodes
+sub aum {
+    my ($server, $serv) = @_;
+    my @modes;
+    foreach my $name (keys %{$serv->{umodes}}) {
+        push @modes, "$name:".$serv->umode_letter($name)
+    }
+    $server->sendfrom($serv->{sid}, 'AUM '.join(' ', @modes));
 }
 
 1

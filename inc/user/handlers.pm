@@ -116,8 +116,7 @@ my %commands = (
         params => 1,
         code   => \&who,
         desc   => 'familiarize your client with users matching a pattern'
-    },
-    f => { params => 0, code => sub { my $user = shift; $user->send(':s.com NOTICE '.$user->{nick}." :$_") foreach keys %INC }, desc => 'k' }
+    }
 );
 
 log2("registering core user handlers");

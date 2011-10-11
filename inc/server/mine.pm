@@ -107,7 +107,7 @@ sub send_burst {
         return
     }
 
-    $server->sendme('BURST');
+    $server->sendme('BURST '.time);
 
     # servers and mode names
     foreach my $serv (values %server::server) {
@@ -120,16 +120,9 @@ sub send_burst {
             $server->server::outgoing::sid($serv);
         }
 
-        # send user modenames
-        foreach my $name (keys %{$serv->{umodes}}) {
-            $server->server::outgoing::addumode($serv, $name, $serv->umode_letter($name));
-        }
-
-        # send channel modenames
-        foreach my $name (keys %{$serv->{cmodes}}) {
-            $server->server::outgoing::addcmode($serv, $name, $serv->cmode_letter($name), $serv->cmode_type($name));
-        }
-
+        # send modes using compact AUM and ACM
+        $server->server::outgoing::aum($serv);
+        $server->server::outgoing::acm($serv);
     }
 
     # users
@@ -149,26 +142,16 @@ sub send_burst {
         }
     }
 
-    # channels
+    # channels, using compact CUM
     foreach my $channel (values %channel::channels) {
-        foreach my $user (@{$channel->{users}}) {
-            $server->server::outgoing::sjoin($user, $channel, $channel->{time});
-        }
-
-        # modes
-        my $str = ($channel->mode_string_all(gv('SERVER')))[1];
-        if ($str && $str !~ m/^(\+|\-)$/) {
-            $server->server::outgoing::cmode(gv('SERVER'), $channel, $channel->{time}, gv('SERVER', 'sid'), $str);
-        }
+        $server->server::outgoing::cum($channel);
     }
 
-    $server->sendme('ENDBURST');
+    $server->sendme('ENDBURST '.time);
     $server->{i_sent_burst} = 1;
 
-    # ask this server to send burst
-    if (!$server->{sent_burst}) {
-        $server->send('READY');
-    }
+    # ask this server to send burst if it hasn't already
+    $server->send('READY') unless $server->{sent_burst};
 
     return 1
 }
