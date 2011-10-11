@@ -101,7 +101,7 @@ sub send_all_user {
 # take the lower time of a channel and unset higher time stuff
 sub take_lower_time {
     my ($channel, $time) = @_;
-    return if $time >= $channel->{time}; # never take a time that isn't lower
+    return $channel->{time} if $time >= $channel->{time}; # never take a time that isn't lower
     log2("locally resetting $$channel{name} time to $time");
     my $amount = $channel->{time} - $time;
     $channel->set_time($time);
