@@ -609,3 +609,8 @@ CHANGES:
         0. This is another large edit. juno3 has new dependencies, but only temporarily.
            These dependencies are required in order to support servers with heavy traffic.
            See README for more information.
+
+        October 10, 2011
+
+        1. added compact JELP commands: AUM, ACM, CUM outgoing and incoming handler.
+           re-added ping system after switching to IO::Async.
