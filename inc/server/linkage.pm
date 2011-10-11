@@ -53,13 +53,13 @@ sub connect_server {
     $main::loop->add($stream);
 
     # send server credentials.
-    $conn->send(sprintf('SERVER %s %s %s %s :%s',
-                        gv('SERVER', 'sid'),
-                        gv('SERVER', 'name'),
-                        gv('PROTO'),
-                        gv('VERSION'),
-                        gv('SERVER', 'desc')
-    ));
+    $conn->send(sprintf 'SERVER %s %s %s %s :%s',
+        gv('SERVER', 'sid'),
+        gv('SERVER', 'name'),
+        gv('PROTO'),
+        gv('VERSION'),
+        gv('SERVER', 'desc')
+    );
 
     $conn->send("PASS $serv{send_password}");
 
