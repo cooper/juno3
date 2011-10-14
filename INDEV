@@ -614,3 +614,7 @@ CHANGES:
 
         1. added compact JELP commands: AUM, ACM, CUM outgoing and incoming handler.
            re-added ping system after switching to IO::Async.
+
+        October 14, 2011
+
+        2. Perfected new compact JELP commands in the last few commits.
