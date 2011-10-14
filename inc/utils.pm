@@ -186,8 +186,8 @@ sub lceq {
 # chop a string to its limit as the config says
 sub cut_to_limit {
     my ($limit, $string) = (conf('limit', shift), shift);
-    return $string unless $limit;
-    my $overflow = length $string - $limit;
+    return $string unless defined $limit;
+    my $overflow = length($string) - $limit;
     $string = substr $string, 0, -$overflow if length $string > $limit;
     return $string
 }
@@ -208,12 +208,13 @@ sub crypt {
         when ('md5')    { $func = 'Digest::MD5::md5_hex'    }
     }
 
-    my $eval = "$func('$what')";
+    $what    =~ s/'/\\'/g;
+    my $eval =  "$func('$what')";
 
     # use eval to prevent crash if failed to load the module
     $what = eval $eval;
 
-    if (!defined($what)) {
+    if (not defined $what) {
         log2("couldn't crypt to $crypt. you probably forgot to load it. $@");
         return $what;
     }
@@ -225,7 +226,7 @@ sub crypt {
 
 sub gv {
     # can't use do{given{
-    # compatibility :| XXX
+    # compatibility with 5.12 XXX
     given (scalar @_) {
         when (1) { return $GV{shift()}                   }
         when (2) { return $GV{shift()}{shift()}          }

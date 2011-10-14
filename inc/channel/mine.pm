@@ -34,6 +34,7 @@ sub cjoin {
     }
 
     names($channel, $user);
+    $user->handle("TOPIC $$channel{name}") if exists $channel->{topic};
     $user->numeric('RPL_ENDOFNAMES', $channel->{name});
 
     return $channel->{time};

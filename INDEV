@@ -5,11 +5,9 @@ TODO:
 
     [H] fix UID collision bugs
     [H] fix server SID/name collision bugs
-    [H] fix the bug that is too embarrassing to mention here
     [H] RPL_ISUPPORT
     [M] compact server commands
     [M] LUSERS
-    [M] WHO
     [L] idle time in WHOIS
     [L] finish RPL_WELCOME
     [L] invisible NAMES
@@ -17,6 +15,7 @@ TODO:
     [L] make umode invisible work
     [L] make cmodes protect_topic and ban work
     [L] add modes secret and private and then make NAMES accurate to them
+    [L] TARGMAX and target limits
 
 TODO for stability and performance:
 
@@ -618,3 +617,6 @@ CHANGES:
         October 14, 2011
 
         2. Perfected new compact JELP commands in the last few commits.
+
+        3. Fixed a bug in the limit checker.
+           Added TOPIC user command and made channel mode t functional.

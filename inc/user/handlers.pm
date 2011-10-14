@@ -116,6 +116,11 @@ my %commands = (
         params => 1,
         code   => \&who,
         desc   => 'familiarize your client with users matching a pattern'
+    },
+    TOPIC => {
+        params => 1,
+        code   => \&topic,
+        desc   => 'view or set the topic of a channel'
     }
 );
 
@@ -629,7 +634,7 @@ sub quit {
         $reason = col((split /\s+/,  $data, 2)[1])
     }
 
-    $user->{conn}->done("Quit: $reason");
+    $user->{conn}->done("~$reason");
 }
 
 sub part {
@@ -663,7 +668,6 @@ sub part {
 
 sub sconnect {
     my ($user, $data, @args) = @_;
-
     my $server = $args[1];
 
     # make sure they have connect flag
@@ -760,6 +764,64 @@ sub who {
     }
 
     $user->numeric('RPL_ENDOFWHO', $query);
+    return 1
+}
+
+sub topic {
+    my ($user, $data, @args) = @_;
+    $args[1] =~ s/,(.*)//; # XXX: comma separated list won't work here!
+    my $channel = channel::lookup_by_name($args[1]);
+
+    # existent channel?
+    if (!$channel) {
+        $user->numeric(ERR_NOSUCHCHANNEL => $args[1]);
+        return
+    }
+
+    # setting topic
+    if (defined $args[2]) {
+        my $can = (!$channel->is_mode('protect_topic')) ? 1 : $channel->user_has_basic_status($user) ? 1 : 0;
+
+        # not permitted
+        if (!$can) {
+            $user->numeric(ERR_CHANOPRIVSNEEDED => $channel->{name});
+            return
+        }
+
+        my $topic = cut_to_limit('topic', col((split /\s+/, $data, 3)[2]));
+        $channel->channel::mine::send_all(':'.$user->full." TOPIC $$channel{name} :$topic");
+
+        # set it
+        if (length $topic) {
+            $channel->{topic} = {
+                setby => $user->full,
+                time  => time,
+                topic => $topic
+            };
+        }
+        else {
+            delete $channel->{topic}
+        }
+
+    }
+
+    # viewing topic
+    else {
+
+        # topic set
+        if (exists $channel->{topic}) {
+            $user->numeric(RPL_TOPIC        => $channel->{name}, $channel->{topic}->{topic});
+            $user->numeric(RPL_TOPICWHOTIME => $channel->{name}, $channel->{topic}->{setby}, $channel->{topic}->{time});
+        }
+
+        # no topic set
+        else {
+            $user->numeric(RPL_NOTOPIC => $channel->{name});
+            return
+        }
+
+    }
+
     return 1
 }
 
