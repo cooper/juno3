@@ -622,3 +622,5 @@ CHANGES:
 
         3. Fixed a bug in the limit checker.
            Added TOPIC user command and made channel mode t functional.
+
+        4. Added server TOPIC command, sort of.
