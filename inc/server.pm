@@ -204,6 +204,10 @@ sub DESTROY {
     log2("$server destroyed");
 }
 
+sub full {
+    shift->{name}
+}
+
 # local shortcuts
 sub handle   { server::mine::handle(@_)   }
 sub send     { server::mine::send(@_)     }

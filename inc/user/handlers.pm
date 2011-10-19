@@ -790,6 +790,7 @@ sub topic {
 
         my $topic = cut_to_limit('topic', col((split /\s+/, $data, 3)[2]));
         $channel->channel::mine::send_all(':'.$user->full." TOPIC $$channel{name} :$topic");
+        server::outgoing::topic_all($user, $channel, time, $topic);
 
         # set it
         if (length $topic) {
@@ -819,7 +820,6 @@ sub topic {
             $user->numeric(RPL_NOTOPIC => $channel->{name});
             return
         }
-
     }
 
     return 1

@@ -103,17 +103,23 @@ sub send_all_user {
 sub take_lower_time {
     my ($channel, $time) = @_;
     return $channel->{time} if $time >= $channel->{time}; # never take a time that isn't lower
+
     log2("locally resetting $$channel{name} time to $time");
     my $amount = $channel->{time} - $time;
     $channel->set_time($time);
+    notice_all($channel, "channel TS set back $amount seconds");
+
+    # unset topic
+    send_all($channel, ':'.gv('SERVER', 'name')." TOPIC $$channel{name} :");
+    delete $channel->{topic};
 
     # unset all channel modes
     my $modestring = ($channel->mode_string_all(gv('SERVER')))[0];
     $modestring =~ s/\+/\-/;
-    notice_all($channel, "channel TS set back $amount seconds");
-    send_all($channel, ":".gv('SERVER', 'name')." MODE $$channel{name} $modestring");
+    send_all($channel, ':'.gv('SERVER', 'name')." MODE $$channel{name} $modestring");
     $channel->{modes} = {};
 
+    notice_all($channel, 'channel properties reset');
     return $channel->{time}
 }
 

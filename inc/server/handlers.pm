@@ -94,6 +94,11 @@ my %commands = (
         forward => 1,
         code    => \&part
     },
+    TOPIC => {
+        params  => 3,
+        forward => 1,
+        code    => \&topic
+    },
 
     # compact
 
@@ -457,6 +462,37 @@ sub cum {
         $user_result  = $serv->convert_cmode_string(gv('SERVER'), $user_result);
         $channel->channel::mine::send_all(":$$serv{name} MODE $$channel{name} $user_result");
     }
+    return 1
+}
+
+sub topic {
+    my ($server, $data, @args) = @_;
+    my $source  = utils::global_lookup(col($args[0]));
+    my $channel = channel::lookup_by_name($args[2]);
+
+    # check that channel exists
+    return unless $channel;
+
+    if ($channel->channel::mine::take_lower_time($args[3]) != $args[3]) {
+        # bad channel time
+        return
+    }
+
+    my $topic = col((split /\s+/, $data, 3)[2]);
+    $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
+
+    # set it
+    if (length $topic) {
+        $channel->{topic} = {
+            setby => $source->full,
+            time  => time,
+            topic => $topic
+        };
+    }
+    else {
+        delete $channel->{topic}
+    }
+
     return 1
 }
 

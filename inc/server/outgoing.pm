@@ -54,7 +54,6 @@ sub addcmode_all {
     server::mine::sendfrom_children(undef, $serv->{sid}, "ADDCMODE $name $mode $type");
 }
 
-
 #########
 # users #
 #########
@@ -119,48 +118,48 @@ sub privmsgnotice_all {
 
 sub sjoin {
     my ($server, $user, $channel, $time) = @_;
-    $server->sendfrom($user->{uid}, "JOIN $$channel{name} $time");
+    $server->sendfrom($user->{uid}, "JOIN $$channel{name} $time")
 }
 
 sub sjoin_all {
     my ($user, $channel, $time) = @_;
-    server::mine::sendfrom_children(undef, $user->{uid}, "JOIN $$channel{name} $time");
+    server::mine::sendfrom_children(undef, $user->{uid}, "JOIN $$channel{name} $time")
 }
 
 # add oper flags
 
 sub oper {
     my ($server, $user, @flags) = @_;
-    $server->sendfrom($user->{uid}, "OPER @flags");
+    $server->sendfrom($user->{uid}, "OPER @flags")
 }
 
 sub oper_all {
     my ($user, @flags) = @_;
-    server::mine::sendfrom_children(undef, $user->{uid}, "OPER @flags");
+    server::mine::sendfrom_children(undef, $user->{uid}, "OPER @flags")
 }
 
 # set away
 
 sub away {
     my ($server, $user) = @_;
-    $server->sendfrom($user->{uid}, "AWAY :$$user{away}");
+    $server->sendfrom($user->{uid}, "AWAY :$$user{away}")
 }
 
 sub away_all {
     my $user = shift;
-    server::mine::sendfrom_children(undef, $user->{uid}, "AWAY :$$user{away}");
+    server::mine::sendfrom_children(undef, $user->{uid}, "AWAY :$$user{away}")
 }
 
 # return from away
 
 sub return_away {
     my ($server, $user) = @_;
-    $server->sendfrom($user->{uid}, 'RETURN');
+    $server->sendfrom($user->{uid}, 'RETURN')
 }
 
 sub return_away_all {
     my $user = shift;
-    server::mine::sendfrom_children(undef, $user->{uid}, 'RETURN');
+    server::mine::sendfrom_children(undef, $user->{uid}, 'RETURN')
 }
 
 # leave a channel
@@ -168,13 +167,23 @@ sub return_away_all {
 sub part {
     my ($server, $user, $channel, $time, $reason) = @_;
     my $sreason = $reason ? " :$reason" : q();
-    $server->sendfrom($user->{uid}, "PART $$channel{name} $time$sreason");
+    $server->sendfrom($user->{uid}, "PART $$channel{name} $time$sreason")
 }
 
 sub part_all {
     my ($user, $channel, $time, $reason) = @_;
     my $sreason = $reason ? " :$reason" : q();
-    server::mine::sendfrom_children(undef, $user->{uid}, "PART $$channel{name} $time$sreason");
+    server::mine::sendfrom_children(undef, $user->{uid}, "PART $$channel{name} $time$sreason")
+}
+
+sub topic {
+    my ($server, $user, $channel, $time, $topic) = @_;
+    $server->sendfrom($user->{uid}, "TOPIC $$channel{name} $time :$topic")
+}
+
+sub topic_all {
+    my ($user, $channel, $time, $topic) = @_;
+    server::mine::sendfrom_children(undef, $user->{uid}, "TOPIC $$channel{name} $time :$topic")
 }
 
 ########
@@ -192,6 +201,7 @@ sub cmode_all {
     my ($source, $channel, $time, $perspective, $modestr) = @_;
     server::mine::sendfrom_children(undef, $source->id, "CMODE $$channel{name} $time $perspective :$modestr")
 }
+
 
 ####################
 # COMPACT commands #
@@ -246,7 +256,7 @@ sub cum {
 
     # note: use "-" if no users present
     $server->sendfrom(gv('SERVER')->{sid}, "CUM $$channel{name} $$channel{time} ".(join(',', @userstrs) || 
-'-')." :$modestr");
+'-')." :$modestr")
 }
 
 # add cmodes
@@ -256,7 +266,7 @@ sub acm {
     foreach my $name (keys %{$serv->{cmodes}}) {
         push @modes, "$name:".$serv->cmode_letter($name).':'.$serv->cmode_type($name)
     }
-    $server->sendfrom($serv->{sid}, 'ACM '.join(' ', @modes));
+    $server->sendfrom($serv->{sid}, 'ACM '.join(' ', @modes))
 }
 
 # add umodes
@@ -266,7 +276,7 @@ sub aum {
     foreach my $name (keys %{$serv->{umodes}}) {
         push @modes, "$name:".$serv->umode_letter($name)
     }
-    $server->sendfrom($serv->{sid}, 'AUM '.join(' ', @modes));
+    $server->sendfrom($serv->{sid}, 'AUM '.join(' ', @modes))
 }
 
 1
