@@ -478,7 +478,7 @@ sub topic {
         return
     }
 
-    my $topic = col((split /\s+/, $data, 3)[2]);
+    my $topic = col((split /\s+/, $data, 5)[4]);
     $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
 
     # set it

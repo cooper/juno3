@@ -618,9 +618,11 @@ CHANGES:
 
         2. Perfected new compact JELP commands in the last few commits.
 
-        October 19, 2011
-
         3. Fixed a bug in the limit checker.
            Added TOPIC user command and made channel mode t functional.
 
+        October 19, 2011
+
         4. Added server TOPIC command, sort of.
+
+        5. fixed a bug in the new TOPIC handler.
