@@ -59,6 +59,8 @@
     kickmsg: 300        # kick messages
     channelname: 50     # channel names
     away: 100           # away reasons
+    connection: 100     # connections
+    client: 50          # users
 
 [ file ]
 

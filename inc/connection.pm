@@ -183,15 +183,19 @@ sub ready {
 
     # must be a user
     if (exists $connection->{nick}) {
+
+        # if the client limit has been reached, hang up
+        if (scalar(grep { $_->{type} && $_->{type}->isa('user') } values %connection) >= conf('limit', 'client')) {
+            $connection->done('not accepting clients');
+            return
+        }
+
         $connection->{uid}      = gv('SERVER', 'sid').++$ID;
         $connection->{server}   = gv('SERVER');
         $connection->{location} = gv('SERVER');
         $connection->{cloak}    = $connection->{host};
         $connection->{modes}    = '';
-        $connection->{type}     = user->new($connection);
-
-        # tell my children
-        
+        $connection->{type}     = user->new($connection);        
     }
 
     # must be a server

@@ -19,7 +19,6 @@ TODO:
 
 TODO for stability and performance:
 
-    IO::Async all the way
     maximum connection settings
     maximum connections in x seconds
     maxperip, globally and locally
@@ -626,3 +625,8 @@ CHANGES:
         4. Added server TOPIC command, sort of.
 
         5. fixed a bug in the new TOPIC handler.
+
+        November 11, 2011
+
+        6. Added connection limit.
+           Added client limit.

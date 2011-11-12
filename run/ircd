@@ -32,7 +32,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.0.5',
+        VERSION => '3.2.0.6',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV
@@ -234,6 +234,12 @@ sub WARNING { log2(shift) }
 # handle connecting user or server
 sub handle_connect {
     my ($listener, $stream) = @_;
+
+    # if the connection limit has been reached, disconnect
+    if (scalar keys %connection::connection >= conf('limit', 'connection')) {
+        $stream->close_now;
+        return
+    }
 
     # create connection object
     my $conn = connection->new($stream);
