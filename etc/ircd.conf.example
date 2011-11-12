@@ -62,7 +62,8 @@
 
                         # the max number of...
     connection: 100     # connections
-    perip: 5            # connections per IP address
+    perip: 3            # connections per IP address (local connections)
+    globalperip: 5      # connections per IP address (global users)
     client: 50          # users
 
 [ file ]

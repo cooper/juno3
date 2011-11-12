@@ -20,7 +20,6 @@ TODO:
 TODO for stability and performance:
 
     maximum connections in x seconds
-    maxperip, globally and locally
     connection throttle
 
 PLANS:
@@ -633,3 +632,5 @@ CHANGES:
         November 12, 2011
 
         7. added max per IP address.
+
+        8. added global max users per IP address.
