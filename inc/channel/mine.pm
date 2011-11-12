@@ -40,11 +40,20 @@ sub cjoin {
     return $channel->{time};
 }
 
+# send NAMES
+# this is here instead of user::handlers because it is convenient to send on channel join
 sub names {
     my ($channel, $user) = @_;
     my @str;
     my $curr = 0;
     foreach my $usr (@{$channel->{users}}) {
+
+        # if this user is invisible, do not show him unless the querier is in a common
+        # channel or has the see_invisible flag.
+        if ($usr->is_mode('invisible')) {
+            next if !$channel->has_user($user) && !$user->has_flag('see_invisible')
+        }
+
         $str[$curr] .= prefix($channel, $usr).$usr->{nick}.q( );
         $curr++ if length $str[$curr] > 500
     }

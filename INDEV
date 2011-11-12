@@ -22,6 +22,10 @@ TODO for stability and performance:
     maximum connections in x seconds
     connection throttle
 
+OPER FLAGS:
+
+    see_invisible: can see invisible users in NAMES
+
 PLANS:
 
     GENERAL:
@@ -634,3 +638,6 @@ CHANGES:
         7. added max per IP address.
 
         8. added global max users per IP address.
+
+        9. added see_invisible flag to make invisible users visible in NAMES and WHO.
+           made RPL_YOUREOPER a bit more verbose.

@@ -208,7 +208,7 @@ sub info {
         "contributed to the project."                                   ,
         " "                                                             ,
         "\2Developers\2"                                                ,
-        "    Mitchell Cooper, \"cooper\" <cooper\@notroll.net>"         ,
+        "    Mitchell Cooper, \"cooper\" <mitchell\@notroll.net>"         ,
         "    Kyle Paranoid, \"mac-mini\" <mac-mini\@mac-mini.org>"      ,
         "    Alyx Marie, \"alyx\" <alyx\@malkier.net>"                  ,
         "    Brandon Rodriguez, \"Beyond\" <beyond\@mailtrap.org>"      ,
@@ -532,7 +532,7 @@ sub oper {
         $user->sendfrom($user->{nick}, "MODE $$user{nick} :$result");
     }
 
-    $user->numeric('RPL_YOUREOPER');
+    $user->numeric('RPL_YOUREOPER', join(' ', @{$user->{flags}}));
     return 1
 }
 
@@ -751,7 +751,7 @@ sub who {
         my $who_flags = delete $quser->{who_flags} || '';
 
         # weed out invisibles
-        next if ($quser->is_mode('invisible') && !channel::in_common($user, $quser));
+        next if ($quser->is_mode('invisible') && !channel::in_common($user, $quser) && !$user->has_flag('see_invisible'));
 
         # rfc2812:
         # If the "o" parameter is passed only operators are returned according

@@ -99,7 +99,7 @@
 # oper classes
 
 [ operclass: local ]
-    flags: [qw/localkill locops/]       # list of oper flags
+    flags: [qw/localkill locops see_invisible/]       # list of oper flags
 
 [ operclass: global ]
     extends: 'local'                    # gets the flags from local
