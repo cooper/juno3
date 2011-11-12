@@ -32,7 +32,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.0.6',
+        VERSION => '3.2.0.7',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV
@@ -240,6 +240,14 @@ sub handle_connect {
         $stream->close_now;
         return
     }
+
+    # if the IP limit has been reached, disconnect
+    my $ip = $stream->{write_handle}->peerhost;
+    if (scalar(grep { $_->{ip} eq $ip } values %connection::connection) >= conf('limit', 'perip')) {
+        $stream->close_now;
+        return
+    }
+
 
     # create connection object
     my $conn = connection->new($stream);

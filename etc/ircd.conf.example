@@ -59,7 +59,10 @@
     kickmsg: 300        # kick messages
     channelname: 50     # channel names
     away: 100           # away reasons
+
+                        # the max number of...
     connection: 100     # connections
+    perip: 5            # connections per IP address
     client: 50          # users
 
 [ file ]
@@ -74,7 +77,7 @@
 [ ping: user ]
 
     message: "Ping timeout"     # user ping section:
-    frequency: 30                   # defaults are usually sufficient.
+    frequency: 30               # defaults are usually sufficient.
     timeout: 120
 
 

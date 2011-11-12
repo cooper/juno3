@@ -19,7 +19,6 @@ TODO:
 
 TODO for stability and performance:
 
-    maximum connection settings
     maximum connections in x seconds
     maxperip, globally and locally
     connection throttle
@@ -630,3 +629,7 @@ CHANGES:
 
         6. Added connection limit.
            Added client limit.
+
+        November 12, 2011
+
+        7. added max per IP address.
