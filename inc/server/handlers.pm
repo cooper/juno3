@@ -138,7 +138,7 @@ sub sid {
 
     # do not allow SID or server name collisions
     if (server::lookup_by_id($ref->{sid}) || server::lookup_by_name($ref->{name})) {
-        log2("duplicate SID $$ref{sid}; dropping $$server{name}");
+        log2("duplicate SID $$ref{sid} or server name $$ref{name}; dropping $$server{name}");
         $server->{conn}->done('attempted to introduce existing server');
         return
     }
@@ -158,6 +158,14 @@ sub uid {
     $ref->{location} = $server;
     $ref->{server}   = server::lookup_by_id(col($ref->{server}));
     delete $ref->{dummy};
+
+    # uid collision?
+    if (user::lookup_by_id($ref->{uid})) {
+        # can't tolerate this.
+        # the server is either not a juno server or is bugged/mentally unstable.
+        log2("duplicate UID $$ref{uid}; dropping $$server{name}");
+        $server->{conn}->done('UID collision');
+    }
 
     # nick collision?
     my $used = user::lookup_by_nick($ref->{nick});

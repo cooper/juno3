@@ -13,7 +13,7 @@ use utils qw[log2 col conn conf match gv];
 our ($ID, %connection) = 'a';
 
 sub new {
-    my ($this, $stream) = @_;
+    my ($class, $stream) = @_;
     return unless defined $stream;
 
     bless my $connection = {
@@ -23,7 +23,7 @@ sub new {
         time          => time,
         last_ping     => time,
         last_response => time
-    }, $this;
+    }, $class;
 
     # resolve hostname
     #if (conf qw/enabled resolve/) {

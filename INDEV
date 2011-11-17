@@ -3,8 +3,6 @@ Development log
 
 TODO:
 
-    [H] fix UID collision bugs
-    [H] fix server SID/name collision bugs
     [H] RPL_ISUPPORT
     [M] compact server commands
     [M] LUSERS
@@ -51,6 +49,8 @@ API PLANS:
         support modules written in JavaScript, Ruby, and Perl.
 
         module: fake ban
+        module: abuse
+        module: named mode setting
 
     LINKING:
 
@@ -75,7 +75,7 @@ CHANGES:
         2. Fixed configuration parser.
 
         3. Added load_requirements() and fatal() util.
-           user.pm is now soley for users; connection.pm will handle connections.
+           user.pm is now solely for users; connection.pm will handle connections.
 
         4. Whoops, forgot to put fatal() in @EXPORT_OK.
            fatal() logs the method that called it now.
@@ -106,7 +106,7 @@ CHANGES:
 
         1. Fixed crash if disconnect before register.
            Allow any drop-in replacement for IO::Socket::INET such as IO::Socket::IP or IO::Socket::INET6.
-           Finsihed flood protection and incoming buffer.
+           Finished flood protection and incoming buffer.
 
         2. Added md5 support.
            Changed configuration some more.
@@ -183,7 +183,7 @@ CHANGES:
         6. UID handler now determines who wins a nick collision battle.
 
         7. Added nick check to registration.
-           Fixed a bug that occured when an unregistered connection disconnected.
+           Fixed a bug that occurred when an unregistered connection disconnected.
 
         8. Added loop functions to extend the main loop.
 
@@ -641,3 +641,7 @@ CHANGES:
 
         9. added see_invisible flag to make invisible users visible in NAMES and WHO.
            made RPL_YOUREOPER a bit more verbose.
+
+    1. November 17, 2011
+
+        0. fixed UID, SID, and server name collision bugs.
