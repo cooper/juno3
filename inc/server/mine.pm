@@ -175,6 +175,9 @@ sub send_children {
         # don't try to send to non-locals
         next unless exists $server->{conn};
 
+        # don't send to servers who haven't received my burst.
+        next unless $server->{i_sent_burst};
+
         $server->send(@_);
     }
 

@@ -164,7 +164,7 @@ sub uid {
         # can't tolerate this.
         # the server is either not a juno server or is bugged/mentally unstable.
         log2("duplicate UID $$ref{uid}; dropping $$server{name}");
-        $server->{conn}->done('UID collision');
+        $server->{conn}->done('UID collision') if exists $server->{conn};
     }
 
     # nick collision?
@@ -361,6 +361,7 @@ sub cmode {
     # perspective doesn't exist?
     if (!$perspective) {
         $server->{conn}->done("server $args[4] doesn't exist");
+        return
     }
 
     # ignore if time is older

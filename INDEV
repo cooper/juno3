@@ -645,3 +645,5 @@ CHANGES:
     1. November 17, 2011
 
         0. fixed UID, SID, and server name collision bugs.
+
+        1. fixed a bug where it's possible for a server to receive useless info before burst is sent.
