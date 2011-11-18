@@ -39,19 +39,19 @@ editing the example configuration. The configuration should be saved as etc/ircd
 juno-ircd started as a fork of pIRCd, the Perl IRC daemon written several years ago by Jay
 Kominek. It has grown to be a bit more *practical*.  
   
-* pIRCd: very buggy, lacking features other than traditional IRC features, poorly coded.
+* **pIRCd**: very buggy, lacking features other than traditional IRC features, poorly coded.
   during its time it was one of few IRCds that featured SSL support.
-* pIRCd2: the same as pIRCd, except you can use dollar signs in your nicks, like Ke$ha.
-* juno-ircd: very poorly written but has more features: five prefixes instead of two,
+* **pIRCd2**: the same as pIRCd, except you can use dollar signs in your nicks, like Ke$ha.
+* **juno-ircd**: very poorly written but has more features: five prefixes instead of two,
   multi-prefix, CAP, channel link mode, internal logging channel, network administrator
   support, oper-override mode, channel mute mode, kline command, an almost-working buggy
   linking protocol, and a network name configuration option.
 **and that's when I realized pIRCd blows.**
-* juno: rewritten from scratch, *far* more usable than any other previous version. This
+* **juno**: rewritten from scratch, *far* more usable than any other previous version. This
   version of juno is what I would consider to be "fully-featured." It has an easy-to-use
   module API and just about every channel mode you can think of. However, it does not
   support server linking at all.
-* juno3: rewritten from scratch, *far* more efficient than any previous version of juno.
+* **juno3**: rewritten from scratch, *far* more efficient than any previous version of juno.
   capable of handling over nine thousand connections and 100,000 global users. has an even
   more capable module API than juno2. has its own custom linking protocol that is also
   very, very extensible. designed to be so customizable that almost anything can be edited
