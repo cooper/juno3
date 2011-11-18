@@ -1,14 +1,14 @@
 # juno-ircd version 3
 
-Yes. 
-It really is an IRC daemon. 
-It's written in Perl. 
- 
-... 
-You can breathe again. 
-There. Very good. 
- 
-## what is juno-ircd version 3?
+Yes.  
+ It really is an IRC daemon.  
+ It's written in Perl.  
+   
+ ...  
+ You can breathe again.  
+ There. Very good.  
+   
+ ## what is juno-ircd version 3?
 
 juno-ircd is a fully-featured, modular, and usable IRC daemon written in Perl. It is aimed
 to be highly extensible and customizable. At the same time it is efficient and usable.
@@ -37,9 +37,9 @@ editing the example configuration. The configuration should be saved as etc/ircd
 ## history
 
 juno-ircd started as a fork of pIRCd, the Perl IRC daemon written several years ago by Jay
-Kominek. It has grown to be a bit more *practical*. 
- 
-* pIRCd: very buggy, lacking features other than traditional IRC features, poorly coded.
+Kominek. It has grown to be a bit more *practical*.  
+   
+ * pIRCd: very buggy, lacking features other than traditional IRC features, poorly coded.
   during its time it was one of few IRCds that featured SSL support.
 * pIRCd2: the same as pIRCd, except you can use dollar signs in your nicks, like Ke$ha.
 * juno-ircd: very poorly written but has more features: five prefixes instead of two,
@@ -57,17 +57,17 @@ Kominek. It has grown to be a bit more *practical*.
   very, very extensible. designed to be so customizable that almost anything can be edited
   by using a module. requires more resources than before, but is also more prepared for
   IRC networks with large loads.
- 
-When juno2 was in development, it was named "juno" where juno1 was named "juno-ircd" as it
+  
+ When juno2 was in development, it was named "juno" where juno1 was named "juno-ircd" as it
 always had been. When juno3 was born, juno-ircd and juno were renamed to juno1 and juno2
 to avoid confusion. Versions are written as version.major.minor.commit, such as 3.2.1.1
 (juno3 2.1 commit 1.)
 
 ## about the author
 
-Mitchell Cooper, mitchell@notroll.net 
- 
-juno1 was my first project in Perl, ever. Since then I have created loads of things. I am
+Mitchell Cooper, mitchell@notroll.net  
+   
+ juno1 was my first project in Perl, ever. Since then I have created loads of things. I am
 still learning, but I have gotten to a point now where I know the Perl language well
 enough to stop learning. Most of my creations in Perl are related to IRC in some way,
 though I have other projects as well. I always look back at things I worked on a month ago
