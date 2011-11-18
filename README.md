@@ -8,7 +8,7 @@ Yes.
  You can breathe again.  
  There. Very good.  
    
- ## what is juno-ircd version 3?
+## what is juno-ircd version 3?
 
 juno-ircd is a fully-featured, modular, and usable IRC daemon written in Perl. It is aimed
 to be highly extensible and customizable. At the same time it is efficient and usable.
