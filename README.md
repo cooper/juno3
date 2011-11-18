@@ -1,117 +1,89 @@
 # juno-ircd version 3
 
-## notice
+Yes. 
+It really is an IRC daemon. 
+It's written in Perl. 
+ 
+... 
+You can breathe again. 
+There. Very good. 
+ 
+## what is juno-ircd version 3?
 
-juno is designed to be ready out-of-the-box. You are likely to get tied of hearing that because I am quite sure that I have said
-that at least 10 other times in this file. However, recently juno has been dependent on several libraries for high efficiency.
-Soon, these options will be configurable. For small networks they don't do much more than waste resources, but for bigger networks
-they provide a notably large speed increase. Most IRC servers probably will do fine with the version that is a bit more resource-friendly
-but not quite as efficient as the version that depends on these large libraries.
+juno-ircd is a fully-featured, modular, and usable IRC daemon written in Perl. It is aimed
+to be highly extensible and customizable. At the same time it is efficient and usable.
 
-## about
+## from juno2 to juno3, what's new?
 
-This is (or will be) a fully-featured IRCd. Why is that so surprising? People keep saying, "omg there is a POE module for ircd y r u making 1,"
-but that fails and is very simple whereas this is completely customizable and packed with features. It's like asking one of the hundreds of 
-people who have developed IRCds in C, "why are you writing an IRCd when there already is one?" I would guess that they were taking something and
-making it better and better. I have also been told that "I don't like it" isn't a good enough reason not to use something, and that I must explain
-why I don't like things. I guess I just never knew that I'm not allowed to create my own things if someone else has already created something
-similar. besides, I don't want to set up an IRCd for any particular reason. I want to make one, so that is what I'm doing. (and have been for over a year)
-
-## also
-
-this is temporary. until this version of the IRCd is somewhat usable, this README probably won't help much. Basically this is an even more
-customizable version of juno 2. It also has a server linking protocol now.
-
-## efficiency and stability
-
-juno3 is a work in process. I do my best to ensure that the IRCd never randomly exits or anything of that nature; instead it should log errors
-and attempt to continue. juno has become surprisingly efficient. The power and speed of perl allows juno to do many operations in a small amount
-of time. I specifically take time to ensure that there are no memory leaks. juno3 has a problem where references refer to themselves, but I have
-solved the issue and put more time into making juno more memory-friendly. juno should track and log the location of data when a user quits, a
-connection is closed, a server leaves the network, etc.
-
-## dependencies
-
-**Temporarily, several packages of the IO::Async library are required.**  
-  
-
-First of all, you need a machine that can run this (tested only on Linux; doubt it will work on Windows.)
-This IRCd is designed to be used out-of-the-box, using all core modules up until August 7, 2011 when IO::Socket::IP became the only Perl module
-not in Perl's core module list that juno relies on. Up until this change, you were able to specify a drop-in replacement for IO::Socket::INET
-or use IO::Socket::INET itself in the configuration for a socket class, but in order to clear confusion IO::Socket::IP is now required.
-IO::Socket::IP provides an interface to both IPv4 and an invisible interface to IPv6 (when available).
-
-**tl;dr**: it works out of the box
-
-## another good laugh
-
-parts of juno are written in JavaScript.
+* **a very extensible linking protocol**
+* more efficiency
+* the ability to host over 9,000 users
+* an even more extensible API
+* more customization
+* a better configuration
+* even more modular
+* more IRC-compliant (probably better for OS X IRC clients!)
+* less buggy (perhaps bugless!)
+* more features in general
 
 ## installation
 
-* configure the ircd and save it as etc/ircd.conf
-* `./juno start`
-* done
+juno is designed to be used out-of-the-box. It comes with a working configuration and, up
+until recently, depended only on modules that ship with Perl. However, it now requires
+much of the IO::Async library and IO::Socket::IP for IPv4 and IPv6 support. After you get
+everything you need installed, feel free to either fire up the IRCd for trying it out or
+editing the example configuration. The configuration should be saved as etc/ircd.conf.
 
-## author and history
+## history
 
-Mitchell Cooper, <mitchell@notroll.net>
-  
-juno-ircd started as a fork of pIRCd. Even though pIRCd might not be some of the best work *anymore*, it was a great example to learn from.
-I called it pIRCd2 for a while up until Elijah Perrault (iElijah101 on GitHub) decided on a name for me. I don't know what it means, but
-there's a movie that uses the same name so I feel that it must be cool enough to use. I added some various features to pIRCd. It was probably
-the buggiest IRCd in existence, and I'm pretty sure that the copy on GitHub is broken and doesn't even run anymore.  
-`[04:15pm] -Global- [Network Notice] Alice (nenolod) - We will be upgrading to "juno-ircd" in 5 seconds.`  
-Anyway, I stopped developing juno-ircd because of some unknown reason that I have forgotten. I was probably getting tired of people laughing
-at me and my IRCd written in Perl. Many moments later I began to rewrite juno from scratch. Looking back at old commit history, I was not
-prepared to rewrite juno again. By the time I learned more and more about Perl I realized that much of juno was full of crap code even after
-I completely rewrote it. juno2 was nearly fully-featured. It had an extensive module API and quite a few built-in features that were cool.
-I don't know why I'm talking in the past tense because it still exists on my github on the "juno" repository. I cleaned up juno so much.
-I was doing commits every 5 minutes changing things to be prettier and more efficient. After I finally got the code mostly cleaned up I
-realized that juno will never have a linking protocol. It was designed on the idea of a single-server network, unfortunately. and thus
-juno3 was born. juno3 is a another complete rewrite. It is a major improvement. juno3 features something that no other version of juno did:
-a linking protocol. But there's more to juno3 than just a linking protocol. 
+juno-ircd started as a fork of pIRCd, the Perl IRC daemon written several years ago by Jay
+Kominek. It has grown to be a bit more *practical*. 
+ 
+* pIRCd: very buggy, lacking features other than traditional IRC features, poorly coded.
+  during its time it was one of few IRCds that featured SSL support.
+* pIRCd2: the same as pIRCd, except you can use dollar signs in your nicks, like Ke$ha.
+* juno-ircd: very poorly written but has more features: five prefixes instead of two,
+  multi-prefix, CAP, channel link mode, internal logging channel, network administrator
+  support, oper-override mode, channel mute mode, kline command, an almost-working buggy
+  linking protocol, and a network name configuration option.
+**and that's when I realized pIRCd blows.**
+* juno: rewritten from scratch, *far* more usable than any other previous version. This
+  version of juno is what I would consider to be "fully-featured." It has an easy-to-use
+  module API and just about every channel mode you can think of. However, it does not
+  support server linking at all.
+* juno3: rewritten from scratch, *far* more efficient than any previous version of juno.
+  capable of handling over nine thousand connections and 100,000 global users. has an even
+  more capable module API than juno2. has its own custom linking protocol that is also
+  very, very extensible. designed to be so customizable that almost anything can be edited
+  by using a module. requires more resources than before, but is also more prepared for
+  IRC networks with large loads.
+ 
+When juno2 was in development, it was named "juno" where juno1 was named "juno-ircd" as it
+always had been. When juno3 was born, juno-ircd and juno were renamed to juno1 and juno2
+to avoid confusion. Versions are written as version.major.minor.commit, such as 3.2.1.1
+(juno3 2.1 commit 1.)
 
-## customization
+## about the author
 
-juno3 could be looked at as more of an ircd "library" instead
-of a hard-coded IRCd. juno3 heavily revolves around the idea of compatibility and interchangeableness. It is very customizable. Soon it
-will have a very impressive API, making it possible for API modules to do almost anything. When you start juno, your terminal will be
-flooded with registration logs. 70% or more of the code in juno is probably accessed through code references stored in locations that
-have names. For example, someone might create an API module that allows anyone to invite users with a certain channel mode specified.
-To do this, their module would delete the check named "internal_must_have_op" for the INVITE command and register a new block that
-returns a true value if the channel mode that allows all users to invite is enabled or returns true if it is not but the user has op.
-juno will be heavily documented, and there will be guides to creating API modules to do exactly what you want.
+Mitchell Cooper, mitchell@notroll.net 
+ 
+juno1 was my first project in Perl, ever. Since then I have created loads of things. I am
+still learning, but I have gotten to a point now where I know the Perl language well
+enough to stop learning. Most of my creations in Perl are related to IRC in some way,
+though I have other projects as well. I always look back at things I worked on a month ago
+and realize how terrible they are. That is why there are three writes of the same IRCd.
+You will notice in my work that I don't really care about people with machines from the
+'90s. (just kidding, juno is surprisingly resource-friendly.) I use unix-like systems, and
+all of my work is designed specifically for unix-like systems. I would be very, very
+surprised if someone got this IRCd working on Windows. I and many others have formed an
+organized known as NoTrollPlzNet which aims to create safe chatting environments (on IRC,
+in particular.) I like apple pie. I am American. I know a woman who was raised in Africa.
+I live near a house that was on Extreme Makeover Home Edition. I build, sell, and maintain
+computers. I love chicken, but I don't like beer chicken. Dark meet is significantly
+better than white meat. Pepsi is better than coke. I like Perl.
 
-## how I code in Perl
+## more info
 
-I try to be as "modern" as possible with my work.
-
-### Perl packages
-
-I do not like to use packages or libraries that:
-
-* claim to provide object-oriented Perl (such as Moose)
-* provide a base for several extensions, pretty much forcing your entire program to depend on the library (like POE)
-* attempt to make syntax prettier (like the Perl6::* modules)
-
-### wait, why not Moose?
-
-I don't get it. Many say that it is the object-oriented extension for Perl. I completely disagree. To me, it appears to have three main purposes:
-
-* shove as much data into the symbol table as possible
-* force your program to allocate so much memory that it refuses to run on systems with less than 9000 GB RAM
-* gain the winning title as the "number one useless memory-eating package" on CPAN
-
-In all seriousness, I do not see any advantage to using Moose. It is enormous and provides little functionality. See [[Perl: blessed references]]
-to learn about object-oriented Perl. If you don't know much about Perl or references, you should see [[Perl: references]] first.
-
-### things you might notice in my code
-
-**I like code references.** I use them *everywhere* for a couple of reasons:
-
-* they're reusable and interchangeable - they can be replaced, moved, and removed
-* references disappear when they're no longer in use - no data is lost, and no memory is wasted
-
-**I like to bless references.** *This* is the objective syntax that Perl offers. Moose isn't much more than that, which I described in a few
-paragraphs up.
+See INDEV for a changelog and TODO list. If you need any help with setting up/configuring
+juno, visit us on NoTrollPlzNet IRC at `irc.notroll.net port 6667 #k`. I love new ideas,
+so feel free to recommend a feature or fix.
