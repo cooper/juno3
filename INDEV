@@ -651,3 +651,5 @@ CHANGES:
         2. made COMMANDS prettier.
 
         3. channel mode ban somewhat does what it should now.
+
+        4. added IRCD user command to view general ircd information.

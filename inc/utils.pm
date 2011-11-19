@@ -5,10 +5,7 @@ package utils;
 use warnings;
 use strict;
 use feature qw[switch say];
-use base 'Exporter';
-use Exporter;
 
-our @EXPORT_OK = qw[log2 conf lconf fatal col conn trim lceq match cut_to_limit gv set];
 our (%conf, %GV);
 
 # parse a configuration file
@@ -248,5 +245,11 @@ sub set {
 
 sub on  () { 1 }
 sub off () { 0 }
+
+sub import {
+    my $package = caller;
+    no strict 'refs';
+    *{$package.'::'.$_} = *{__PACKAGE__.'::'.$_} foreach @_
+}
 
 1

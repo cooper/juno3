@@ -121,6 +121,11 @@ my %commands = (
         params => 1,
         code   => \&topic,
         desc   => 'view or set the topic of a channel'
+    },
+    IRCD => {
+        params => 0,
+        code   => \&ircd,
+        desc   => 'view ircd statistics'
     }
 );
 
@@ -840,6 +845,21 @@ sub topic {
     }
 
     return 1
+}
+
+sub ircd {
+    my $user = shift;
+    $user->server_notice('*** ircd information');
+    $user->server_notice('    version');
+    $user->server_notice('        '.gv('NAME').' version '.gv('VERSION').' proto '.gv('PROTO'));
+    $user->server_notice('    startup time');
+    $user->server_notice('        '.POSIX::strftime('%a %b %d %Y at %H:%M:%S %Z', localtime gv('START')));
+    $user->server_notice('    loaded perl modules');
+    $user->server_notice("        $_") foreach keys %INC;
+    $user->server_notice('    for command list see COMMANDS');
+    $user->server_notice('    for license see INFO');
+    $user->server_notice('*** End of ircd information');
+
 }
 
 1
