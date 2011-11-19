@@ -597,15 +597,25 @@ sub commands {
     my $user = shift;
     $user->server_notice('List of available commands');
 
+    # get the width
+    my $i = 0;
+    foreach my $command (keys %user::mine::commands) {
+        $i = length $command if length $command > $i
+    }
+
+    $i++;
+    $user->server_notice('*** List of available commands');
+
     # send a notice for each command
     foreach my $command (keys %user::mine::commands) {
         foreach my $source (keys %{$user::mine::commands{$command}}) {
-            $user->server_notice(sprintf "%s [\2%s\2] %s", $command,
-              $source, $user::mine::commands{$command}{$source}{desc})
+            $user->server_notice(sprintf "%-${i}s [\2%s\2] %-${i}s", $command,
+                $source, $user::mine::commands{$command}{$source}{desc})
         }
     }
 
-    $user->server_notice('End of commands list');
+    $user->server_notice('*** End of command list');
+
 }
 
 sub away {
