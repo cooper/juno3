@@ -400,6 +400,12 @@ sub cjoin {
         }
         return if $channel->has_user($user);
 
+        # check for ban
+        if ($channel->list_matches('ban', $user->fullcloak) || $channel->list_matches('ban', $user->full)) {
+            $user->numeric('ERR_BANNEDFROMCHAN', $channel->{name});
+            return
+        }
+
         # tell servers that the user joined and the automatic modes were set
         server::outgoing::sjoin_all($user, $channel, $time);
         server::outgoing::cmode_all($user->{server}, $channel, $time, gv('SERVER', 'sid'), $result) if $result;

@@ -226,6 +226,11 @@ sub full {
     "$$user{nick}!$$user{ident}\@$$user{host}"
 }
 
+sub fullcloak {
+    my $user = shift;
+    "$$user{nick}!$$user{ident}\@$$user{cloak}"
+}
+
 sub DESTROY {
     my $user = shift;
     log2("$user destroyed");

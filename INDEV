@@ -4,12 +4,12 @@ Development log
 TODO:
 
     [H] RPL_ISUPPORT
-    [M] compact server commands
+    [H] list mode listing
+    [H] no speaking if banned in channel
     [M] LUSERS
     [M] burst topic
     [L] idle time in WHOIS
     [L] MOTD server parameter
-    [L] make cmode ban work
     [L] add modes secret and private and then make NAMES accurate to them
     [L] TARGMAX and target limits
 
@@ -649,3 +649,5 @@ CHANGES:
         November 19, 2011
 
         2. made COMMANDS prettier.
+
+        3. channel mode ban somewhat does what it should now.

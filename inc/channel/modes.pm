@@ -107,6 +107,7 @@ register_block('ban', 'internal', sub {
         $channel->remove_from_list('ban', $mode->{param});
     }
     push @{$mode->{params}}, $mode->{param};
+    return 1
 });
 
 
