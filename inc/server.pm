@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Copyright (c) 2011, Mitchell Cooper
+# Copyright (c) 2010-12, Mitchell Cooper
 package server;
 
 use warnings;
