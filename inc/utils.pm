@@ -225,9 +225,9 @@ sub gv {
     # can't use do{given{
     # compatibility with 5.12 XXX
     given (scalar @_) {
-        when (1) { return $GV{shift()}                   }
-        when (2) { return $GV{shift()}{shift()}          }
-        when (3) { return $GV{shift()}{shift()}{shift()} }
+        when (1) { return $GV{+shift}                 }
+        when (2) { return $GV{+shift}{+shift}         }
+        when (3) { return $GV{+shift}{+shift}{+shift} }
     }
     return
 }

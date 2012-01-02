@@ -110,7 +110,7 @@ main() {
 
         restart)
             stop
-            sleep 1
+            #sleep .01
             forcestart
             ;;
 

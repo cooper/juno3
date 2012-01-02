@@ -8,7 +8,7 @@ use feature 'switch';
 
 use Socket::GetAddrInfo;
 
-use utils qw[log2 col conn conf match gv];
+use utils qw[log2 col conn conf match gv set];
 
 our ($ID, %connection) = 'a';
 
@@ -34,6 +34,15 @@ sub new {
         $connection->{host} = $connection->{ip};
         $connection->send(':'.gv('SERVER', 'name').' NOTICE * :*** hostname resolving is not enabled on this server');
     #}
+
+    # update total connection count
+    my $count = gv('connection_count');
+    set('connection_count', $count + 1);
+
+    # update maximum connection count
+    if ((scalar keys %connection) + 1 > gv('max_connection_count')) {
+        set('max_connection_count', (scalar keys %connection) + 1);
+    }
 
     log2("Processing connection from $$connection{ip}");
     return $connection{$stream} = $connection

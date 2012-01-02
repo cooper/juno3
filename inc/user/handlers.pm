@@ -100,7 +100,7 @@ my %commands = (
     QUIT => {
         params => 0,
         code   => \&quit,
-        desc   => 'disconnect from network'
+        desc   => 'disconnect from the server'
     },
     PART => {
         params => 1,
@@ -126,6 +126,11 @@ my %commands = (
         params => 0,
         code   => \&ircd,
         desc   => 'view ircd statistics'
+    },
+    LUSERS => {
+        params => 0,
+        code   => \&lusers,
+        desc   => 'view connection count statistics'
     }
 );
 
@@ -860,6 +865,46 @@ sub ircd {
     $user->server_notice('    for license see INFO');
     $user->server_notice('*** End of ircd information');
 
+}
+
+sub lusers {
+    my ($user, $data, @args) = @_;
+
+    # get server count
+    my $servers   = scalar keys %server::server;
+    my $l_servers = scalar grep { $_->is_local } values %server::server;
+
+    # get x users, x invisible, and total global
+    my ($g_not_invisible, $g_invisible) = (0, 0);
+    foreach my $user (values %user::user) {
+        $g_invisible++, next if $user->is_mode('invisible');
+        $g_not_invisible++
+    }
+    my $g_users = $g_not_invisible + $g_invisible;
+
+    # get local users
+    my $l_users  = scalar grep { $_->is_local } values %user::user;
+
+    # get connection count and max connection count
+    my $conn     = gv('connection_count');
+    my $conn_max = gv('max_connection_count');
+
+    # get oper count and channel count
+    my $opers = scalar grep { $_->is_mode('ircop') } values %user::user;
+    my $chans = scalar keys %channel::channel;
+
+    # get max global and max local
+    my $m_global = gv('max_global_user_count');
+    my $m_local  = gv('max_local_user_count');
+
+    # send numerics
+    $user->numeric(RPL_LUSERCLIENT   => $g_not_invisible, $g_invisible, $servers);
+    $user->numeric(RPL_LUSEROP       => $opers);
+    $user->numeric(RPL_LUSERCHANNELS => $chans);
+    $user->numeric(RPL_LUSERME       => $l_users, $l_servers);
+    $user->numeric(RPL_LOCALUSERS    => $l_users, $m_local, $l_users, $m_local);
+    $user->numeric(RPL_GLOBALUSERS   => $g_users, $m_global, $g_users, $m_global);
+    $user->numeric(RPL_STATSCONN     => $conn_max, $m_local, $conn);
 }
 
 1

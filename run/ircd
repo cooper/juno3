@@ -32,10 +32,16 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.1.4',
+        VERSION => '3.2.1.5',
         PROTO   => '0.0.1',
         START   => time,
-        NOFORK  => 'NOFORK' ~~ @ARGV
+        NOFORK  => 'NOFORK' ~~ @ARGV,
+
+        # vars that need to be set
+        connection_count      => 0,
+        max_connection_count  => 0,
+        max_global_user_count => 0,
+        max_local_user_count  => 0
     )
 
 }
