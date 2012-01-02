@@ -653,3 +653,7 @@ CHANGES:
         3. channel mode ban somewhat does what it should now.
 
         4. added IRCD user command to view general ircd information.
+
+        January 1, 2012
+
+        5. added connection tracking and LUSERS command.
