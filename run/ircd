@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Copyright (c) 2011, Mitchell Cooper
+# Copyright (c) 2010-12, Mitchell Cooper
 
 use warnings;
 use strict;
@@ -32,7 +32,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.1.5',
+        VERSION => '3.2.1.6',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV,
@@ -255,7 +255,6 @@ sub handle_connect {
     }
 
     # if the global user IP limit has been reached, disconnect
-    my $ip = $stream->{write_handle}->peerhost;
     if (scalar(grep { $_->{ip} eq $ip } values %user::user) >= conf('limit', 'globalperip')) {
         $stream->close_now;
         return

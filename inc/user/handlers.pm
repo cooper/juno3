@@ -39,7 +39,7 @@ my %commands = (
     INFO => {
         params => 0,
         code   => \&info,
-        desc   => 'display IRCd information'
+        desc   => 'display ircd license and credits'
     },
     MODE => {
         params => 1,
@@ -125,7 +125,7 @@ my %commands = (
     IRCD => {
         params => 0,
         code   => \&ircd,
-        desc   => 'view ircd statistics'
+        desc   => 'view ircd information'
     },
     LUSERS => {
         params => 0,

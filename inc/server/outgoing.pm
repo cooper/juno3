@@ -54,6 +54,28 @@ sub addcmode_all {
     server::mine::sendfrom_children(undef, $serv->{sid}, "ADDCMODE $name $mode $type");
 }
 
+sub topicburst {
+    my ($server, $channel) = @_;
+    $server->sendfrom(gv('SERVER')->{sid}, sprintf
+        'TOPICBURST %s %d %s %d :%s',
+          $channel->{name},
+          $channel->{time},
+          $channel->{topic}->{setby},
+          $channel->{topic}->{time},
+          $channel->{topic}->{topic})
+}
+
+sub topicburst_all {
+    my $channel = shift;
+    server::mine::sendfrom_children(undef, gv('SERVER')->{sid}, sprintf
+        'TOPICBURST %s %d %s %d :%s',
+          $channel->{name},
+          $channel->{time},
+          $channel->{topic}->{setby},
+          $channel->{topic}->{time},
+          $channel->{topic}->{topic})
+}
+
 #########
 # users #
 #########
@@ -255,8 +277,7 @@ sub cum {
     }
 
     # note: use "-" if no users present
-    $server->sendfrom(gv('SERVER')->{sid}, "CUM $$channel{name} $$channel{time} ".(join(',', @userstrs) || 
-'-')." :$modestr")
+    $server->sendfrom(gv('SERVER')->{sid}, "CUM $$channel{name} $$channel{time} ".(join(',', @userstrs) || '-')." :$modestr")
 }
 
 # add cmodes

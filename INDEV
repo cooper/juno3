@@ -657,3 +657,7 @@ CHANGES:
         January 1, 2012
 
         5. added connection tracking and LUSERS command.
+
+        January 6, 2012
+
+        6. added outgoing TOPICBURST server command.

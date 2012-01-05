@@ -505,4 +505,7 @@ sub topic {
     return 1
 }
 
+sub topicburst {
+}
+
 1

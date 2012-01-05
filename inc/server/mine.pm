@@ -150,6 +150,7 @@ sub send_burst {
     # channels, using compact CUM
     foreach my $channel (values %channel::channels) {
         $server->server::outgoing::cum($channel);
+        $server->server::outgoing::topicburst($channel) if $channel->{topic};
     }
 
     $server->sendme('ENDBURST '.time);
