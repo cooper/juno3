@@ -611,7 +611,6 @@ sub ison {
 
 sub commands {
     my $user = shift;
-    $user->server_notice('List of available commands');
 
     # get the width
     my $i = 0;
