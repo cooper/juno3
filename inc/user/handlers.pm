@@ -31,11 +31,11 @@ my %commands = (
 #        code   => \&nick,
 #        desc   => 'change your nickname'
 #    },
-    PONG => {
-        params => 0,
-        code   => sub { },
-        desc   => 'reply to a ping'
-    },
+#    PONG => {
+#        params => 0,
+#        code   => sub { },
+#        desc   => 'reply to a ping'
+#    },
     INFO => {
         params => 0,
         code   => \&info,
