@@ -673,3 +673,5 @@ CHANGES:
 
         2. finished core/ping.
            updated example configuration.
+
+        3. modularized fake user command.

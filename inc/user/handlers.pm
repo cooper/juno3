@@ -16,11 +16,11 @@ my %commands = (
 #        code   => \&ping,
 #        desc   => 'ping the server'
 #    },
-    USER => {
-        params => 0,
-        code   => \&fake_user,
-        desc   => 'fake user command'
-    },
+#    USER => {
+#        params => 0,
+#        code   => \&fake_user,
+#        desc   => 'fake user command'
+#    },
     MOTD => {
         params => 0,
         code   => \&motd,
@@ -144,11 +144,6 @@ undef %commands;
 sub ping {
     my ($user, $data, @s) = @_;
     $user->sendserv('PONG '.gv('SERVER', 'name').' :'.col($s[1]))
-}
-
-sub fake_user {
-    my $user = shift;
-    $user->numeric('ERR_ALREADYREGISTRED');
 }
 
 sub motd {

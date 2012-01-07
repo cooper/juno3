@@ -39,8 +39,8 @@
 
 [ modules ]
 
-    core: ['ping'] # core modules which will be loaded automatically
-    ext: []        # extension modules which will be loaded automatically
+    core: ['ping', 'fakeuser'] # core modules
+    ext: []                    # extension modules
 
 [ users ]
 
