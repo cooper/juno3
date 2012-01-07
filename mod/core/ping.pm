@@ -11,7 +11,6 @@ our $mod = API::Module->new(
     version     => '0.1',
     description => 'ping the server',
     requires    => ['user_commands'],
-    utilities   => ['gv'],
     initialize  => \&init
 );
 
