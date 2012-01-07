@@ -682,3 +682,5 @@ CHANGES:
         5. modularized NICK command.
 
         6. moved PONG and USER to core/cmd_fakecommands.
+
+        7. modularized INFO command.
