@@ -11,36 +11,36 @@ use utils qw[col log2 lceq lconf match cut_to_limit conf gv];
 {
 
 my %commands = (
-#    PING => {
-#        params => 1,
-#        code   => \&ping,
-#        desc   => 'ping the server'
-#    },
-#    USER => {
-#        params => 0,
-#        code   => \&fake_user,
-#        desc   => 'fake user command'
-#    },
-#    MOTD => {
-#        params => 0,
-#        code   => \&motd,
-#        desc   => 'display the message of the day'
-#    },
-#    NICK => {
-#        params => 1,
-#        code   => \&nick,
-#        desc   => 'change your nickname'
-#    },
-#    PONG => {
-#        params => 0,
-#        code   => sub { },
-#        desc   => 'reply to a ping'
-#    },
-#    INFO => {
-#        params => 0,
-#        code   => \&info,
-#        desc   => 'display ircd license and credits'
-#    },
+    PING => {
+        params => 1,
+        code   => \&ping,
+        desc   => 'ping the server'
+    },
+    USER => {
+        params => 0,
+        code   => \&fake_user,
+        desc   => 'fake user command'
+    },
+    MOTD => {
+        params => 0,
+        code   => \&motd,
+        desc   => 'display the message of the day'
+    },
+    NICK => {
+        params => 1,
+        code   => \&nick,
+        desc   => 'change your nickname'
+    },
+    PONG => {
+        params => 0,
+        code   => sub { },
+        desc   => 'reply to a ping'
+    },
+    INFO => {
+        params => 0,
+        code   => \&info,
+        desc   => 'display ircd license and credits'
+    },
     MODE => {
         params => 1,
         code   => \&mode,
@@ -139,6 +139,100 @@ user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{co
 log2("end of core handlers");
 undef %commands;
 
+}
+
+sub ping {
+    my ($user, $data, @s) = @_;
+    $user->sendserv('PONG '.gv('SERVER', 'name').' :'.col($s[1]))
+}
+
+sub fake_user {
+    my $user = shift;
+    $user->numeric('ERR_ALREADYREGISTRED');
+}
+
+sub motd {
+    # TODO <server> parameter
+    my $user = shift;
+    if (!defined gv('MOTD')) {
+        $user->numeric('ERR_NOMOTD');
+        return
+    }
+    $user->numeric('RPL_MOTDSTART', gv('SERVER', 'name'));
+    foreach my $line (@{gv('MOTD')}) {
+        $user->numeric('RPL_MOTD', $line)
+    }
+    $user->numeric('RPL_ENDOFMOTD');
+    return 1
+}
+
+# change nickname
+sub nick {
+    my ($user, $data, @args) = @_;
+    my $newnick = col($args[1]);
+
+    if ($newnick eq '0') {
+        $newnick = $user->{uid}
+    }
+    else {
+        # ignore stupid nick changes
+        if (lceq $user->{nick} => $newnick) {
+            return
+        }
+
+        # check for valid nick
+        if (!utils::validnick($newnick)) {
+            $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
+            return
+        }
+
+        # check for existing nick
+        if (user::lookup_by_nick($newnick)) {
+            $user->numeric('ERR_NICKNAMEINUSE', $newnick);
+            return
+        }
+    }
+
+    # tell ppl
+    $user->channel::mine::send_all_user("NICK $newnick");
+
+    # change it
+    $user->change_nick($newnick);
+
+    server::outgoing::nickchange_all($user);
+}
+
+sub info {
+    my $user = shift;
+    my @info = (
+        " ",
+        "\2***\2 this is \2".gv('NAME')."\2 version \2".gv('VERSION')."\2.\2 ***\2",
+        " "                                                             ,
+        "Copyright (c) 2010-12, the juno-ircd developers"                  ,
+        " "                                                             ,
+        "This program is free software."                                ,
+        "You are free to modify and redistribute it under the terms of" ,
+        "the New BSD license."                                          ,
+        " "                                                             ,
+        "juno3 wouldn't be here if it weren't for the people who have"  ,
+        "contributed to the project."                                   ,
+        " "                                                             ,
+        "\2Developers\2"                                                ,
+        "    Mitchell Cooper, \"cooper\" <mitchell\@notroll.net>"       ,
+        "    Kyle Paranoid, \"mac-mini\" <mac-mini\@mac-mini.org>"      ,
+        "    Alyx Marie, \"alyx\" <alyx\@malkier.net>"                  ,
+        "    Brandon Rodriguez, \"Beyond\" <beyond\@mailtrap.org>"      ,
+        "    Nick Dalsheimer, \"AstroTurf\" <astronomerturf\@gmail.com>",
+        "    Matthew Carey, \"swarley\" <matthew.b.carey\@gmail.com>"   ,
+        "    Matthew Barksdale, \"matthew\" <matt\@mattwb65.com>"       ,
+        " "                                                             ,
+        "Proudly brought to you by \2\x0302No\x0313Troll\x0304Plz\x0309Net\x0f",
+        "https://notroll.net"                                           ,
+        " "
+    );
+    $user->numeric('RPL_INFO', $_) foreach @info;
+    $user->numeric('RPL_ENDOFINFO');
+    return 1
 }
 
 sub mode {

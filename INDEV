@@ -684,3 +684,5 @@ CHANGES:
         6. moved PONG and USER to core/cmd_fakecommands.
 
         7. modularized INFO command.
+
+        8. undid everything I just did. I have a better idea.
