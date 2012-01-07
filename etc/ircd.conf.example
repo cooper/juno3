@@ -37,6 +37,11 @@
     id: 0                                       # the SID
                                                 #   must be unique to the network or things *WILL* screw up
 
+[ api ]
+
+    modules: ['core'] # modules to load automatically.
+                      # you probably want to load core. juno is pretty much useless without it.
+
 [ users ]
 
     automodes: "+i"     # modes set to users on connect

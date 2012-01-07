@@ -1,14 +1,10 @@
-#!/usr/bin/perl
-# Copyright (c) 2010-12, Mitchell Cooper
-package user::handlers;
-
+# Copyright (c) 2012, Mitchell Cooper
+package ext::core;
+ 
 use warnings;
 use strict;
-use feature 'switch';
-
-use utils qw[col log2 lceq lconf match cut_to_limit conf gv];
-
-{
+ 
+use utils qw(col log2 lceq lconf match cut_to_limit conf gv);
 
 my %commands = (
     PING => {
@@ -17,12 +13,10 @@ my %commands = (
         desc   => 'ping the server'
     },
     USER => {
-        params => 0,
         code   => \&fake_user,
         desc   => 'fake user command'
     },
     MOTD => {
-        params => 0,
         code   => \&motd,
         desc   => 'display the message of the day'
     },
@@ -32,12 +26,10 @@ my %commands = (
         desc   => 'change your nickname'
     },
     PONG => {
-        params => 0,
         code   => sub { },
         desc   => 'reply to a ping'
     },
     INFO => {
-        params => 0,
         code   => \&info,
         desc   => 'display ircd license and credits'
     },
@@ -57,7 +49,6 @@ my %commands = (
         desc   => 'send a notice to a user or channel'
     },
     MAP => {
-        params => 0,
         code   => \&cmap,
         desc   => 'view a list of servers connected to the network'
     },
@@ -88,17 +79,14 @@ my %commands = (
         desc   => 'check if users are online'
     },
     COMMANDS => {
-        params => 0,
         code   => \&commands,
         desc   => 'view a list of available commands'
     },
     AWAY => {
-        params => 0,
         code   => \&away,
         desc   => 'mark yourself as away or return from being away'
     },
     QUIT => {
-        params => 0,
         code   => \&quit,
         desc   => 'disconnect from the server'
     },
@@ -123,22 +111,32 @@ my %commands = (
         desc   => 'view or set the topic of a channel'
     },
     IRCD => {
-        params => 0,
         code   => \&ircd,
         desc   => 'view ircd information'
     },
     LUSERS => {
-        params => 0,
         code   => \&lusers,
         desc   => 'view connection count statistics'
     }
 );
 
-log2("registering core user handlers");
-user::mine::register_handler('core', $_, $commands{$_}{params}, $commands{$_}{code}, $commands{$_}{desc}) foreach keys %commands;
-log2("end of core handlers");
-undef %commands;
+our $mod = API::Module->new(
+    name        => 'core',
+    version     => '0.1',
+    description => 'the core set of commands and modes',
+    requires    => ['user_commands'],
+    initialize  => \&init
+);
+ 
+sub init {
+    $mod->register_user_command(
+        name        => $_,
+        description => $commands{$_}{desc},
+        parameters  => $commands{$_}{params} || undef,
+        code        => $commands{$_}{code}
+    ) foreach keys %commands;
 
+    return 1
 }
 
 sub ping {
@@ -906,4 +904,4 @@ sub lusers {
     $user->numeric(RPL_STATSCONN     => $conn_max, $m_local, $conn);
 }
 
-1
+$mod

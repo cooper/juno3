@@ -6,7 +6,6 @@ use warnings;
 use strict;
 
 use user::mine;
-use user::handlers;
 use user::numerics;
 use user::modes;
 use utils qw[log2 gv set];

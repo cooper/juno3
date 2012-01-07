@@ -11,23 +11,11 @@ our @loaded;
 
 # load modules in the configuration
 sub load_config {
-
-    log2('Loading core modules');
-
-    # load core modules
-    if (my $core = conf('modules', 'core')) {
-        load_module("core/$_", "core/$_.pm") foreach @$core;
+    log2('Loading configuration modules');
+    if (my $mods = conf('api', 'modules')) {
+        load_module($_, "$_.pm") foreach @$mods;
     }
-
-    log2('Loading extension modules');
-
-    # load extension modules
-    if (my $ext = conf('modules', 'ext')) {
-        load_module("ext/$_", "ext/$_.pm") foreach @$ext;
-    }
-
     log2('Done loading modules');
-
 }
 
 sub load_module {
