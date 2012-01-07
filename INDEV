@@ -661,3 +661,12 @@ CHANGES:
         January 6, 2012
 
         6. added outgoing TOPICBURST server command.
+
+    2. January 7, 2012
+
+        This is the start of the extension API and modularization of core features.
+
+        1. added API.pm, which manages module loading and unloading.
+           added API::Module, the class which all modules will use to add features.
+           began API::Base::UserCommands. API::Base::* modules are base classes of API::Module.
+           began the first module, core/ping.

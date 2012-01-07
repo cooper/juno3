@@ -32,7 +32,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.1.6',
+        VERSION => '3.2.2.1',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV,
@@ -56,6 +56,7 @@ use connection;
 use server;
 use user;
 use channel;
+use API;
 use utils qw[conf lconf log2 fatal gv set];
 
 our $loop = IO::Async::Loop::Epoll->new;
@@ -92,8 +93,7 @@ sub start {
 
     log2('Started server at '.scalar(localtime gv('START')));
 
-    # parse the configuration, load the required modules, and listen
-
+    # parse the configuration
     utils::parse_config('etc/ircd.conf') or die "Can't parse configuration.\n";
 
     # create the main server object
@@ -116,8 +116,14 @@ sub start {
     $server->user::modes::add_internal_modes();
     $server->channel::modes::add_internal_modes();
 
+    # load required modules and API extensions
     load_requirements();
+    API::load_config();
+
+    # listen
     create_sockets();
+
+    # ping timer
     my $freq = lconf('ping', 'user', 'frequency');
     my $timer = IO::Async::Timer::Periodic->new( 
         interval       => 30,
@@ -125,6 +131,7 @@ sub start {
     );
     $loop->add($timer);
     $timer->start;
+
     log2("server initialization complete");
 
     # auto server connect
