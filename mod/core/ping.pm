@@ -4,11 +4,14 @@ package ext::core::ping;
 use warnings;
 use strict;
 
+use utils qw|gv col|;
+
 our $mod = API::Module->new(
     name        => 'core/ping',
     version     => '0.1',
     description => 'ping the server',
     requires    => ['user_commands'],
+    utilities   => ['gv'],
     initialize  => \&init
 );
 

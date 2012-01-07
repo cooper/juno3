@@ -13,7 +13,7 @@ sub new {
     $opts{requires} ||= [];
 
     # make sure all required options are present
-    foreach my $what (qw|name version description|) {
+    foreach my $what (qw|name version description initialize|) {
         next if exists $opts{$what};
         $opts{name} ||= 'unknown';
         log2("module $opts{name} does not have '$what' option.");

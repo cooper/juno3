@@ -670,3 +670,6 @@ CHANGES:
            added API::Module, the class which all modules will use to add features.
            began API::Base::UserCommands. API::Base::* modules are base classes of API::Module.
            began the first module, core/ping.
+
+        2. finished core/ping.
+           updated example configuration.

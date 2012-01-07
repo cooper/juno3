@@ -37,6 +37,11 @@
     id: 0                                       # the SID
                                                 #   must be unique to the network or things *WILL* screw up
 
+[ modules ]
+
+    core: ['ping'] # core modules which will be loaded automatically
+    ext: []        # extension modules which will be loaded automatically
+
 [ users ]
 
     automodes: "+i"     # modes set to users on connect

@@ -11,11 +11,11 @@ use utils qw[col log2 lceq lconf match cut_to_limit conf gv];
 {
 
 my %commands = (
-    PING => {
-        params => 1,
-        code   => \&ping,
-        desc   => 'ping the server'
-    },
+#    PING => {
+#        params => 1,
+#        code   => \&ping,
+#        desc   => 'ping the server'
+#    },
     USER => {
         params => 0,
         code   => \&fake_user,

@@ -7,6 +7,8 @@ use feature 'switch';
 
 use utils qw(conf log2 gv set);
 
+our @loaded;
+
 # load modules in the configuration
 sub load_config {
 
@@ -51,6 +53,10 @@ sub load_module {
     # load the requirements if they are not already
     load_requirements($module) or log2('could not satisfy dependencies') and return;
 
+    # initialize
+    log2('initializing module');
+    $module->{initialize}->() or log2('module refused to load.') and return;
+
     log2('Module loaded successfully');
 }
 
@@ -72,6 +78,11 @@ sub load_base {
     return if $INC{"API/Base/$base.pm"}; # already loaded
     require "API/Base/$base.pm";
     unshift @API::Module::ISA, "API::Base::$base"
+}
+
+sub call_unloads {
+    my $module = shift;
+    $_->unload($module) foreach @API::Module::ISA;
 }
 
 1
