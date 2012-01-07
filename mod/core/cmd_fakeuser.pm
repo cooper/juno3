@@ -1,5 +1,5 @@
 # Copyright (c) 2012, Mitchell Cooper
-package ext::core::fakeuser;
+package ext::core::cmd_fakeuser;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use strict;
 use utils qw|gv col|;
 
 our $mod = API::Module->new(
-    name        => 'core/fakeuser',
+    name        => 'core/cmd_fakeuser',
     version     => '0.1',
     description => 'fake user command',
     requires    => ['user_commands'],

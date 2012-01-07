@@ -675,3 +675,6 @@ CHANGES:
            updated example configuration.
 
         3. modularized fake user command.
+
+        4. renamed the new modules to start with 'cmd_', since eventually there will be modules for more than just commands.
+           modularized MOTD command.

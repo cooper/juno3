@@ -21,11 +21,11 @@ my %commands = (
 #        code   => \&fake_user,
 #        desc   => 'fake user command'
 #    },
-    MOTD => {
-        params => 0,
-        code   => \&motd,
-        desc   => 'display the message of the day'
-    },
+#    MOTD => {
+#        params => 0,
+#        code   => \&motd,
+#        desc   => 'display the message of the day'
+#    },
     NICK => {
         params => 1,
         code   => \&nick,
@@ -144,21 +144,6 @@ undef %commands;
 sub ping {
     my ($user, $data, @s) = @_;
     $user->sendserv('PONG '.gv('SERVER', 'name').' :'.col($s[1]))
-}
-
-sub motd {
-    # TODO <server> parameter
-    my $user = shift;
-    if (!defined gv('MOTD')) {
-        $user->numeric('ERR_NOMOTD');
-        return
-    }
-    $user->numeric('RPL_MOTDSTART', gv('SERVER', 'name'));
-    foreach my $line (@{gv('MOTD')}) {
-        $user->numeric('RPL_MOTD', $line)
-    }
-    $user->numeric('RPL_ENDOFMOTD');
-    return 1
 }
 
 # change nickname

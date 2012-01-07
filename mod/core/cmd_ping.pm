@@ -1,5 +1,5 @@
 # Copyright (c) 2012, Mitchell Cooper
-package ext::core::ping;
+package ext::core::cmd_ping;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use strict;
 use utils qw|gv col|;
 
 our $mod = API::Module->new(
-    name        => 'core/ping',
+    name        => 'core/cmd_ping',
     version     => '0.1',
     description => 'ping the server',
     requires    => ['user_commands'],
