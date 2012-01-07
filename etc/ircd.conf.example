@@ -39,7 +39,7 @@
 
 [ modules ]
 
-    core: ['cmd_ping', 'cmd_fakeuser', 'cmd_motd'] # core modules
+    core: ['cmd_ping', 'cmd_fakeuser', 'cmd_motd', 'cmd_nick'] # core modules
     ext: [] # extension modules
 
 [ users ]

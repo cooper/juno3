@@ -26,11 +26,11 @@ my %commands = (
 #        code   => \&motd,
 #        desc   => 'display the message of the day'
 #    },
-    NICK => {
-        params => 1,
-        code   => \&nick,
-        desc   => 'change your nickname'
-    },
+#    NICK => {
+#        params => 1,
+#        code   => \&nick,
+#        desc   => 'change your nickname'
+#    },
     PONG => {
         params => 0,
         code   => sub { },
@@ -144,42 +144,6 @@ undef %commands;
 sub ping {
     my ($user, $data, @s) = @_;
     $user->sendserv('PONG '.gv('SERVER', 'name').' :'.col($s[1]))
-}
-
-# change nickname
-sub nick {
-    my ($user, $data, @args) = @_;
-    my $newnick = col($args[1]);
-
-    if ($newnick eq '0') {
-        $newnick = $user->{uid}
-    }
-    else {
-        # ignore stupid nick changes
-        if (lceq $user->{nick} => $newnick) {
-            return
-        }
-
-        # check for valid nick
-        if (!utils::validnick($newnick)) {
-            $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
-            return
-        }
-
-        # check for existing nick
-        if (user::lookup_by_nick($newnick)) {
-            $user->numeric('ERR_NICKNAMEINUSE', $newnick);
-            return
-        }
-    }
-
-    # tell ppl
-    $user->channel::mine::send_all_user("NICK $newnick");
-
-    # change it
-    $user->change_nick($newnick);
-
-    server::outgoing::nickchange_all($user);
 }
 
 sub info {

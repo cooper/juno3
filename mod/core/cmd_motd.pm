@@ -4,7 +4,7 @@ package ext::core::cmd_motd;
 use warnings;
 use strict;
 
-use utils qw|gv col|;
+use utils 'gv';
 
 our $mod = API::Module->new(
     name        => 'core/cmd_motd',

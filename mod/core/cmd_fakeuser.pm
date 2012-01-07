@@ -4,8 +4,6 @@ package ext::core::cmd_fakeuser;
 use warnings;
 use strict;
 
-use utils qw|gv col|;
-
 our $mod = API::Module->new(
     name        => 'core/cmd_fakeuser',
     version     => '0.1',
