@@ -48,6 +48,13 @@ sub register_handler {
     return 1
 }
 
+# unregister
+sub delete_handler {
+    my $command = uc shift;
+    log2("deleting handler $command");
+    delete $commands{$command}
+}
+
 # register user numerics
 sub register_numeric {
     my ($source, $numeric) = (shift, shift);

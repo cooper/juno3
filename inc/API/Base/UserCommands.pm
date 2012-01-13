@@ -4,6 +4,8 @@ package API::Base::UserCommands;
 use warnings;
 use strict;
 
+use utils 'log2';
+
 sub register_user_command {
     my ($mod, %opts) = @_;
 
@@ -15,6 +17,8 @@ sub register_user_command {
         return
     }
 
+    $mod->{user_commands} ||= [];
+
     # register to juno
     user::mine::register_handler(
         $mod->{name},
@@ -22,13 +26,18 @@ sub register_user_command {
         $opts{parameters} || 0,
         $opts{code},
         $opts{description}
-    );
+    ) or return;
 
+    push @{$mod->{user_commands}}, $opts{name};
     return 1
 }
 
 sub unload {
     my ($class, $mod) = @_;
+    log2("unloading commands registered by $$mod{name}");
+    user::mine::delete_handler($_) foreach @{$mod->{user_commands}};
+    log2("done unloading commands");
+    return 1
 }
 
 1

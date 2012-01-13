@@ -692,3 +692,5 @@ CHANGES:
     3. January 13, 2012
 
         0. Check if 'initialize' is CODE in module instance creation.
+
+        1. unload users commands registered by module at module unload.

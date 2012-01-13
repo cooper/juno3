@@ -46,6 +46,7 @@ sub load_module {
     $module->{initialize}->() or log2('module refused to load.') and return;
 
     log2('Module loaded successfully');
+    return 1
 }
 
 sub load_requirements {
