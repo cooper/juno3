@@ -688,3 +688,7 @@ CHANGES:
         8. undid everything I just did. I have a better idea.
 
         9. goodbye user/handlers. hello mod/core.
+
+    3. January 13, 2012
+
+        0. Check if 'initialize' is CODE in module instance creation.

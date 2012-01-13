@@ -20,6 +20,11 @@ sub new {
         return
     }
 
+    if (not defined ref $opts{initialize} or ref $opts{initialize} ne 'CODE') {
+        log2("module $opts{name} didn't supply CODE");
+        return
+    }
+
     return bless my $mod = \%opts, $class;
 }
 
