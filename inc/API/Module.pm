@@ -25,6 +25,9 @@ sub new {
         return
     }
 
+    # package name
+    $opts{package} = caller;
+
     return bless my $mod = \%opts, $class;
 }
 

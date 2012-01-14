@@ -117,6 +117,11 @@ my %commands = (
     LUSERS => {
         code   => \&lusers,
         desc   => 'view connection count statistics'
+    },
+    MODLOAD => {
+        code   => \&modload,
+        desc   => 'load an IRCd extension',
+        params => 1
     }
 );
 
@@ -902,6 +907,31 @@ sub lusers {
     $user->numeric(RPL_LOCALUSERS    => $l_users, $m_local, $l_users, $m_local);
     $user->numeric(RPL_GLOBALUSERS   => $g_users, $m_global, $g_users, $m_global);
     $user->numeric(RPL_STATSCONN     => $conn_max, $m_local, $conn);
+}
+
+sub modload {
+    my ($user, $data, @args) = @_;
+
+    # must have modload flag
+    if (!$user->has_flag('modload')) {
+        $user->numeric('ERR_NOPRIVILEGES');
+        return
+    }
+
+    $user->server_notice("Loading module \2$args[1]\2.");
+
+    my $result = API::load_module($args[1], "$args[1].pm");
+
+    if (!$result) {
+        $user->server_notice('Module failed to load.');
+        return
+    }
+
+    # success
+    else {
+        $user->server_notice('Module loaded successfully.');
+        return 1
+    }
 }
 
 $mod
