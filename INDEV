@@ -715,3 +715,5 @@ CHANGES:
         7. unload registered user mode blocks when unloading a module.
 
         8. moved channel modes to the configuration.
+
+        9. fixed a couple bugs in RPL_WELCOME and RPL_MYINFO caused by channel mode modularization.

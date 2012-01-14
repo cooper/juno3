@@ -171,7 +171,7 @@ foreach my $modename (keys %needs) {
 
 # get a +modes string
 sub mode_string {
-    my @modes = sort { $a cmp $b } values %{$utils::conf{modes}{channel}};
+    my @modes = sort { $a cmp $b } map { $_->[1] } values %{$utils::conf{modes}{channel}};
     return join '', @modes
 }
 

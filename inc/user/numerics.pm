@@ -133,8 +133,8 @@ sub chanmodes {
     #   status (4)
     my (%m, @a);
     @a[3, 1, 2, 0] = (q.., q.., q.., q..);
-    foreach my $name (keys %channel::modes::modes) {
-        my ($type, $letter) = @{$channel::modes::modes{$name}};
+    foreach my $name (keys %{$utils::conf{modes}{channel}}) {
+        my ($type, $letter) = @{$utils::conf{modes}{channel}{$name}};
         $m{$type} = [] unless $m{$type};
         push @{$m{$type}}, $letter
     }
@@ -150,12 +150,15 @@ sub chanmodes {
 
 # PREFIX in RPL_ISUPPORT
 sub prefix {
-    my $modes =
-      $channel::modes::modes{owner}[1]  .
-      $channel::modes::modes{admin}[1]  .
-      $channel::modes::modes{op}[1]     .
-      $channel::modes::modes{halfop}[1] .
-      $channel::modes::modes{voice}[1]  ;
+
+    my %modes = %{$utils::conf{modes}{channel}};
+
+    my $modestr =
+      $modes{owner}[1]  .
+      $modes{admin}[1]  .
+      $modes{op}[1]     .
+      $modes{halfop}[1] .
+      $modes{voice}[1]  ;
 
     my $prefixes =
       $channel::mine::prefix{owner}  .
@@ -164,7 +167,7 @@ sub prefix {
       $channel::mine::prefix{halfop} .
       $channel::mine::prefix{voice}  ;
 
-    return "($modes)$prefixes"
+    return "($modestr)$prefixes"
 }
 
 1
