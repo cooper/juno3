@@ -33,6 +33,10 @@ sub unload {
     my ($class, $mod) = @_;
     log2("unloading user modes registered by $$mod{name}");
 
+    # delete 1 at a time
+    foreach my $name (@{$mod->{user_modes}}) {
+        user::modes::delete_block($name, $mod->{name});
+    }
 
     log2("done unloading modes");
     return 1

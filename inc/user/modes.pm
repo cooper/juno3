@@ -61,6 +61,17 @@ sub register_block {
     return 1
 }
 
+# delete a block
+sub delete_block {
+    my ($name, $what) = @_;
+    if (exists $blocks{$name}{$what}) {
+        delete $blocks{$name}{$what};
+        log2("deleting user mode block for $name: $what");
+        return 1
+    }
+    return
+}
+
 # call on mode change
 sub fire {
     my ($user, $state, $name) = @_;
@@ -73,6 +84,8 @@ sub fire {
     foreach my $block (values %{$blocks{$name}}) {
         return unless $block->($user, $state)
     }
+
+    # all returned true
     return 1
 }
 

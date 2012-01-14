@@ -708,6 +708,8 @@ CHANGES:
 
         January 14, 2012
 
-        6. added UserModes API::Module base for registering user mode blocks.
+        6. added UserModes API::Module base for registering user mode blocks. (user_modes)
            user mode letters are now defined in the configuration. see example.
            moved internal user modes to core module.
+
+        7. unload registered user mode blocks when unloading a module.
