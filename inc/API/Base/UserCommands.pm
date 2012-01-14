@@ -34,7 +34,7 @@ sub register_user_command {
 
 sub unload {
     my ($class, $mod) = @_;
-    log2("unloading commands registered by $$mod{name}");
+    log2("unloading user commands registered by $$mod{name}");
     user::mine::delete_handler($_) foreach @{$mod->{user_commands}};
     log2("done unloading commands");
     return 1

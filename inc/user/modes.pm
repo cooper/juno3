@@ -9,27 +9,21 @@ use utils 'log2';
 
 my %blocks;
 
-# local modes
-# eventually this will all be in utils.pm # TODO
-my %modes = (
-    ircop     => 'o',
-    invisible => 'i'
-);
-
 # this just tells the internal server what
-# mode is associated with what letter
+# mode is associated with what letter as defined by the configuration
 sub add_internal_modes {
     my $server = shift;
-    log2("registering internal user modes");
-    foreach my $name (keys %modes) {
-        $server->add_umode($name, $modes{$name});
+    return unless $utils::conf{modes}{user};
+    log2("registering user mode letters");
+    foreach my $name (keys %{$utils::conf{modes}{user}}) {
+        $server->add_umode($name, $utils::conf{modes}{user}{$name});
     }
-    log2("end of internal modes");
+    log2("end of user mode letters");
 }
 
 # returns a string of every mode
 sub mode_string {
-    my @modes = sort { $a cmp $b } values %modes;
+    my @modes = sort { $a cmp $b } values %{$utils::conf{modes}{user}};
     return join '', @modes
 }
 
@@ -44,36 +38,26 @@ sub mode_string {
 # and changes from a user on a different server
 # will not apply to these and must be handled
 # separately
-log2("registering internal mode blocks");
-
-# block for oper
-register_block('ircop', 'internal_ircop', sub {
-    my ($user, $state) = @_;
-    if ($state) {
-        # never allow users to set ircop
-        return
-    }
-    # but always allow them to unset it
-    log2("removing all flags from $$user{nick}");
-    $user->{flags} = [];
-    return 1
-});
-
-log2("end internal mode blocks");
 
 # register a block check to a mode
 sub register_block {
     my ($name, $what, $code) = @_;
+
+    # check if it is CODE
     if (ref $code ne 'CODE') {
         log2((caller)[0]." tried to register a block to $name that isn't CODE.");
         return
     }
+
+    # make sure this one doesn't exist
     if (exists $blocks{$name}{$what}) {
         log2((caller)[0]." tried to register $what to $name which is already registered");
         return
     }
-    log2("registered $what to $name");
+
+    # success
     $blocks{$name}{$what} = $code;
+    log2("registered $name from $what");
     return 1
 }
 
@@ -84,6 +68,8 @@ sub fire {
         # nothing to do
         return 1
     }
+
+    # call each block
     foreach my $block (values %{$blocks{$name}}) {
         return unless $block->($user, $state)
     }

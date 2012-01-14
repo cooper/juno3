@@ -139,24 +139,57 @@ my %commands = (
     }
 );
 
+my %modes = (
+    ircop => \&umode_ircop
+);
+
 our $mod = API::Module->new(
     name        => 'core',
     version     => '0.1',
     description => 'the core set of commands and modes',
-    requires    => ['user_commands'],
+    requires    => ['user_commands', 'user_modes'],
     initialize  => \&init
 );
  
 sub init {
+
+    # register mode blocks
+    $mod->register_user_mode_block(
+        name => $_,
+        code => $modes{$_}
+    ) || return foreach keys %modes;
+
+    # register commands
     $mod->register_user_command(
         name        => $_,
         description => $commands{$_}{desc},
         parameters  => $commands{$_}{params} || undef,
         code        => $commands{$_}{code}
-    ) foreach keys %commands;
+    ) || return foreach keys %commands;
+
+    undef %commands;
+    undef %modes;
 
     return 1
 }
+
+##############
+# USER MODES #
+##############
+
+sub umode_ircop {
+    my ($user, $state) = @_;
+    return if $state; # /never/ allow setting ircop
+
+    # but always allow them to unset it
+    log2("removing all flags from $$user{nick}");
+    $user->{flags} = [];
+    return 1
+}
+
+#################
+# USER COMMANDS #
+#################
 
 sub ping {
     my ($user, $data, @s) = @_;
@@ -989,9 +1022,9 @@ sub modreload {
         return
     }
 
-    # UNLOAD
+    $user->server_notice("Reloading module \2$args[1]\2.");
 
-    $user->server_notice("Unloading module \2$args[1]\2.");
+    # UNLOAD
 
     my $result = API::unload_module($args[1], "$args[1].pm");
 

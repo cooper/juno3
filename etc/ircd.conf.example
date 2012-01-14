@@ -42,6 +42,14 @@
     modules: ['core'] # modules to load automatically.
                       # you probably want to load core. juno is pretty much useless without it.
 
+[ modes: user ]
+
+    ircop:     'o'      # user mode letters. If these are provided, the modes will exist.
+    invisible: 'i'      # if they are not provided, the modes will not exist. You can choose
+                        # any letter to correspond with a mode without changing the internal
+                        # working of the IRCd. If you chose to add a rule here for a mode that
+                        # does nothing, the mode will still exist - it will just be useless.
+
 [ users ]
 
     automodes: "+i"     # modes set to users on connect
@@ -49,7 +57,6 @@
 [ channels ]
 
     automodes: "+nt"    # modes set on channel creation
-
 
 [ flood ]
 
