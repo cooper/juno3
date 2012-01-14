@@ -1026,6 +1026,7 @@ sub verify {
     if ($user->{cmd_verify} && ref $user->{cmd_verify} eq 'CODE') {
         $user->server_notice('Okay, if you say so...');
         $user->{cmd_verify}->(@args);
+        delete $user->{cmd_verify};
     }
 
     # nothing
