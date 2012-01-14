@@ -697,3 +697,5 @@ CHANGES:
 
         2. added MODLOAD command to core. requires 'modload' flag.
            added more checking to ensure modules that are loaded aren't loaded again.
+
+        3. added MODUNLOAD command to core. requires 'modunload' flag.

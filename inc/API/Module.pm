@@ -20,8 +20,13 @@ sub new {
         return
     }
 
+    # initialize and void must be code
     if (not defined ref $opts{initialize} or ref $opts{initialize} ne 'CODE') {
         log2("module $opts{name} didn't supply CODE");
+        return
+    }
+    if ((defined $opts{void}) && (not defined ref $opts{void} or ref $opts{void} ne 'CODE')) {
+        log2("module $opts{name} provided void, but it is not CODE.");
         return
     }
 

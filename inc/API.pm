@@ -67,6 +67,35 @@ sub load_module {
     return 1
 }
 
+sub unload_module {
+    my ($name, $file) = @_;
+
+    # find it..
+    my $mod;
+    foreach my $module (@loaded) {
+        next unless lc $module->{name} eq lc $name;
+        $mod = $module;
+        last
+    }
+
+    if (!$mod) {
+        log2("couldn't unload $name because it doesn't exist.");
+        return
+    }
+
+    # unload all of its commands, loops, modes, etc.
+    call_unloads($mod);
+
+    # call void if exists.
+    if ($mod->{void}) {
+        $mod->{void}->()
+        or log2("module $$mod{name} refused to unload")
+        and return;
+    }
+
+    return 1
+}
+
 sub load_requirements {
     my $mod = shift;
     return unless $mod->{requires};

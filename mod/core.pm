@@ -122,6 +122,11 @@ my %commands = (
         code   => \&modload,
         desc   => 'load an IRCd extension',
         params => 1
+    },
+    MODUNLOAD => {
+        code   => \&modunload,
+        desc   => 'unload an IRCd extension',
+        params => 1
     }
 );
 
@@ -923,13 +928,38 @@ sub modload {
     my $result = API::load_module($args[1], "$args[1].pm");
 
     if (!$result) {
-        $user->server_notice('Module failed to load.');
+        $user->server_notice('Module failed to load. See server log for information.');
         return
     }
 
     # success
     else {
         $user->server_notice('Module loaded successfully.');
+        return 1
+    }
+}
+
+sub modunload {
+    my ($user, $data, @args) = @_;
+
+    # must have modunload flag
+    if (!$user->has_flag('modunload')) {
+        $user->numeric('ERR_NOPRIVILEGES');
+        return
+    }
+
+    $user->server_notice("Unloading module \2$args[1]\2.");
+
+    my $result = API::unload_module($args[1], "$args[1].pm");
+
+    if (!$result) {
+        $user->server_notice('Module failed to unload. See server log for information.');
+        return
+    }
+
+    # success
+    else {
+        $user->server_notice('Module unloaded successfully.');
         return 1
     }
 }
