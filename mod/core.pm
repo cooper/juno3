@@ -132,6 +132,10 @@ my %commands = (
         code   => \&modreload,
         desc   => 'reload an IRCd extension',
         params => 1
+    },
+    VERIFY => {
+        code   => \&verify,
+        desc   => 'verify doing something which could be harmful'
     }
 );
 
@@ -953,6 +957,13 @@ sub modunload {
         return
     }
 
+    if (lc $args[1] eq 'core' && !$args[2]) {
+        $user->server_notice('I REALLY DOUBT YOU WANT TO DO THAT.');
+        $user->server_notice('If you do, use the VERIFY command.');
+        $user->{cmd_verify} = sub { $user->handle("$args[0] $args[1] 1") };
+        return
+    }
+
     $user->server_notice("Unloading module \2$args[1]\2.");
 
     my $result = API::unload_module($args[1], "$args[1].pm");
@@ -1007,6 +1018,19 @@ sub modreload {
     else {
         $user->server_notice('Module loaded successfully.');
         return 1
+    }
+}
+
+sub verify {
+    my ($user, $data, @args) = @_;
+    if ($user->{cmd_verify} && ref $user->{cmd_verify} eq 'CODE') {
+        $user->server_notice('Okay, if you say so...');
+        $user->{cmd_verify}->(@args);
+    }
+
+    # nothing
+    else {
+        $user->server_notice('Sorry, nothing to verify.');
     }
 }
 

@@ -703,3 +703,5 @@ CHANGES:
         4. added MODRELOAD command to core. requires both 'modunload' and 'modload' flags.
            actually made MODUNLOAD work. I should have tested it earlier.
            it is now possible to reload core, so updating juno's internal commands won't require restarting.
+
+        5. added a command verification system to core.
