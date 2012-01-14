@@ -713,3 +713,5 @@ CHANGES:
            moved internal user modes to core module.
 
         7. unload registered user mode blocks when unloading a module.
+
+        8. moved channel modes to the configuration.

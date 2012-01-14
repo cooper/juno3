@@ -50,6 +50,28 @@
                         # working of the IRCd. If you chose to add a rule here for a mode that
                         # does nothing, the mode will still exist - it will just be useless.
 
+[ modes: channel ]
+
+    # channel mode letters and their types.
+    # the type MUST comply with the mode name, but you may switch
+    # the letters as you please without changing the internal working.
+    # the types are:
+    #   normal (0)
+    #   parameter (1)
+    #   parameter_set (2)
+    #   list (3)
+    #   status (4)
+
+    no_ext:        [0, 'n'] # no external channel messages      (n)
+    protect_topic: [0, 't'] # only operators can set the topic  (t)
+    moderated:     [0, 'm'] # only voiced and up may speak      (m)
+    ban:           [3, 'b'] # channel ban                       (b)
+    owner:         [4, 'q'] #                                   (q)
+    admin:         [4, 'a'] #                                   (a)
+    op:            [4, 'o'] #                                   (o)
+    halfop:        [4, 'h'] #                                   (h)
+    voice:         [4, 'v'] #                                   (v)
+
 [ users ]
 
     automodes: "+i"     # modes set to users on connect

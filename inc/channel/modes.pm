@@ -14,35 +14,26 @@ use utils 'log2';
 #sub list          () { 3 }
 #sub status        () { 4 }
 
-my %blocks;
-
-# local modes
 # types:
 #   normal (0)
 #   parameter (1)
 #   parameter_set (2)
 #   list (3)
 #   status (4)
-our %modes = (
-    no_ext        => [0, 'n'],
-    protect_topic => [0, 't'],
-    moderated     => [0, 'm'],
-    testing       => [1, 'T'],
-    owner         => [4, 'q'],
-    admin         => [4, 'a'],
-    op            => [4, 'o'],
-    halfop        => [4, 'h'],
-    voice         => [4, 'v'],
-    ban           => [3, 'b']
-);
+
+my %blocks;
 
 # this just tells the internal server what
-# mode is associated with what letter and type
+# mode is associated with what letter and type by configuration
 sub add_internal_modes {
     my $server = shift;
-    log2("registering internal channel modes");
-    foreach my $name (keys %modes) {
-        $server->add_cmode($name, $modes{$name}[1], $modes{$name}[0]);
+    log2("registering channel mode letters");
+    foreach my $name (keys %{$utils::conf{modes}{channel}}) {
+        $server->add_cmode(
+            $name,
+            $utils::conf{modes}{channel}{$name}[1],
+            $utils::conf{modes}{channel}{$name}[0]
+        );
     }
     log2("end of internal modes");
 }
@@ -55,21 +46,29 @@ sub register_block {
         return
     }
     if (exists $blocks{$name}{$what}) {
-        log2((caller)[0]." tried to register $what to $name which is already registered");
+        log2((caller)[0]." tried to register $name to $what which is already registered");
         return
     }
-    log2("registered $what to $name");
+    log2("registered $name from $what");
     $blocks{$name}{$what} = $code;
     return 1
 }
 
-# TODO
 sub fire {
-    my ($channel, $server, $source, $state, $name, $parameter, $parameters, $force, $over_protocol) = @_;
+    my (
+        $channel, $server,
+        $source, $state,
+        $name, $parameter,
+        $parameters, $force,
+        $over_protocol
+    ) = @_;
+
     if (!exists $blocks{$name}) {
         # nothing to do
         return 1
     }
+
+    # create a hashref with info
     my %this = (
         server => $server,
         source => $source,
@@ -79,6 +78,7 @@ sub fire {
         force  => $force,
         proto  => $over_protocol
     );
+
     foreach my $block (values %{$blocks{$name}}) {
         return unless $block->($channel, \%this)
     }
@@ -171,11 +171,8 @@ foreach my $modename (keys %needs) {
 
 # get a +modes string
 sub mode_string {
-    my $string = q();
-    foreach my $name (keys %modes) {
-        $string .= $channel::modes::modes{$name}[1];
-    }
-    $string
+    my @modes = sort { $a cmp $b } values %{$utils::conf{modes}{channel}};
+    return join '', @modes
 }
 
 log2("end of internal mode blocks");
