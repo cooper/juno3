@@ -83,8 +83,12 @@ sub unload_module {
         return
     }
 
-    # unload all of its commands, loops, modes, etc.
+    # unload all of its commands, loops, modes, etc. unload package.
     call_unloads($mod);
+    class_unload($mod->{package});
+
+    # remove from @loaded
+    @loaded = grep { $_ != $mod } @loaded;
 
     # call void if exists.
     if ($mod->{void}) {
@@ -121,6 +125,28 @@ sub load_base {
 sub call_unloads {
     my $module = shift;
     $_->unload($module) foreach @API::Module::ISA;
+}
+
+# from Class::Unload on CPAN.
+# copyright (c) 2011 by Dagfinn Ilmari MannsÃ¥ker.
+sub class_unload {
+    my $class = shift;
+    no strict 'refs';
+
+    # Flush inheritance caches
+    @{$class . '::ISA'} = ();
+
+    my $symtab = $class.'::';
+    # Delete all symbols except other namespaces
+    for my $symbol (keys %$symtab) {
+        next if $symbol =~ /\A[^:]+::\z/;
+        delete $symtab->{$symbol};
+    }
+
+    my $inc_file = join( '/', split /(?:'|::)/, $class ) . '.pm';
+    delete $INC{ $inc_file };
+
+    return 1
 }
 
 1
