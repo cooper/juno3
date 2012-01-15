@@ -108,6 +108,7 @@ sub load_requirements {
     foreach (@{$mod->{requires}}) {
         when ('user_commands') { load_base('UserCommands') or return     }
         when ('user_modes')    { load_base('UserModes')    or return     }
+        when ('channel_modes') { load_base('ChannelModes') or return     }
         default                { log2('unknown requirement '.$_); return }
     }
 

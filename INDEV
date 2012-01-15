@@ -3,10 +3,10 @@ Development log
 
 TODO:
 
+    [H] for list modes, create mode blocks to be fired for viewing lists
     [H] RPL_ISUPPORT
     [H] list mode listing
     [H] no speaking if banned in channel
-    [M] LUSERS
     [M] burst topic
     [L] idle time in WHOIS
     [L] MOTD server parameter
@@ -21,6 +21,9 @@ TODO for stability and performance:
 OPER FLAGS:
 
     see_invisible: can see invisible users in NAMES
+    connect: use the CONNECT command
+    modload: use the MODLOAD command
+    modunload: use the MODUNLOAD command
 
 PLANS:
 
@@ -717,3 +720,8 @@ CHANGES:
         8. moved channel modes to the configuration.
 
         9. fixed a couple bugs in RPL_WELCOME and RPL_MYINFO caused by channel mode modularization.
+
+    4. January 15, 2012
+
+        0. added ChannelModes API::Module base for registering channel mode blocks. (channel_modes)
+           moved internal channel mode blocks to the core module.

@@ -54,6 +54,18 @@ sub register_block {
     return 1
 }
 
+# delete a block
+sub delete_block {
+    my ($name, $what) = @_;
+    if (exists $blocks{$name}{$what}) {
+        delete $blocks{$name}{$what};
+        log2("deleting user mode block for $name: $what");
+        return 1
+    }
+    return
+}
+
+
 sub fire {
     my (
         $channel, $server,
@@ -85,96 +97,10 @@ sub fire {
     return 1
 }
 
-# blocks
-
-log2("registering internal mode blocks");
-
-# test mode
-register_block('testing', 'internal', sub {
-    my ($channel, $mode) = @_;
-    push @{$mode->{params}}, $mode->{param};
-    $channel->set_mode('testing', $mode->{param});
-    return 1
-});
-
-# channel bans
-register_block('ban', 'internal', sub {
-    my ($channel, $mode) = @_;
-    if ($mode->{state}) {
-        $channel->add_to_list('ban', $mode->{param});
-    }
-    else {
-        $channel->remove_from_list('ban', $mode->{param});
-    }
-    push @{$mode->{params}}, $mode->{param};
-    return 1
-});
-
-
-# status modes
-
-my %needs = (
-    owner  => ['owner'],
-    admin  => ['owner', 'admin'],
-    op     => ['owner', 'admin', 'op'],
-    halfop => ['owner', 'admin', 'op'],
-    voice  => ['owner', 'admin', 'op', 'halfop']
-);
-
-foreach my $modename (keys %needs) {
-
-    # registers the main mode stuff
-    register_block($modename, 'internal', sub {
-        my ($channel, $mode) = @_;
-        my $source = $mode->{source};
-        my $target = $mode->{proto} ? user::lookup_by_id($mode->{param}) : user::lookup_by_nick($mode->{param});
-
-        # make sure the target user exists
-        if (!$target) {
-            if (!$mode->{force} && $source->isa('user') && $source->is_local) {
-                $source->numeric('ERR_NOSUCHNICK', $mode->{param});
-            }
-            return
-        }
-
-        # and also make sure he is on the channel
-        if (!$channel->has_user($target)) {
-            if (!$mode->{force} && $source->isa('user') && $source->is_local) {
-                $source->numeric('ERR_USERNOTINCHANNEL', $target->{nick}, $channel->{name});
-            }
-            return
-        }
-
-        if (!$mode->{force} && $source->is_local) {
-
-            # for each need, check if the user has it
-            my $check_needs = sub {
-                foreach my $need (@{$needs{$modename}}) {
-                    return 1 if $channel->list_has($need, $source);
-                }
-                return
-            };
-
-            # they don't have any of the needs
-            return unless $check_needs->();
-
-        }
-
-        # [USER RESPONSE, SERVER RESPONSE]
-        push @{$mode->{params}}, [$target->{nick}, $target->{uid}];
-        my $do = $mode->{state} ? 'add_to_list' : 'remove_from_list';
-        $channel->$do($modename, $target);
-        return 1
-    });
-
-}
-
 # get a +modes string
 sub mode_string {
     my @modes = sort { $a cmp $b } map { $_->[1] } values %{$utils::conf{modes}{channel}};
     return join '', @modes
 }
-
-log2("end of internal mode blocks");
 
 1
