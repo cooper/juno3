@@ -506,6 +506,33 @@ sub topic {
 }
 
 sub topicburst {
+    # :sid TOPICBURST channel time setby time :topic
+    my ($server, $data, @args) = @_;
+    my $channel = channel::lookup_by_name($args[2]);
+
+    # check that channel exists
+    return unless $channel;
+
+    if ($channel->channel::mine::take_lower_time($args[3]) != $args[3]) {
+        # bad channel time
+        return
+    }
+
+    my $topic = col((split /\s+/, $data, 7)[6]);
+
+    # set it
+    if (length $topic) {
+        $channel->{topic} = {
+            setby => $args[4],
+            time  => $args[5],
+            topic => $topic
+        };
+    }
+    else {
+        delete $channel->{topic}
+    }
+
+    return 1
 }
 
 1

@@ -725,3 +725,5 @@ CHANGES:
 
         0. added ChannelModes API::Module base for registering channel mode blocks. (channel_modes)
            moved internal channel mode blocks to the core module.
+
+        1. added TOPICBURST server command handler.
