@@ -95,12 +95,12 @@ my %commands = (
         code    => \&part
     },
     TOPIC => {
-        params  => 3,
+        params  => 4,
         forward => 1,
         code    => \&topic
     },
     TOPICBURST => {
-        params  => 5,
+        params  => 4,
         forward => 1,
         code    => \&topicburst
     },
@@ -480,6 +480,7 @@ sub cum {
 }
 
 sub topic {
+    # :source TOPIC channel ts time :topic
     my ($server, $data, @args) = @_;
     my $source  = utils::global_lookup(col($args[0]));
     my $channel = channel::lookup_by_name($args[2]);
@@ -492,14 +493,14 @@ sub topic {
         return
     }
 
-    my $topic = col((split /\s+/, $data, 5)[4]);
+    my $topic = col((split /\s+/, $data, 6)[5]);
     $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
 
     # set it
     if (length $topic) {
         $channel->{topic} = {
             setby => $source->full,
-            time  => time,
+            time  => $args[4],
             topic => $topic
         };
     }

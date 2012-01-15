@@ -200,7 +200,7 @@ sub part_all {
 
 sub topic {
     my ($server, $user, $channel, $time, $topic) = @_;
-    $server->sendfrom($user->{uid}, "TOPIC $$channel{name} $time :$topic")
+    $server->sendfrom($user->{uid}, "TOPIC $$channel{name} $$channel{time} $time :$topic")
 }
 
 sub topic_all {

@@ -729,3 +729,5 @@ CHANGES:
         1. added TOPICBURST server command handler.
 
         2. tell channel users when topic is changed by TOPICBURST.
+
+        3. I think I fixed a bug in TOPIC.
