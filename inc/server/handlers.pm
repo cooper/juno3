@@ -99,6 +99,11 @@ my %commands = (
         forward => 1,
         code    => \&topic
     },
+    TOPICBURST => {
+        params  => 5,
+        forward => 1,
+        code    => \&topicburst
+    },
 
     # compact
 
