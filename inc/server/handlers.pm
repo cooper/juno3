@@ -524,6 +524,7 @@ sub topicburst {
     }
 
     my $topic = col((split /\s+/, $data, 7)[6]);
+    $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
 
     # set it
     if (length $topic) {

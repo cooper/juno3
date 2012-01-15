@@ -727,3 +727,5 @@ CHANGES:
            moved internal channel mode blocks to the core module.
 
         1. added TOPICBURST server command handler.
+
+        2. tell channel users when topic is changed by TOPICBURST.
