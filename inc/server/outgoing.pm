@@ -205,7 +205,7 @@ sub topic {
 
 sub topic_all {
     my ($user, $channel, $time, $topic) = @_;
-    server::mine::sendfrom_children(undef, $user->{uid}, "TOPIC $$channel{name} $time :$topic")
+    server::mine::sendfrom_children(undef, $user->{uid}, "TOPIC $$channel{name} $$channel{time} $time :$topic")
 }
 
 ########
