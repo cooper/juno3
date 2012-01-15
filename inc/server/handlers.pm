@@ -513,6 +513,7 @@ sub topic {
 sub topicburst {
     # :sid TOPICBURST channel time setby time :topic
     my ($server, $data, @args) = @_;
+    my $source  = utils::global_lookup(col($args[0]));
     my $channel = channel::lookup_by_name($args[2]);
 
     # check that channel exists
