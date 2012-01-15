@@ -731,3 +731,5 @@ CHANGES:
         2. tell channel users when topic is changed by TOPICBURST.
 
         3. I think I fixed a bug in TOPIC.
+
+        4. I'm tired of nick collision bugs, so here's my temporary solution.

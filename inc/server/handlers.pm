@@ -176,21 +176,21 @@ sub uid {
     my $used = user::lookup_by_nick($ref->{nick});
     if ($used) {
         log2("nick collision! $$ref{nick}");
-        if ($ref->{time} > $used->{time}) {
-            # I lose
-            $ref->{nick} = $ref->{uid}
-        }
-        elsif ($ref->{time} < $used->{time}) {
-            # you lose
-            $used->channel::mine::send_all_user("NICK $$used{uid}") if $used->is_local;
-            $used->change_nick($used->{uid});
-        }
-        else {
+        #if ($ref->{time} > $used->{time}) {
+        #    # I lose
+        #    $ref->{nick} = $ref->{uid}
+        #}
+        #elsif ($ref->{time} < $used->{time}) {
+        #    # you lose
+        #    $used->channel::mine::send_all_user("NICK $$used{uid}") if $used->is_local;
+        #    $used->change_nick($used->{uid});
+        #}
+        #else {
             # we both lose
             $ref->{nick} = $ref->{uid};
-            $used->channel::mine::send_all_user("NICK $$used{uid}") if $used->is_local;
+            $used->channel::mine::send_all_user("NICK $$used{uid}");
             $used->change_nick($used->{uid});
-        }
+        #}
     }
 
     # create a new user
