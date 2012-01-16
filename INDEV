@@ -739,3 +739,5 @@ CHANGES:
 
         January 16, 2012
         Goal of the day: moving outgoing server crap to core module.
+
+        6. separated core into several separate modules.
