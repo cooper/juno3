@@ -296,7 +296,8 @@ sub init {
     # register server commands
     $mod->register_server_command(
         name        => $_,
-        parameters  => $scommands{$_}{params} || undef,
+        parameters  => $scommands{$_}{params}  || undef,
+        forward     => $scommands{$_}{forward} || undef,
         code        => $scommands{$_}{code}
     ) || return foreach keys %scommands;
 
