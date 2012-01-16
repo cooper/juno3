@@ -741,3 +741,5 @@ CHANGES:
         Goal of the day: moving outgoing server crap to core module.
 
         6. separated core into several separate modules.
+
+        7. added OutgoingCommands API::Module base for outgoing server commands. (outgoing_commands)

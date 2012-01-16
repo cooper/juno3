@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use utils qw[log2 col gv];
 
-our %commands = ();
+our (%commands, %outgoing);
 
 # register command handlers
 sub register_handler {
@@ -49,6 +49,45 @@ sub delete_handler {
     my $command = uc shift;
     log2("deleting handler $command");
     delete $commands{$command}
+}
+
+# register outgoing command handlers
+sub register_outgoing_handler {
+    my ($source, $command) = (shift, uc shift);
+
+    # does it already exist?
+    if (exists $outgoing{$command}) {
+        log2("attempted to register $command which already exists");
+        return
+    }
+
+    # ensure that it is CODE
+    my $ref = shift;
+    if (ref $ref ne 'CODE') {
+        log2("not a CODE reference for $command");
+        return
+    }
+
+    # one per source
+    if (exists $outgoing{$command}{$source}) {
+        log2("$source already registered $command; aborting");
+        return
+    }
+
+    #success
+    $outgoing{$command}{$source} = {
+        code    => $ref,
+        source  => $source
+    };
+    log2("$source registered $command");
+    return 1
+}
+
+# unregister
+sub delete_outgoing_handler {
+    my $command = uc shift;
+    log2("deleting handler $command");
+    delete $outgoing{$command}
 }
 
 # handle local user data

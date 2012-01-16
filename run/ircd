@@ -32,7 +32,7 @@ BEGIN {
 
     %global = (
         NAME    => 'juno-ircd',
-        VERSION => '3.2.4.6',
+        VERSION => '3.2.4.7',
         PROTO   => '0.0.1',
         START   => time,
         NOFORK  => 'NOFORK' ~~ @ARGV,

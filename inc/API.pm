@@ -106,11 +106,12 @@ sub load_requirements {
     return if ref $mod->{requires} ne 'ARRAY';
 
     foreach (@{$mod->{requires}}) {
-        when ('user_commands')   { load_base('UserCommands')   or return     }
-        when ('user_modes')      { load_base('UserModes')      or return     }
-        when ('channel_modes')   { load_base('ChannelModes')   or return     }
-        when ('server_commands') { load_base('ServerCommands') or return     }
-        default                  { log2('unknown requirement '.$_); return   }
+        when ('user_commands')     { load_base('UserCommands')     or return }
+        when ('user_modes')        { load_base('UserModes')        or return }
+        when ('channel_modes')     { load_base('ChannelModes')     or return }
+        when ('server_commands')   { load_base('ServerCommands')   or return }
+        when ('outgoing_commands') { load_base('OutgoingCommands') or return }
+        default                    { log2('unknown requirement '.$_); return }
     }
 
     return 1
