@@ -44,6 +44,13 @@ sub register_handler {
     return 1
 }
 
+# unregister
+sub delete_handler {
+    my $command = uc shift;
+    log2("deleting handler $command");
+    delete $commands{$command}
+}
+
 # handle local user data
 sub handle {
     my $server = shift;

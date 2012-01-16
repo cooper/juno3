@@ -733,3 +733,6 @@ CHANGES:
         3. I think I fixed a bug in TOPIC.
 
         4. I'm tired of nick collision bugs, so here's my temporary solution.
+
+        5. added ServerCommands API::Module base. (server_commands)
+           moved server commands to core.
