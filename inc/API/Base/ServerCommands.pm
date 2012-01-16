@@ -24,7 +24,7 @@ sub register_server_command {
         $mod->{name},
         $opts{name},
         $opts{parameters} || 0,
-        $opts{forward} || 0,
+        $opts{forward}    || 0,
         $opts{code}
     ) or return;
 

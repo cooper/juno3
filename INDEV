@@ -736,3 +736,6 @@ CHANGES:
 
         5. added ServerCommands API::Module base. (server_commands)
            moved server commands to core.
+
+        January 16, 2012
+        Goal of the day: moving outgoing server crap to core module.
