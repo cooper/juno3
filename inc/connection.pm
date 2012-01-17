@@ -220,7 +220,7 @@ sub ready {
 
         $connection->{parent} = gv('SERVER');
         $connection->{type}   = server->new($connection);
-        server::outgoing::sid_all($connection->{type});
+        server::mine::fire_command_all(sid => $connection->{type});
 
         # send server credentials
         if (!$connection->{sent_creds}) {
@@ -289,7 +289,7 @@ sub done {
 
     if ($connection->{type}) {
         # share this quit with the children
-        $connection->server::outgoing::quit_all($reason);
+        server::mine::fire_command_all(quit => $connection, $reason);
 
         # tell user.pm or server.pm that the connection is closed
         $connection->{type}->quit($reason)

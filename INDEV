@@ -746,3 +746,7 @@ CHANGES:
 
         8. finished core_ocommands :).
            now I have to replace all of the old server::outgoing::* calls with the new system.
+
+        9. finished moving from the old server::outgoing::* system to the new server::mine::fire_command system.
+           I have a great feeling that commit this will cause a bug or two.
+           In other news, outgoing commands are now modularized.

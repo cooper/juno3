@@ -189,35 +189,35 @@ sub send_burst {
 
         # the server already knows about me.
         if ($serv != gv('SERVER')) {
-            $server->server::outgoing::sid($serv);
+            fire_command($server, sid => $serv)
         }
 
         # send modes using compact AUM and ACM
-        $server->server::outgoing::aum($serv);
-        $server->server::outgoing::acm($serv);
+        fire_command($server, aum => $serv);
+        fire_command($server, acm => $serv)
     }
 
     # users
     foreach my $user (values %user::user) {
         # ignore users the server already knows!
         next if $user->{server} == $server || $server->{sid} == $user->{source};
-        $server->server::outgoing::uid($user);
+        fire_command($server, uid => $user);
 
         # oper flags
         if (scalar @{$user->{flags}}) {
-            $server->server::outgoing::oper($user, @{$user->{flags}});
+            fire_command($server, oper => $user, @{$user->{flags}})
         }
 
         # away reason
         if (exists $user->{away}) {
-            $server->server::outgoing::away($user);
+            fire_command($server, away => $user)
         }
     }
 
     # channels, using compact CUM
     foreach my $channel (values %channel::channels) {
-        $server->server::outgoing::cum($channel);
-        $server->server::outgoing::topicburst($channel) if $channel->{topic};
+        fire_command($server, cum => $channel);
+        fire_command($server, topicburst => $channel) if $channel->{topic}
     }
 
     $server->sendme('ENDBURST '.time);

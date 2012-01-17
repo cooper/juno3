@@ -9,7 +9,6 @@ use feature 'switch';
 use server::mine;
 use server::linkage;
 use server::handlers;
-use server::outgoing;
 use utils qw[log2 gv];
 
 our %server;

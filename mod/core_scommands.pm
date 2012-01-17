@@ -286,7 +286,7 @@ sub privmsgnotice {
             return 1
         }
         # otherwise pass this on...
-        $tuser->{location}->server::outgoing::privmsgnotice($command, $user, $tuser->{uid}, $message);
+        server::mine::fire_command($tuser->{location}, privmsgnotice => $command, $user, $tuser->{uid}, $message);
         return 1
     }
 
@@ -303,7 +303,7 @@ sub privmsgnotice {
             next if $usr->is_local;
             next if $sent{$usr->{location}};
             $sent{$usr->{location}} = 1;
-            $usr->{location}->server::outgoing::privmsgnotice($command, $user, $channel->{name}, $message);
+            server::mine::fire_command($usr->{location}, privmsgnotice => $command, $user, $channel->{name}, $message);
         }
 
         return 1

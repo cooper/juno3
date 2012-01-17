@@ -179,7 +179,7 @@ sub new_connection {
     $user->sendfrom($user->{nick}, "MODE $$user{nick} :".$user->mode_string);
 
     # tell other servers
-    server::outgoing::uid_all($user);
+    server::mine::fire_command_all(uid => $user);
 }
 
 1
