@@ -39,7 +39,7 @@
 
 [ api ]
 
-    modules: ['core_ucommands', 'core_scommands', 'core_umodes', 'core_cmodes']
+    modules: ['core_ucommands', 'core_scommands', 'core_ocommands', 'core_umodes', 'core_cmodes']
                         # modules to load automatically.
                         # you probably want to load core_*. juno is pretty much useless without those.
 

@@ -3,6 +3,7 @@ Development log
 
 TODO:
 
+    [H] create command blocks- just like mode blocks but for commands.
     [H] for list modes, create mode blocks to be fired for viewing lists
     [H] RPL_ISUPPORT
     [H] list mode listing

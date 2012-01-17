@@ -11,7 +11,28 @@ There. Very good.
 ## what is juno-ircd version 3?
 
 juno-ircd is a fully-featured, modular, and usable IRC daemon written in Perl. It is aimed
-to be highly extensible and customizable. At the same time it is efficient and usable.
+to be highly extensible and customizable. At the same time it is efficient and usable.  
+
+Here is a list of goals that juno-ircd is designed for.
+
+* being written in Perl.
+* being extensible and flexible.
+* being customizable in every visibly possible way.
+* compatibility with some standards and hopefully *most* clients.
+* seamless multi-server IRC networks.
+* drop-in code: the ability to update most features without restarting.
+* being bugless. (but everyone makes mistakes every once in a while..)
+
+Here's a list of things juno is not designed for.
+
+* being memory-friendly.
+* compatibility with non-unix-like systems.
+* being a compiled executable.
+* replicating functionality of the original ircd or ircds branched from it.
+* replicating inspircd.
+* supporting IRC clients from 1912.
+* non-English-speaking server administrators.
+* linking with other ircds (so don't ask for that.)
 
 ## from juno2 to juno3, what's new?
 
@@ -23,8 +44,9 @@ to be highly extensible and customizable. At the same time it is efficient and u
 * a better configuration
 * even more modular
 * more IRC-compliant (probably better for OS X IRC clients!)
-* less buggy (perhaps bugless!)
+* less buggy
 * more features in general
+* the ability to update core features without restarting
 
 ## installation
 
