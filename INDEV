@@ -743,3 +743,6 @@ CHANGES:
         6. separated core into several separate modules.
 
         7. added OutgoingCommands API::Module base for outgoing server commands. (outgoing_commands)
+
+        8. finished core_ocommands :).
+           now I have to replace all of the old server::outgoing::* calls with the new system.

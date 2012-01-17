@@ -9,7 +9,7 @@ my %cmodes = (
 );
 
 our $mod = API::Module->new(
-    name        => 'core/cmodes',
+    name        => 'core_cmodes',
     version     => '0.1',
     description => 'the core set of channel modes',
     requires    => ['channel_modes'],

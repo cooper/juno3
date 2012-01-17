@@ -11,7 +11,7 @@ my %umodes = (
 );
 
 our $mod = API::Module->new(
-    name        => 'core/umodes',
+    name        => 'core_umodes',
     version     => '0.1',
     description => 'the core set of user commands',
     requires    => ['user_modes'],

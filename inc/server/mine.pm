@@ -68,14 +68,8 @@ sub register_outgoing_handler {
         return
     }
 
-    # one per source
-    if (exists $outgoing{$command}{$source}) {
-        log2("$source already registered $command; aborting");
-        return
-    }
-
     #success
-    $outgoing{$command}{$source} = {
+    $outgoing{$command} = {
         code    => $ref,
         source  => $source
     };
@@ -88,6 +82,33 @@ sub delete_outgoing_handler {
     my $command = uc shift;
     log2("deleting handler $command");
     delete $outgoing{$command}
+}
+
+# fire outgoing
+sub fire_command {
+    my ($server, $command, @args) = (shift, uc shift, @_);
+    if (!$outgoing{$command}) {
+        log2("fired $command which does not exist");
+        return
+    }
+
+    # send
+    $server->send($outgoing{$command}{code}(@args));
+
+    return 1
+}
+
+sub fire_command_all {
+    my ($command, @args) = (uc shift, @_);
+    if (!$outgoing{$command}) {
+        log2("fired $command which does not exist");
+        return
+    }
+
+    # send
+    send_children(undef, $outgoing{$command}{code}(@args));
+
+    return 1
 }
 
 # handle local user data
