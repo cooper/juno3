@@ -222,8 +222,7 @@ sub nick {
 
     # change it
     $user->change_nick($newnick);
-
-    server::mine::fire_command_all($user);
+    server::mine::fire_command_all(nick => $user);
 }
 
 sub info {

@@ -206,8 +206,8 @@ sub uid {
         #else {
             # we both lose
             $ref->{nick} = $ref->{uid};
-            $used->channel::mine::send_all_user("NICK $$used{uid}");
             $used->change_nick($used->{uid});
+            $used->channel::mine::send_all_user("NICK $$used{uid}");
         #}
     }
 

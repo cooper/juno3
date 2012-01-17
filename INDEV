@@ -754,3 +754,5 @@ CHANGES:
     5. January 16, 2012
 
         0. fixed a bug where juno crashes if data is received from a socket that has been ->done. 
+
+        1. fixed a bug where NICK messages were not propagated properly.
