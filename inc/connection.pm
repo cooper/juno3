@@ -57,6 +57,9 @@ sub handle {
     # strip unwanted characters
     $data =~ s/(\n|\r|\0)//g;
 
+    # connection is being closed
+    return if $connection->{goodbye};
+
     # if this peer is registered, forward the data to server or user
     return $connection->{type}->handle($data) if $connection->{ready};
 
@@ -306,6 +309,10 @@ sub done {
     # perl doesn't know to destroy unless we do this
     delete $connection->{type}->{conn};
     delete $connection->{type};
+
+    # prevent confusion if more data is received
+    delete $connection->{ready};
+    $connection->{goodbye} = 1;
 
     return 1
 

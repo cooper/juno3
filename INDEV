@@ -750,3 +750,7 @@ CHANGES:
         9. finished moving from the old server::outgoing::* system to the new server::mine::fire_command system.
            I have a great feeling that commit this will cause a bug or two.
            In other news, outgoing commands are now modularized.
+
+    5. January 16, 2012
+
+        0. fixed a bug where juno crashes if data is received from a socket that has been ->done. 
