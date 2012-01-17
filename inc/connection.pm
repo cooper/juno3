@@ -261,7 +261,7 @@ sub somewhat_ready {
 
 # send data to the socket
 sub send {
-    return shift->{stream}->write(shift."\r\n");
+    return shift->{stream}->write(shift()."\r\n");
 }
 
 # find by a user or server object
