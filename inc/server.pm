@@ -8,7 +8,6 @@ use feature 'switch';
 
 use server::mine;
 use server::linkage;
-use server::handlers;
 use utils qw[log2 gv];
 
 our %server;
@@ -158,7 +157,6 @@ sub convert_cmode_string {
     return $newstring
 }
 
-# XXX mine.pm?
 sub cmode_takes_parameter {
     my ($server, $name, $state) = @_;
     given ($server->{cmodes}->{$name}->{type}) {
