@@ -27,8 +27,6 @@ BEGIN {
     unshift @INC, "$run_dir/inc";
 
     require ircd;
-    require utils; # must be loaded because ircd depends on it
-                   # but ircd cannot use it because it must be done after compile time
     ircd::begin()
 }
 

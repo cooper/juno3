@@ -765,3 +765,7 @@ CHANGES:
            this will be useful in future changes.
 
         3. started working to make most of the ircd reloadable without restarting.
+
+        January 18, 2012
+
+        4. fixed a bug where the same oper flags would be set over and over.

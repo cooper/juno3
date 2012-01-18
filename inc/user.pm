@@ -172,19 +172,21 @@ sub mode_string {
 # add oper flags
 sub add_flags {
     my $user  = shift;
-    my @flags = @_;
+    my @flags = grep { !$user->has_flag($_) } @_;
     log2("adding flags to $$user{nick}: @flags");
     push @{$user->{flags}}, @flags
 }
 
 # remove oper flags
 sub remove_flags {
-    my $user = shift;
+    my $user   = shift;
     my @remove = @_;
-    log2("removing flags from $$user{nick}: @remove");
     my %r;
+    log2("removing flags from $$user{nick}: @remove");
+
     @r{@remove}++;
-    my @new = grep { !exists $r{$_} } @{$user->{flags}};
+
+    my @new        = grep { !exists $r{$_} } @{$user->{flags}};
     $user->{flags} = \@new;
 }
 
