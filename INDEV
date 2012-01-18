@@ -769,3 +769,5 @@ CHANGES:
         January 18, 2012
 
         4. fixed a bug where the same oper flags would be set over and over.
+
+        5. finally fixed all of the nick collision bugs for good.
