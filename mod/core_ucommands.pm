@@ -709,7 +709,7 @@ sub part {
         # remove the user and tell the other channel's users and servers
         my $ureason = $reason ? " :$reason" : q();
         $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$ureason");
-        $user->server::mine::fire_command_all(part => $channel, $channel->{time}, $reason);
+        server::mine::fire_command_all(part => $user, $channel, $channel->{time}, $reason);
         $channel->remove($user);
 
     }

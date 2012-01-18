@@ -249,7 +249,7 @@ sub off () { 0 }
 sub import {
     my $package = caller;
     no strict 'refs';
-    *{$package.'::'.$_} = *{__PACKAGE__.'::'.$_} foreach @_
+    *{$package.'::'.$_} = *{__PACKAGE__.'::'.$_} foreach @_[1..$#_]
 }
 
 1

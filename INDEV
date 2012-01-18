@@ -757,3 +757,9 @@ CHANGES:
         0. fixed a bug where juno crashes if data is received from a socket that has been ->done. 
 
         1. fixed a bug where NICK messages were not propagated properly.
+
+        January 17, 2012
+
+        2. fixed a bug in PART messages being propagated.
+           moved tons of code from run/ircd to a module, inc/ircd.pm instead.
+           this will be useful in future changes.

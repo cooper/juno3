@@ -88,7 +88,7 @@ sub delete_outgoing_handler {
 sub fire_command {
     my ($server, $command, @args) = (shift, uc shift, @_);
     if (!$outgoing{$command}) {
-        log2("fired $command which does not exist");
+        log2((caller)[0]." fired $command which does not exist");
         return
     }
 
@@ -100,8 +100,8 @@ sub fire_command {
 
 sub fire_command_all {
     my ($command, @args) = (uc shift, @_);
-    if (!$outgoing{$command}) {
-        log2("fired $command which does not exist");
+    if (!$outgoing{$command}) {my @c = caller 1;
+        log2((caller)[0]." @c fired $command which does not exist");
         return
     }
 
