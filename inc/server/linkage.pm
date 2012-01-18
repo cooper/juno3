@@ -45,8 +45,8 @@ sub connect_server {
         read_all       => 0,
         read_len       => POSIX::BUFSIZ,
         on_read        => \&ircd::handle_data,
-        on_read_eof    => sub { $conn->done('connection closed'); $stream->close_now   },
-        on_write_eof   => sub { $conn->done('connection closed'); $stream->close_now   },
+        on_read_eof    => sub { $conn->done('connection closed');   $stream->close_now },
+        on_write_eof   => sub { $conn->done('connection closed');   $stream->close_now },
         on_read_error  => sub { $conn->done('read error: ' .$_[1]); $stream->close_now },
         on_write_error => sub { $conn->done('write error: '.$_[1]); $stream->close_now }
     );

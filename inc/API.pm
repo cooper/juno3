@@ -153,4 +153,10 @@ sub class_unload {
     return 1
 }
 
-1
+# temporarily store the loaded array on reload
+ircd::reloadable(sub {
+    $main::TMP_API_LOADED = \@loaded
+}, sub {
+    @loaded = @{$main::TMP_API_LOADED};
+    undef $main::TMP_API_LOADED
+})

@@ -7,7 +7,10 @@ use feature qw|switch say|;
 
 use utils qw[conf lconf log2 fatal gv set];
 
-my ($VERSION, %global) = '3.2.5.2';
+utils::ircd_LOAD();
+
+our @reloadable;
+my ($VERSION, %global) = '3.2.5.3';
 
 sub start {
 
@@ -200,7 +203,7 @@ sub handle_connect {
         on_write_error => sub { $conn->done('write error: '.$_[1]); $stream->close_now }
     );
 
-    $main::loop->add($stream);
+    $main::loop->add($stream)
 }
 
 # handle incoming data
@@ -253,11 +256,7 @@ sub boot {
 }
 
 sub loop {
-    $main::loop->loop_forever;
-}
-
-sub load {
-
+    $main::loop->loop_forever
 }
 
 sub become_daemon {
@@ -279,7 +278,7 @@ sub become_daemon {
     }
 
     exit if gv('PID');
-    POSIX::setsid();
+    POSIX::setsid()
 }
 
 sub begin {
@@ -299,6 +298,17 @@ sub begin {
         max_global_user_count => 0,
         max_local_user_count  => 0
     )
+}
+
+# sets a package as reloadable for updates
+sub reloadable {
+    my $package = caller;
+    my $code    = shift || 0;
+    my $after   = shift || 0;
+    $code  = sub {} if ref $code  ne 'CODE';
+    $after = sub {} if ref $after ne 'CODE';
+    push @reloadable, [$package, $code, $after];
+    return 1
 }
 
 1
