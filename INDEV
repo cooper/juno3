@@ -771,3 +771,7 @@ CHANGES:
         4. fixed a bug where the same oper flags would be set over and over.
 
         5. finally fixed all of the nick collision bugs for good.
+
+        January 19, 2012
+
+        6. fixed a bug where AUM was entirely retarded. it was caused by a recent code cleanup.

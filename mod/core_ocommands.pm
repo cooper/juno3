@@ -255,7 +255,7 @@ sub aum {
     my $serv  = shift;
 
     my @modes = map {
-        $serv->umode_letter($_)
+       "$_:".$serv->umode_letter($_)
     } keys %{$serv->{umodes}};
 
     ":$$serv{sid} AUM ".join(' ', @modes)
