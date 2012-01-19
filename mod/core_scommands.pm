@@ -358,7 +358,7 @@ sub away {
 sub return_away {
     my ($server, $data, @args) = @_;
     my $user = user::lookup_by_id(col($args[0]));
-    $user->return_away();
+    $user->unset_away();
 }
 
 # add a channel mode

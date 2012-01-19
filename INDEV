@@ -777,3 +777,5 @@ CHANGES:
         6. fixed a bug where AUM was entirely retarded. it was caused by a recent code cleanup.
 
         7. fixed a bug where users could continuously change their nickname to their UID.
+
+        8. fixed a bug where users returning from away caused adjacent servers to crash.
