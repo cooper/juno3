@@ -775,3 +775,5 @@ CHANGES:
         January 19, 2012
 
         6. fixed a bug where AUM was entirely retarded. it was caused by a recent code cleanup.
+
+        7. fixed a bug where users could continuously change their nickname to their UID.

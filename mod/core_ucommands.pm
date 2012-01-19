@@ -199,11 +199,6 @@ sub nick {
         $newnick = $user->{uid}
     }
     else {
-        # ignore stupid nick changes
-        if (lceq $user->{nick} => $newnick) {
-            return
-        }
-
         # check for valid nick
         if (!utils::validnick($newnick)) {
             $user->numeric('ERR_ERRONEUSNICKNAME', $newnick);
@@ -215,6 +210,11 @@ sub nick {
             $user->numeric('ERR_NICKNAMEINUSE', $newnick);
             return
         }
+    }
+
+    # ignore stupid nick changes
+    if (lceq $user->{nick} => $newnick) {
+        return
     }
 
     # tell ppl
