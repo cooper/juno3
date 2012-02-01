@@ -787,3 +787,7 @@ CHANGES:
            a new status mode/prefix system is on its way, so channel->has_basic_status won't be around much longer.
            added ban list viewing, which should fix the issue with irssi channel synchronization.
            temporarily, anyone can set channel modes until the new channel status system is done.
+
+    6. February 1, 2012
+
+        0. fixed channel->list_has. this fixes a ban matching bug caused by yesterday's changes.

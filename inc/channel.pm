@@ -80,7 +80,7 @@ sub list_has {
 sub list_matches {
     my ($channel, $name, $what) = @_;
     return unless exists $channel->{modes}->{$name};
-    return 1 if match($what, @{$channel->{modes}->{$name}->{list}})
+    return 1 if match($what, map { $_->[0] } @{$channel->{modes}->{$name}->{list}})
 }
 
 # adds something to a list mode (such as ban)

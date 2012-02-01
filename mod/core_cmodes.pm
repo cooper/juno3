@@ -118,7 +118,10 @@ sub cmode_ban {
 
     # setting
     if ($mode->{state}) {
-        $channel->add_to_list('ban', $mode->{param}, setby => $mode->{source}->name, time => time);
+        $channel->add_to_list('ban', $mode->{param},
+            setby => $mode->{source}->name,
+            time  => time
+        )
     }
 
     # unsetting
