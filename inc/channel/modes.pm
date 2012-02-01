@@ -81,20 +81,21 @@ sub fire {
     }
 
     # create a hashref with info
-    my %this = (
-        server => $server,
-        source => $source,
-        state  => $state,
-        param  => $parameter,
-        params => $parameters,
-        force  => $force,
-        proto  => $over_protocol
-    );
+    my $this = {
+        channel => $channel,
+        server  => $server,
+        source  => $source,
+        state   => $state,
+        param   => $parameter,
+        params  => $parameters,
+        force   => $force,
+        proto   => $over_protocol
+    };
 
     foreach my $block (values %{$blocks{$name}}) {
-        return unless $block->($channel, \%this)
+        return (undef, $this) unless $block->($channel, $this)
     }
-    return 1
+    return (1, $this)
 }
 
 # get a +modes string

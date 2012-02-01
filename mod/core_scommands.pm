@@ -330,8 +330,8 @@ sub sjoin {
     # channel doesn't exist; make a new one
     else {
         $channel = channel->new({
-            name   => $chname,
-            'time' => $time
+            name => $chname,
+            time => $time
         });
     }
 

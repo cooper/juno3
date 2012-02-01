@@ -102,12 +102,30 @@ sub register_statuses {
 
 sub cmode_ban {
     my ($channel, $mode) = @_;
-    if ($mode->{state}) {
-        $channel->add_to_list('ban', $mode->{param});
+
+    # view list
+    if (!defined $mode->{param}) {
+        foreach my $ban (@{$channel->{modes}->{ban}->{list}}) {
+            $mode->{source}->numeric(
+                RPL_BANLIST =>
+                $channel->{name}, $ban->[0], $ban->[1]->{setby}, $ban->[1]->{time}
+            )
+        }
+        $mode->{source}->numeric(RPL_ENDOFBANLIST => $channel->{name});
+        $mode->{do_not_set} = 1;
+        return 1
     }
+
+    # setting
+    if ($mode->{state}) {
+        $channel->add_to_list('ban', $mode->{param}, setby => $mode->{source}->name, time => time);
+    }
+
+    # unsetting
     else {
         $channel->remove_from_list('ban', $mode->{param});
     }
+
     push @{$mode->{params}}, $mode->{param};
     return 1
 }

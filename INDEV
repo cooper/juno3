@@ -779,3 +779,11 @@ CHANGES:
         7. fixed a bug where users could continuously change their nickname to their UID.
 
         8. fixed a bug where users returning from away caused adjacent servers to crash.
+
+        January 31, 2012
+
+        9. added the ability to store data with list items in channel mode lists.
+           now, each channel mode block cannot assume that a user has operator status as they could before.
+           a new status mode/prefix system is on its way, so channel->has_basic_status won't be around much longer.
+           added ban list viewing, which should fix the issue with irssi channel synchronization.
+           temporarily, anyone can set channel modes until the new channel status system is done.

@@ -172,8 +172,11 @@ sub cmode_takes_parameter {
 
         # lists like +b always want a parameter
         # keep in mind that these view lists when there isn't one, though
+        # REVISION: blocks for these modes must check for parameters manually.
+        # if there is a parameter, it will set or unset. it should send a numerical
+        # list otherwise.
         when (3) {
-            return 1
+            return 2 # 2 means yes if present but still valid if not present
         }
 
         # status modes always want a parameter

@@ -73,7 +73,7 @@ sub set_mode {
 sub list_has {
     my ($channel, $name, $what) = @_;
     return unless exists $channel->{modes}->{$name};
-    return 1 if grep { $_ eq $what } @{$channel->{modes}->{$name}->{list}}
+    return 1 if grep { $_->[0] eq $what } @{$channel->{modes}->{$name}->{list}}
 }
 
 # something matches in an expression list
@@ -85,7 +85,7 @@ sub list_matches {
 
 # adds something to a list mode (such as ban)
 sub add_to_list {
-    my ($channel, $name, $parameter) = @_;
+    my ($channel, $name, $parameter, %opts) = @_;
     $channel->{modes}->{$name} = {
         time => time,
         list => []
@@ -97,7 +97,7 @@ sub add_to_list {
     }
 
     log2("$$channel{name}: adding $parameter to $name list");
-    push @{$channel->{modes}->{$name}->{list}}, $parameter;
+    push @{$channel->{modes}->{$name}->{list}}, [$parameter, \%opts];
     return 1
 }
 
@@ -107,7 +107,7 @@ sub remove_from_list {
     return unless $channel->list_has($name, $what);
 
     my @old = @{$channel->{modes}->{$name}->{list}};
-    my @new = grep { $_ ne $what } @old;
+    my @new = grep { $_->[0] ne $what } @old;
     $channel->{modes}->{$name}->{list} = \@new;
     log2("$$channel{name}: removing $what from $name list");
 }
@@ -203,17 +203,25 @@ sub handle_mode_string {
                 next
             }
             my $parameter = undef;
-            if ($server->cmode_takes_parameter($name, $state)) {
+            if (my $takes = $server->cmode_takes_parameter($name, $state)) {
                 $parameter = shift @m;
-                next letter unless defined $parameter
+                next letter if !defined $parameter && $takes == 1
             }
 
             # don't allow this mode to be changed if the test fails
             # *unless* force is provided.
-            my $win = $channel->channel::modes::fire($server, $source, $state, $name, $parameter, $parameters, $force, $over_protocol);
-            if (!$force) {
-                next unless $win
-            }
+            my ($win, $moderef) = $channel->channel::modes::fire(
+                $server, $source,
+                $state, $name,
+                $parameter, $parameters,
+                $force, $over_protocol
+            );
+
+            # blocks failed.
+            if (!$force) { next letter unless $win }
+
+            # block says not to set.
+            next letter if $moderef->{do_not_set};
 
             # if it is just a normal mode, set it
             if ($server->cmode_type($name) == 0) {
@@ -238,13 +246,13 @@ sub handle_mode_string {
     my @server_params;
     foreach my $param (@$parameters) {
         if (ref $param eq 'ARRAY') {
-            push @user_params, $param->[0];
+            push @user_params,   $param->[0];
             push @server_params, $param->[1]
         }
 
         # not an array ref
         else {
-            push @user_params, $param;
+            push @user_params,  $param;
             push @server_params, $param
         }
     }

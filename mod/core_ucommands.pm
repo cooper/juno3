@@ -292,10 +292,11 @@ sub mode {
         # setting
 
         # does he have op?
-        if (!$channel->user_has_basic_status($user)) {
-            $user->numeric('ERR_CHANOPRIVSNEEDED', $channel->{name});
-            return
-        }
+        #if (!$channel->user_has_basic_status($user)) {
+        #    $user->numeric('ERR_CHANOPRIVSNEEDED', $channel->{name});
+        #    return
+        #}
+        # DISABLED, at least for now. we'll see how this will be done later.
 
         my $modestr = join ' ', @args[2..$#args];
         my ($user_result, $server_result) = $channel->handle_mode_string($user->{server}, $user, $modestr);
@@ -669,8 +670,9 @@ sub away {
     }
 
     # unsetting
+    return unless exists $user->{away};
     $user->unset_away;
-    server::mine::fire_command_all(return_away =>$user);
+    server::mine::fire_command_all(return_away => $user);
     $user->numeric('RPL_UNAWAY');
 }
 

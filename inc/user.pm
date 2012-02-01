@@ -254,5 +254,6 @@ sub sendserv      { user::mine::sendserv(@_)      }
 sub server_notice { user::mine::server_notice(@_) }
 sub numeric       { user::mine::numeric(@_)       }
 sub id            { shift->{uid}                  }
+sub name          { shift->{nick}                 }
 
 1
