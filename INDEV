@@ -794,3 +794,7 @@ CHANGES:
 
         1. added overload for users. in string context, user objects return UIDs.
            the main advantage of this is readability in logging.
+
+        February 3, 2012
+
+        2. temporarily added a fix for iterating through list values vs. data stored with them, just until I make a less ugly solution.
