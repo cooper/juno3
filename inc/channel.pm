@@ -73,7 +73,10 @@ sub set_mode {
 sub list_has {
     my ($channel, $name, $what) = @_;
     return unless exists $channel->{modes}->{$name};
-    return 1 if grep { $_->[0] eq $what } @{$channel->{modes}->{$name}->{list}}
+    foreach my $thing (@{$channel->{modes}->{$name}->{list}}) {
+        return $thing if $thing->[0] eq $what
+    }
+    return
 }
 
 # something matches in an expression list
@@ -356,6 +359,7 @@ sub user_is {
 
 # returns true value only if the passed user has status
 # greater than voice (halfop, op, admin, owner)
+# XXX: this will be removed eventually, so don't use it for new things.
 sub user_has_basic_status {
     my ($channel, $user) = @_;
     foreach my $status (qw|owner admin op halfop|) {
@@ -364,8 +368,8 @@ sub user_has_basic_status {
     return
 }
 
-# returns true if the two passed users have a channel in common
-# well actually it returns the first match found
+# returns true if the two passed users have a channel in common.
+# well actually it returns the first match found, but that's usually useless.
 sub in_common {
     my ($user1, $user2) = @_;
     foreach my $channel (values %channels) {

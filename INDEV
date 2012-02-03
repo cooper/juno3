@@ -798,3 +798,6 @@ CHANGES:
         February 3, 2012
 
         2. temporarily added a fix for iterating through list values vs. data stored with them, just until I make a less ugly solution.
+
+        3. it is quite embarrassing that this bug has existed throughout nearly two years of development.
+           masks should match exactly as expected now.

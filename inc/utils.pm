@@ -157,19 +157,18 @@ sub match {
     $mask = lc $mask;
     my @aregexps;
 
-    foreach my $regexp (@list) {
-
-        # replace wildcards with regex
-        $regexp =~ s/\./\\\./g;
-        $regexp =~ s/\?/\./g;
-        $regexp =~ s/\*/\.\*/g;
-        $regexp = '^'.$regexp.'$';
-        push @aregexps, lc $regexp
-
-    }
+    # convert IRC expression to Perl expression.
+    @list = map {
+        $_ = "\Q$_\E";  # escape all non-alphanumeric characters.
+        s/\\\?/\./g;    # replace "\?" with "."
+        s/\\\*/\.\*/g;  # replace "\*" with ".*"
+        s/\\\@/\@/g;    # replace "\@" with "@"
+        s/\\\!/\!/g;    # replace "\!" with "!"
+        lc
+    } @list;
 
     # success
-    return 1 if grep { $mask =~ m/$_/ } @aregexps;
+    return 1 if grep { $mask =~ m/^$_$/ } @list;
 
     # no matches
     return
