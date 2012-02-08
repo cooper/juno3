@@ -7,6 +7,8 @@ use strict;
 
 use utils qw[conf log2 gv];
 
+use IO::Async::Stream;
+
 # connect to a server in the configuration
 
 sub connect_server {

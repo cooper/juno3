@@ -231,7 +231,7 @@ sub gv {
     return
 }
 
-sub set {
+sub set ($$) {
     my $set = shift;
     if (uc $set eq $set) {
         log2("can't set $set");

@@ -136,12 +136,16 @@ my %ucommands = (
     VERIFY => {
         code   => \&verify,
         desc   => 'verify doing something which could be harmful'
+    },
+    REHASH => {
+        code   => \&rehash,
+        desc   => 'reload the server configuration'
     }
 );
 
 our $mod = API::Module->new(
     name        => 'core_ucommands',
-    version     => '0.1',
+    version     => '0.2',
     description => 'the core set of user commands',
     requires    => ['user_commands'],
     initialize  => \&init
@@ -226,34 +230,35 @@ sub nick {
 }
 
 sub info {
+    my ($NAME, $VERSION) = (gv('NAME'), gv('VERSION'));
     my $user = shift;
-    my @info = (
-        " ",
-        "\2***\2 this is \2".gv('NAME')."\2 version \2".gv('VERSION')."\2.\2 ***\2",
-        " "                                                             ,
-        "Copyright (c) 2010-12, the juno-ircd developers"                  ,
-        " "                                                             ,
-        "This program is free software."                                ,
-        "You are free to modify and redistribute it under the terms of" ,
-        "the New BSD license."                                          ,
-        " "                                                             ,
-        "juno3 wouldn't be here if it weren't for the people who have"  ,
-        "contributed to the project."                                   ,
-        " "                                                             ,
-        "\2Developers\2"                                                ,
-        "    Mitchell Cooper, \"cooper\" <mitchell\@notroll.net>"       ,
-        "    Kyle Paranoid, \"mac-mini\" <mac-mini\@mac-mini.org>"      ,
-        "    Alyx Marie, \"alyx\" <alyx\@malkier.net>"                  ,
-        "    Brandon Rodriguez, \"Beyond\" <beyond\@mailtrap.org>"      ,
-        "    Nick Dalsheimer, \"AstroTurf\" <astronomerturf\@gmail.com>",
-        "    Matthew Carey, \"swarley\" <matthew.b.carey\@gmail.com>"   ,
-        "    Matthew Barksdale, \"matthew\" <matt\@mattwb65.com>"       ,
-        " "                                                             ,
-        "Proudly brought to you by \2\x0302No\x0313Troll\x0304Plz\x0309Net\x0f",
-        "https://notroll.net"                                           ,
-        " "
-    );
-    $user->numeric('RPL_INFO', $_) foreach @info;
+    my $info = <<"END";
+
+\2***\2 this is \2$NAME\2 version \2$VERSION\2.\2 ***\2
+ 
+Copyright (c) 2010-12, the juno-ircd developers
+ 
+This program is free software.
+You are free to modify and redistribute it under the terms of
+the New BSD license.
+ 
+juno3 wouldn't be here if it weren't for the people who have
+contributed to the project.
+ 
+\2Developers\2
+    Mitchell Cooper, \"cooper\" <mitchell\@notroll.net>
+    Kyle Paranoid, \"mac-mini\" <mac-mini\@mac-mini.org>
+    Alyx Marie, \"alyx\" <alyx\@malkier.net>
+    Brandon Rodriguez, \"Beyond\" <beyond\@mailtrap.org>
+    Nick Dalsheimer, \"AstroTurf\" <astronomerturf\@gmail.com>
+    Matthew Carey, \"swarley\" <matthew.b.carey\@gmail.com>
+    Matthew Barksdale, \"matthew\" <matt\@mattwb65.com>
+ 
+Proudly brought to you by \2\x0302No\x0313Troll\x0304Plz\x0309Net\x0f
+https://notroll.net
+ 
+END
+    $user->numeric('RPL_INFO', $_) foreach split /\n/, $info;
     $user->numeric('RPL_ENDOFINFO');
     return 1
 }
@@ -1041,6 +1046,24 @@ sub verify {
     else {
         $user->server_notice('Sorry, nothing to verify.');
     }
+}
+
+sub rehash {
+    my ($user, $data, @args) = @_;
+
+    # make sure they have connect flag
+    if (!$user->has_flag('rehash')) {
+        $user->numeric('ERR_NOPRIVILEGES');
+        return
+    }
+
+    if (utils::parse_config('etc/ircd.conf')) {
+        $user->server_notice('rehash', 'configuration loaded successfully');
+        return 1
+    }
+
+    $user->server_notice('rehash', 'there was an error parsing the configuration.');
+    return
 }
 
 $mod

@@ -801,3 +801,7 @@ CHANGES:
 
         3. it is quite embarrassing that this bug has existed throughout nearly two years of development.
            masks should match exactly as expected now.
+
+        4. added REHASH command to core_ucommands. it currently supports local rehashing only.
+           this also adds the 'rehash' user flag.
+           Fixed a bug win server::linkage where autoconnect didn't work right due to module load timing.
