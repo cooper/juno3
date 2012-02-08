@@ -25,6 +25,7 @@ OPER FLAGS:
     connect: use the CONNECT command
     modload: use the MODLOAD command
     modunload: use the MODUNLOAD command
+    rehash: use REHASH command locally
 
 PLANS:
 
@@ -805,3 +806,5 @@ CHANGES:
         4. added REHASH command to core_ucommands. it currently supports local rehashing only.
            this also adds the 'rehash' user flag.
            Fixed a bug win server::linkage where autoconnect didn't work right due to module load timing.
+
+        5. this should fix a small bug where lazy mode handling created a pointless (but not harmful) CMODE message.

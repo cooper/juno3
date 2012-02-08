@@ -124,7 +124,7 @@ my %scommands = (
 
 our $mod = API::Module->new(
     name        => 'core_scommands',
-    version     => '0.1',
+    version     => '0.2',
     description => 'the core set of server commands',
     requires    => ['server_commands'],
     initialize  => \&init
@@ -465,10 +465,13 @@ sub cum {
     my $channel = channel::lookup_by_name($args[2]) || channel->new({ name => $args[2], time => $ts});
     my $newtime = $channel->channel::mine::take_lower_time($ts);
 
-    # lazy mode handling.. # FIXME
+    # lazy mode handling..
+    # pretend to receive a CMODE.
+    # revision: use cmode() directly otherwise fake CMODE messages will be forwarded to children.
     if ($newtime == $ts) { # won the time battle
         my $modestr = col(join ' ', @args[5..$#args]);
-        $server->handle(":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr");
+        my $cdata   = ":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr";
+        cmode($server, $cdata, split(/\s+/, $cdata));
     }
 
     # no users

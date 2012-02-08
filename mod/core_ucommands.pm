@@ -970,13 +970,6 @@ sub modunload {
         return
     }
 
-    if (lc $args[1] eq 'core' && !$args[2]) {
-        $user->server_notice('I REALLY DOUBT YOU WANT TO DO THAT.');
-        $user->server_notice('If you do, use the VERIFY command.');
-        $user->{cmd_verify} = sub { $user->handle("$args[0] $args[1] 1") };
-        return
-    }
-
     $user->server_notice("Unloading module \2$args[1]\2.");
 
     my $result = API::unload_module($args[1], "$args[1].pm");
