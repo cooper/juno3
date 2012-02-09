@@ -808,3 +808,6 @@ CHANGES:
            Fixed a bug win server::linkage where autoconnect didn't work right due to module load timing.
 
         5. this should fix a small bug where lazy mode handling created a pointless (but not harmful) CMODE message.
+
+        6. If a user is connected through a server whose parent split during a netsplit, the server that split to
+           cause this is mentioned in the user's quit message instead of the server the user is physically connected to.

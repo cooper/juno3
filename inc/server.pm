@@ -31,8 +31,8 @@ sub new {
 }
 
 sub quit {
-    my ($server, $reason) = @_;
-    my $why = $server->{name}.q( ).$server->{parent}->{name};
+    my ($server, $reason, $why) = @_;
+    $why ||= $server->{name}.q( ).$server->{parent}->{name};
 
     log2("server $$server{name} has quit: $reason");
 
@@ -48,7 +48,7 @@ sub quit {
     # now we must do the same for each of the servers' children and their children and so on
     foreach my $serv (values %server) {
         next if $serv == $server;
-        $serv->quit('parent server has disconnected') if $serv->{parent} == $server
+        $serv->quit('parent server has disconnected', $why) if $serv->{parent} == $server
     }
 
     undef $server;
