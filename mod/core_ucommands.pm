@@ -140,12 +140,17 @@ my %ucommands = (
     REHASH => {
         code   => \&rehash,
         desc   => 'reload the server configuration'
+    },
+    KILL => {
+        code   => \&ukill,
+        desc   => 'forcibly remove a user from the server',
+        params => 2
     }
 );
 
 our $mod = API::Module->new(
     name        => 'core_ucommands',
-    version     => '0.2',
+    version     => '0.3',
     description => 'the core set of user commands',
     requires    => ['user_commands'],
     initialize  => \&init
@@ -1044,7 +1049,7 @@ sub verify {
 sub rehash {
     my ($user, $data, @args) = @_;
 
-    # make sure they have connect flag
+    # make sure they have rehash flag
     if (!$user->has_flag('rehash')) {
         $user->numeric('ERR_NOPRIVILEGES');
         return
@@ -1057,6 +1062,32 @@ sub rehash {
 
     $user->server_notice('rehash', 'there was an error parsing the configuration.');
     return
+}
+
+sub ukill {
+    my ($user, $data, @args) = @_;
+
+    # make sure they have kill flag
+    if (!$user->has_flag('kill')) {
+        $user->numeric('ERR_NOPRIVILEGES');
+        return
+    }
+
+    my $tuser  = user::lookup_by_nick($args[1]);
+    my $reason = col((split /\s+/, $data, 3)[2]);
+
+    # no such nick
+    if (!$tuser) {
+        $user->numeric(ERR_NOSUCHNICK => $args[1]);
+        return
+    }
+
+    if ($tuser->is_local) {
+        $tuser->{conn}->done("Killed: $reason [$$user{nick}]");
+        $user->server_notice('kill', "$$tuser{nick} has been killed.");
+    }
+
+    return # global kills not yet implemented
 }
 
 $mod

@@ -26,6 +26,7 @@ OPER FLAGS:
     modload: use the MODLOAD command
     modunload: use the MODUNLOAD command
     rehash: use REHASH command locally
+    kill: use KILL command locally
 
 PLANS:
 
@@ -803,6 +804,8 @@ CHANGES:
         3. it is quite embarrassing that this bug has existed throughout nearly two years of development.
            masks should match exactly as expected now.
 
+        February 8, 2012
+
         4. added REHASH command to core_ucommands. it currently supports local rehashing only.
            this also adds the 'rehash' user flag.
            Fixed a bug win server::linkage where autoconnect didn't work right due to module load timing.
@@ -811,3 +814,6 @@ CHANGES:
 
         6. If a user is connected through a server whose parent split during a netsplit, the server that split to
            cause this is mentioned in the user's quit message instead of the server the user is physically connected to.
+
+        7. added KILL command (local only, at the moment). it's probably slightly wrong, but after two hours of trying to figure it out, I don't really care.
+           this adds the 'kill' user flag.
