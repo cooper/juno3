@@ -150,7 +150,7 @@ my %ucommands = (
 
 our $mod = API::Module->new(
     name        => 'core_ucommands',
-    version     => '0.3',
+    version     => '0.4',
     description => 'the core set of user commands',
     requires    => ['user_commands'],
     initialize  => \&init
@@ -1067,12 +1067,6 @@ sub rehash {
 sub ukill {
     my ($user, $data, @args) = @_;
 
-    # make sure they have kill flag
-    if (!$user->has_flag('kill')) {
-        $user->numeric('ERR_NOPRIVILEGES');
-        return
-    }
-
     my $tuser  = user::lookup_by_nick($args[1]);
     my $reason = col((split /\s+/, $data, 3)[2]);
 
@@ -1083,11 +1077,35 @@ sub ukill {
     }
 
     if ($tuser->is_local) {
+
+        # make sure they have kill flag
+        if (!$user->has_flag('kill')) {
+            $user->numeric('ERR_NOPRIVILEGES');
+            return
+        }
+
         $tuser->{conn}->done("Killed: $reason [$$user{nick}]");
-        $user->server_notice('kill', "$$tuser{nick} has been killed.");
     }
 
-    return # global kills not yet implemented
+    # tell other servers.
+    # it will be sent throughout the entire system, but only the server who the user is
+    # physically connected to will respond by removing the user. The other servers will
+    # ->quit the user when that server sends a QUIT message. Because of this, it is possible
+    # for kill messages to be ignored entirely. It all depends on the response of the server
+    # the target user is connected to.
+    else {
+
+        # make sure they have gkill flag
+        if (!$user->has_flag('gkill')) {
+            $user->numeric('ERR_NOPRIVILEGES');
+            return
+        }
+
+        server::mine::fire_command_all(kill => $user, $tuser, $reason);
+    }
+
+    $user->server_notice('kill', "$$tuser{nick} has been killed.");
+    return 1
 }
 
 $mod

@@ -102,6 +102,11 @@ my %scommands = (
         forward => 1,
         code    => \&topicburst
     },
+    KILL => {
+        params  => 2,
+        forward => 1,
+        code    => \&skill
+    },
 
     # compact
 
@@ -124,7 +129,7 @@ my %scommands = (
 
 our $mod = API::Module->new(
     name        => 'core_scommands',
-    version     => '0.2',
+    version     => '0.3',
     description => 'the core set of server commands',
     requires    => ['server_commands'],
     initialize  => \&init
@@ -562,6 +567,19 @@ sub topicburst {
     }
 
     return 1
+}
+
+sub skill {
+    # :source KILL uid :reason
+    my ($server, $data, @args) = @_;
+    my $source  = utils::global_lookup(col($args[0]));
+    my $tuser   = user::lookup_by_id($args[2]);
+    my $reason  = col((split /\s+/, $data, 4)[3]);
+
+    # we ignore any non-local users and just forward them
+    if ($tuser->is_local) {
+        $tuser->{conn}->done("Killed: $reason [$$user{nick}]");
+    }
 }
 
 $mod

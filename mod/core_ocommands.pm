@@ -26,12 +26,13 @@ my %ocommands = (
     cmode         => \&cmode,
     cum           => \&cum,
     acm           => \&acm,
-    aum           => \&aum
+    aum           => \&aum,
+    kill          => \&skill
 );
 
 our $mod = API::Module->new(
     name        => 'core_ocommands',
-    version     => '0.1',
+    version     => '0.2',
     description => 'the core set of outgoing commands',
     requires    => ['outgoing_commands'],
     initialize  => \&init
@@ -183,6 +184,13 @@ sub cmode {
     ":$id CMODE $$channel{name} $time $perspective :$modestr"
 }
 
+# kill
+
+sub skill {
+    my ($source, $tuser, $reason) = @_;
+    my ($id, $tid) = ($source->id, $tuser->id);
+    ":$id KILL $tid :$reason"
+}
 
 ####################
 # COMPACT commands #

@@ -27,6 +27,7 @@ OPER FLAGS:
     modunload: use the MODUNLOAD command
     rehash: use REHASH command locally
     kill: use KILL command locally
+    gkill: use KILL command globally
 
 PLANS:
 
@@ -815,5 +816,10 @@ CHANGES:
         6. If a user is connected through a server whose parent split during a netsplit, the server that split to
            cause this is mentioned in the user's quit message instead of the server the user is physically connected to.
 
+        February 9, 2012
+
         7. added KILL command (local only, at the moment). it's probably slightly wrong, but after two hours of trying to figure it out, I don't really care.
            this adds the 'kill' user flag.
+
+        8. added KILL server command, outgoing command, and extended user command to support global killing.
+           this adds the 'gkill' user flag.
