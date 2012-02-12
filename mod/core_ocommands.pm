@@ -32,7 +32,7 @@ my %ocommands = (
 
 our $mod = API::Module->new(
     name        => 'core_ocommands',
-    version     => '0.2',
+    version     => '0.3',
     description => 'the core set of outgoing commands',
     requires    => ['outgoing_commands'],
     initialize  => \&init
@@ -161,8 +161,8 @@ sub return_away {
 # leave a channel
 sub part {
     my ($user, $channel, $time, $reason) = @_;
-    my $sreason = $reason ? " :$reason" : q();
-    ":$$user{uid} PART $$channel{name} $time$sreason"
+    $reason ||= q();
+    ":$$user{uid} PART $$channel{name} $time :$reason"
 }
 
 

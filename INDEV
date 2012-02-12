@@ -821,5 +821,13 @@ CHANGES:
         7. added KILL command (local only, at the moment). it's probably slightly wrong, but after two hours of trying to figure it out, I don't really care.
            this adds the 'kill' user flag.
 
+        February 11, 2012
+
         8. added KILL server command, outgoing command, and extended user command to support global killing.
            this adds the 'gkill' user flag.
+
+        9. The ServerCommand base's 'params' now has parameter type checking.
+           This commit is likely to break the entire IRCd.
+           there are two possible outcomes of this update: many, many bugs in the linking protocol will be fixed
+           or (and more likely) nothing will work at all, and trying to link two servers will lead to a crash.
+           this update breaks compatibility with ALL existing API modules, as register_server_command()'s 'params' option is now required.

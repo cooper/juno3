@@ -8,102 +8,102 @@ use utils qw(col log2 lceq lconf match cut_to_limit conf gv);
 
 my %scommands = (
     SID => {
-        params  => 6,
+        params  => [qw(server dummy any ts any any any :rest)],
         forward => 1,
         code    => \&sid
     },
     UID => {
-        params  => 9,
+        params  => [qw(server dummy any ts any any any any any any :rest)],
         forward => 1,
         code    => \&uid
     },
     QUIT => {
-        params  => 1,
+        params  => [qw(source dummy :rest)],
         forward => 1,
         code    => \&quit
     },
     NICK => {
-        params  => 1,
+        params  => [qw(user dummy any)],
         forward => 1,
         code    => \&nick
     },
     BURST => {
-        params  => 0,
+        params  => [qw(server)],
         forward => 1,
         code    => \&burst
     },
     ENDBURST => {
-        params  => 0,
+        params  => [qw(server)],
         forward => 1,
         code    => \&endburst
     },
-    ADDUMODE  => {
-        params  => 2,
+    ADDUMODE => {
+        params  => [qw(server dummy any any)],
         forward => 1,
         code    => \&addumode
     },
     UMODE => {
-        params  => 1,
+        params  => [qw(user dummy any)],
         forward => 1,
         code    => \&umode
     },
     PRIVMSG => {
-        params  => 2,
+        params  => [qw(user any any :rest)],
         forward => 0, # we have to figure ourself
         code    => \&privmsgnotice
     },
     NOTICE => {
-        params  => 2,
+        params  => [qw(user any any :rest)],
         forward => 0, # we have to figure ourself
         code    => \&privmsgnotice
     },
     JOIN => {
-        params  => 2,
+        params  => [qw(user dummy any ts)],
         forward => 1,
         code    => \&sjoin
     },
     OPER => {
-        params  => 1,
+        params  => [qw(user dummy @rest)],
         forward => 1,
         code    => \&oper
     },
     AWAY => {
-        params  => 1,
+        params  => [qw(user dummy :rest)],
         forward => 1,
         code    => \&away
     },
     RETURN => {
-        params  => 0,
+        params  => [qw(user)],
         forward => 1,
         code    => \&return_away
     },
     ADDCMODE => {
-        params  => 3,
+        params  => [qw(server dummy any any any)],
         forward => 1,
         code    => \&addcmode
     },
     CMODE => {
-        params  => 4,
+        params  => [qw(source dummy channel ts server :rest)],
         forward => 1,
         code    => \&cmode
     },
     PART => {
-        params  => 1,
+        params  => [qw(user dummy channel ts :rest)],
         forward => 1,
         code    => \&part
     },
     TOPIC => {
-        params  => 4,
+        params  => [qw(source dummy channel ts ts :rest)],
         forward => 1,
         code    => \&topic
     },
     TOPICBURST => {
-        params  => 4,
+        params  => [qw(source dummy channel ts any ts :rest)],
         forward => 1,
         code    => \&topicburst
     },
     KILL => {
-        params  => 2,
+        params  => [qw(user dummy user :rest)],
         forward => 1,
         code    => \&skill
     },
@@ -111,17 +111,17 @@ my %scommands = (
     # compact
 
     AUM => {
-        params  => 1,
+        params  => [qw(server dummy @rest)],
         forward => 1,
         code    => \&aum
     },
     ACM => {
-        params  => 1,
+        params  => [qw(server dummy @rest)],
         forward => 1,
         code    => \&acm
     },
     CUM => {
-        params  => 4,
+        params  => [qw(server dummy any ts any :rest)],
         forward => 1,
         code    => \&cum
     }
@@ -129,7 +129,7 @@ my %scommands = (
 
 our $mod = API::Module->new(
     name        => 'core_scommands',
-    version     => '0.3',
+    version     => '0.4',
     description => 'the core set of server commands',
     requires    => ['server_commands'],
     initialize  => \&init
@@ -155,14 +155,13 @@ sub init {
 ###################
 
 sub sid {
+    # server dummy any    ts any  any   any  :rest
+    # :sid   SID   newsid ts name proto ircd :desc
     my ($server, $data, @args) = @_;
 
     my $ref        = {};
-    $ref->{$_}     = shift @args foreach qw[parent dummy sid time name proto ircd];
-    $ref->{desc}   = col(join ' ', @args);
+    $ref->{$_}     = shift @args foreach qw[parent sid time name proto ircd desc];
     $ref->{source} = $server->{sid};
-    $ref->{parent} = server::lookup_by_id(col($ref->{parent}));
-    delete $ref->{dummy};
 
     # do not allow SID or server name collisions
     if (server::lookup_by_id($ref->{sid}) || server::lookup_by_name($ref->{name})) {
@@ -177,15 +176,14 @@ sub sid {
 }
 
 sub uid {
+    # server dummy any ts any   any  any   any  any   any :rest
+    # :sid   UID   uid ts modes nick ident host cloak ip  :realname
     my ($server, $data, @args) = @_;
 
     my $ref          = {};
-    $ref->{$_}       = shift @args foreach qw[server dummy uid time modes nick ident host cloak ip];
-    $ref->{real}     = col(join ' ', @args);
+    $ref->{$_}       = shift @args foreach qw[server uid time modes nick ident host cloak ip real];
     $ref->{source}   = $server->{sid};
     $ref->{location} = $server;
-    $ref->{server}   = server::lookup_by_id(col($ref->{server}));
-    delete $ref->{dummy};
 
     # uid collision?
     if (user::lookup_by_id($ref->{uid})) {
@@ -227,63 +225,63 @@ sub uid {
 }
 
 sub quit {
-    my ($server, $data, @args) = @_;
-
-    # find the server or user
-    my $source = utils::global_lookup(col($args[0]));
+    # source  dummy  :rest
+    # :source QUIT   :reason
+    my ($server, $data, $source, $reason) = @_;
 
     # delete the server or user
-    $source->quit(col(join ' ', @args[2..$#args]));
+    $source->quit($reason);
 }
 
+# handle a nickchange
 sub nick {
-    # handle a nickchange
-    my ($server, $data, @args) = @_;
-    my $user = user::lookup_by_id(col($args[0]));
+    # user dummy any
+    # :uid NICK  newnick
+    my ($server, $data, $user, $newnick) = @_;
 
     # tell ppl
-    $user->channel::mine::send_all_user("NICK $args[2]");
-
-    $user->change_nick($args[2])
+    $user->channel::mine::send_all_user("NICK $newnick");
+    $user->change_nick($newnick);
 }
 
 sub burst {
-    my $server = shift;
-    $server->{is_burst} = 1;
-    log2("$$server{name} is bursting information")
+    # server dummy
+    # :sid   BURST
+    my ($server, $data, $serv) = @_;
+    $serv->{is_burst} = 1;
+    log2("$$serv{name} is bursting information");
 }
 
 sub endburst {
-    my $server = shift;
-    delete $server->{is_burst};
-    $server->{sent_burst} = 1;
-    log2("end of burst from $$server{name}")
+    # server dummy
+    # :sid   ENDBURST
+    my ($server, $data, $serv) = @_;
+    delete $serv->{is_burst};
+    $serv->{sent_burst} = 1;
+    log2("end of burst from $$serv{name}");
 }
 
 sub addumode {
-    my ($server, $data, @args) = @_;
-    my $serv = server::lookup_by_id(col($args[0]));
-    $serv->add_umode($args[2], $args[3]);
+    # server dummy    any  any
+    # :sid   ADDUMODE name letter
+    my ($server, $data, $serv) = (shift, shift, shift);
+    $serv->add_umode(shift, shift);
 }
 
 sub umode {
-    # why would umodes need time stamps?
-    my ($server, $data, @args) = @_;
-    my $user = user::lookup_by_id(col($args[0]));
-    $user->handle_mode_string($args[2], 1);
+    # user dummy any
+    # :uid UMODE modestring
+    my ($server, $data, $user, $str) = @_;
+    $user->handle_mode_string($str, 1);
 }
 
 sub privmsgnotice {
-    my ($server, $data, @args) = @_;
-    my $user    = user::lookup_by_id(col($args[0]));
-    my $command = uc $args[1];
-
-    # we can't  use @args because it splits by whitespace
-    my @m = split ' ', $data, 4;
-    my $message = col($m[3]);
+    # user any            any    :rest
+    # :uid PRIVMSG|NOTICE target :message
+    my ($server, $data, $user, $command, $target, $message) = @_;
 
     # is it a user?
-    my $tuser = user::lookup_by_id($args[2]);
+    my $tuser = user::lookup_by_id($target);
     if ($tuser) {
         # if it's mine, send it
         if ($tuser->is_local) {
@@ -296,7 +294,7 @@ sub privmsgnotice {
     }
 
     # must be a channel
-    my $channel = channel::lookup_by_name($args[2]);
+    my $channel = channel::lookup_by_name($target);
     if ($channel) {
         # tell local users
         $channel->channel::mine::send_all(':'.$user->full." $command $$channel{name} :$message", $user);
@@ -315,13 +313,11 @@ sub privmsgnotice {
     }
 }
 
-# join
 sub sjoin {
-    my ($server, $data, @args) = @_;
-    my $user    = user::lookup_by_id(col($args[0]));
-    my $chname  = $args[2];
+    # user dummy any     ts
+    # :uid JOIN  channel time
+    my ($server, $data, $user, $chname, $time) = @_;
     my $channel = channel::lookup_by_name($chname);
-    my $time    = $args[3];
 
     # the channel exists, so just join
     if ($channel) {
@@ -348,57 +344,47 @@ sub sjoin {
 
 # add user flags
 sub oper {
-    my ($server, $data, @args) = @_;
-    my $user = user::lookup_by_id(col($args[0]));
-    $user->add_flags(@args[2..$#args]);
+    # user dummy @rest
+    # :uid OPER  flag flag flag
+    my ($server, $data, $user, @flags) = @_;
+    $user->add_flags(@flags);
 }
 
 sub away {
-    my ($server, $data, @args) = @_;
-    my $user   = user::lookup_by_id(col($args[0]));
-    my $reason = col((split /\s+/, $data, 3)[2]);
+    # user dummy :rest
+    # :uid AWAY  :reason
+    my ($server, $data, $user, $reason) = @_;
     $user->set_away($reason);
 }
 
 sub return_away {
-    my ($server, $data, @args) = @_;
-    my $user = user::lookup_by_id(col($args[0]));
+    # user dummy
+    # :uid RETURN
+    my ($server, $data, $user) = @_;
     $user->unset_away();
 }
 
 # add a channel mode
 sub addcmode {
-    my ($server, $data, @args) = @_;
-    my $serv = server::lookup_by_id(col($args[0]));
-    $serv->add_cmode($args[2], $args[3], $args[4]);
+    # server dummy    any  any    any
+    # :sid   ADDCMODE name letter type
+    my ($server, $data, $serv, @args) = @_;
+    $serv->add_cmode(@args);
 }
 
 # set a mode on a channel
 sub cmode {
-    my ($server, $data, @args) = @_;
-    my $source      = utils::global_lookup(col($args[0]));
-    my $channel     = channel::lookup_by_name($args[2]);
-    my $perspective = server::lookup_by_id($args[4]);
+    # source  dummy channel ts   server      :rest
+    # :source CMODE channel time perspective :modestr
+    my ($server, $data, $source, $channel, $time, $perspective, $modestr) = @_;
 
-    # channel doesn't exist?
-    if (!$channel) {
-        $server->{conn}->done("channel $args[2] doesn't exist");
-        return
-    }
+    # ignore if time is older and take lower time
+    return if $time > $channel->{time};
+    $channel->channel::mine::take_lower_time($time);
 
-    # perspective doesn't exist?
-    if (!$perspective) {
-        $server->{conn}->done("server $args[4] doesn't exist");
-        return
-    }
-
-    # ignore if time is older
-    return if $args[3] > $channel->{time};
-
-    # take the lower time
-    $channel->channel::mine::take_lower_time($args[3]);
-
-    my ($user_result, $server_result) = $channel->handle_mode_string($perspective, $source, col(join ' ', @args[5..$#args]), 1, 1);
+    my ($user_result, $server_result) = $channel->handle_mode_string(
+        $perspective, $source, $modestr, 1, 1
+    );
     return 1 if !$user_result || $user_result =~ m/^(\+|\-)$/;
 
     # convert it to our view
@@ -408,20 +394,12 @@ sub cmode {
 }
 
 sub part {
-    my ($server, $data, @args) = @_;
-    my $user    = user::lookup_by_id(col($args[0]));
-    my @m       = split /\s+/, $data, 5;
-    my $reason  = $args[4] ? col($m[4]) : q();
-    my $channel = channel::lookup_by_name($args[2]);
-
-    # channel doesn't exist?
-    if (!$channel) {
-        $server->{conn}->done("channel $args[2] doesn't exist");
-        return
-    }
+    # user dummy channel ts   :rest
+    # :uid PART  channel time :reason
+    my ($server, $data, $user, $channel, $time, $reason) = @_;
 
     # take the lower time
-    $channel->channel::mine::take_lower_time($args[3]);
+    $channel->channel::mine::take_lower_time($time);
 
     # ?!?!!?!
     if (!$channel->has_user($user)) {
@@ -431,16 +409,17 @@ sub part {
 
     # remove the user and tell the local channel users
     $channel->remove($user);
-    my $sreason = $reason ? " :$reason" : q();
-    $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$sreason");
+    $reason = $reason ? " :$reason" : q();
+    $channel->channel::mine::send_all(':'.$user->full." PART $$channel{name}$reason");
     return 1
 }
 
 # add user mode, compact AUM
 sub aum {
-    my ($server, $data, @args) = @_;
-    my $serv = server::lookup_by_id(col($args[0]));
-    foreach my $str (@args[2..$#args]) {
+    # server dummy @rest
+    # :sid   AUM   name:letter name:letter
+    my ($server, $data, $serv) = (shift, shift, shift);
+    foreach my $str (@_) {
         my ($name, $letter) = split /:/, $str;
         next unless defined $letter; # just in case..
         $serv->add_umode($name, $letter)
@@ -450,11 +429,12 @@ sub aum {
 
 # add channel mode, compact ACM
 sub acm {
-    my ($server, $data, @args) = @_;
-    my $serv = server::lookup_by_id(col($args[0]));
-    foreach my $str (@args[2..$#args]) {
+    # server dummy @rest
+    # :sid   ACM   name:letter:type name:letter:type
+    my ($server, $data, $serv) = (shift, shift, shift);
+    foreach my $str (@_) {
         my ($name, $letter, $type) = split /:/, $str;
-        next unless defined $letter;
+        next unless defined $type;
         $serv->add_cmode($name, $letter, $type)
     }
     return 1
@@ -462,27 +442,26 @@ sub acm {
 
 # channel user membership, compact CUM
 sub cum {
-    my ($server, $data, @args) = @_;
-    my $serv = server::lookup_by_id(col($args[0]));
+    # server dummy any     ts   any   :rest
+    # :sid   CUM   channel time users :modestr
+    my ($server, $data, $serv, $chname, $ts, $userstr, $modestr) = @_;
 
     # we cannot assume that this a new channel
-    my $ts      = $args[3];
-    my $channel = channel::lookup_by_name($args[2]) || channel->new({ name => $args[2], time => $ts});
+    my $channel = channel::lookup_by_name($chname) || channel->new({ name => $chname, time => $ts});
     my $newtime = $channel->channel::mine::take_lower_time($ts);
 
     # lazy mode handling..
     # pretend to receive a CMODE.
     # revision: use cmode() directly otherwise fake CMODE messages will be forwarded to children.
     if ($newtime == $ts) { # won the time battle
-        my $modestr = col(join ' ', @args[5..$#args]);
         my $cdata   = ":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr";
-        cmode($server, $cdata, split(/\s+/, $cdata));
+        cmode($server, $cdata, $channel->{name}, $channel->{time}, $serv->{sid}, $modestr);
     }
 
     # no users
-    return 1 if $args[4] eq '-';
+    return 1 if $userstr eq '-';
 
-    USER: foreach my $str (split /,/, $args[4]) {
+    USER: foreach my $str (split /,/, $userstr) {
         my ($uid, $modes) = split /!/, $str;
         my $user          = user::lookup_by_id($uid) or next USER;
 
@@ -495,7 +474,7 @@ sub cum {
         next USER unless $modes;      # the mode part is obviously optional..
         next USER if $newtime != $ts; # the time battle was lost
 
-        # lazy mode setting # FIXME
+        # lazy mode setting
         # but I think it is a clever way of doing it.
         my $final_modestr = $modes.' '.(($uid.' ') x length $modes);
         my ($user_result, $server_result) = $channel->handle_mode_string($serv, $serv, $final_modestr, 1, 1);
@@ -506,27 +485,25 @@ sub cum {
 }
 
 sub topic {
+    # source  dummy channel ts ts   :rest
     # :source TOPIC channel ts time :topic
-    my ($server, $data, @args) = @_;
-    my $source  = utils::global_lookup(col($args[0]));
-    my $channel = channel::lookup_by_name($args[2]);
+    my ($server, $data, $source, $channel, $ts, $time, $topic) = @_;
 
     # check that channel exists
     return unless $channel;
 
-    if ($channel->channel::mine::take_lower_time($args[3]) != $args[3]) {
+    if ($channel->channel::mine::take_lower_time($ts) != $ts) {
         # bad channel time
         return
     }
 
-    my $topic = col((split /\s+/, $data, 6)[5]);
     $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
 
     # set it
     if (length $topic) {
         $channel->{topic} = {
             setby => $source->full,
-            time  => $args[4],
+            time  => $time,
             topic => $topic
         };
     }
@@ -538,27 +515,22 @@ sub topic {
 }
 
 sub topicburst {
-    # :sid TOPICBURST channel time setby time :topic
-    my ($server, $data, @args) = @_;
-    my $source  = utils::global_lookup(col($args[0]));
-    my $channel = channel::lookup_by_name($args[2]);
+    # source dummy      channel ts   any   ts   :rest
+    # :sid   TOPICBURST channel ts   setby time :topic
+    my ($server, $data, $source, $channel, $ts, $setby, $time, $topic) = @_;
 
-    # check that channel exists
-    return unless $channel;
-
-    if ($channel->channel::mine::take_lower_time($args[3]) != $args[3]) {
+    if ($channel->channel::mine::take_lower_time($ts) != $ts) {
         # bad channel time
         return
     }
 
-    my $topic = col((split /\s+/, $data, 7)[6]);
     $channel->channel::mine::send_all(':'.$source->full." TOPIC $$channel{name} :$topic");
 
     # set it
     if (length $topic) {
         $channel->{topic} = {
-            setby => $args[4],
-            time  => $args[5],
+            setby => $setby,
+            time  => $time,
             topic => $topic
         };
     }
@@ -570,11 +542,9 @@ sub topicburst {
 }
 
 sub skill {
-    # :source KILL uid :reason
-    my ($server, $data, @args) = @_;
-    my $source  = utils::global_lookup(col($args[0]));
-    my $tuser   = user::lookup_by_id($args[2]);
-    my $reason  = col((split /\s+/, $data, 4)[3]);
+    # user  dummy user :rest
+    # :uid  KILL  uid  :reason
+    my ($server, $data, $user, $tuser, $reason) = @_;
 
     # we ignore any non-local users and just forward them
     if ($tuser->is_local) {
