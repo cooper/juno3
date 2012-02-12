@@ -100,8 +100,8 @@ sub fire_command {
 
 sub fire_command_all {
     my ($command, @args) = (uc shift, @_);
-    if (!$outgoing{$command}) {my @c = caller 1;
-        log2((caller)[0]." @c fired $command which does not exist");
+    if (!$outgoing{$command}) {
+        log2((caller)[0]." fired $command which does not exist");
         return
     }
 

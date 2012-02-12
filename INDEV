@@ -835,3 +835,5 @@ CHANGES:
     7. February 11, 2012
 
         0. I was right about breaking the entire ircd. here's the first of many upcoming bug fixes.
+
+        1. more bug fixes regarding the last couple commits.

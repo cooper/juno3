@@ -32,7 +32,7 @@ my %ocommands = (
 
 our $mod = API::Module->new(
     name        => 'core_ocommands',
-    version     => '0.3',
+    version     => '0.4',
     description => 'the core set of outgoing commands',
     requires    => ['outgoing_commands'],
     initialize  => \&init
@@ -226,7 +226,7 @@ sub cum {
 
         # lists of users
         when (4) {
-            foreach my $user (@{$channel->{modes}->{$name}->{list}}) {
+            foreach my $user (map { $_->[0] } @{$channel->{modes}->{$name}->{list}}) {
                 if (exists $prefixes{$user}) { $prefixes{$user} .= $letter }
                                         else { $prefixes{$user}  = $letter }
             } # ugly br
