@@ -150,7 +150,7 @@ my %ucommands = (
 
 our $mod = API::Module->new(
     name        => 'core_ucommands',
-    version     => '0.4',
+    version     => '0.5',
     description => 'the core set of user commands',
     requires    => ['user_commands'],
     initialize  => \&init
@@ -820,7 +820,7 @@ sub who {
         next if (defined $args[2] && $args[2] =~ m/o/ && !$quser->is_mode('ircop'));
 
         # found a match
-        $who_flags .= (defined $quser->{away} ? 'G' : 'H') . ($quser->is_mode('ircop') ? '*' : q||);
+        $who_flags = (defined $quser->{away} ? 'G' : 'H') . $who_flags . ($quser->is_mode('ircop') ? '*' : q||);
         $user->numeric('RPL_WHOREPLY', $match_pattern, $quser->{ident}, $quser->{host}, $quser->{server}->{name}, $quser->{nick}, $who_flags, $quser->{real});
     }
 

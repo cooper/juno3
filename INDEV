@@ -837,3 +837,7 @@ CHANGES:
         0. I was right about breaking the entire ircd. here's the first of many upcoming bug fixes.
 
         1. more bug fixes regarding the last couple commits.
+
+        February 12, 2012
+
+        2. For some reason, clients don't like when the H or G flag comes before prefix flags.

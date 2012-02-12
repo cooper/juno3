@@ -86,6 +86,13 @@ sub list_matches {
     return 1 if match($what, map { $_->[0] } @{$channel->{modes}->{$name}->{list}})
 }
 
+# returns an array of list elements
+sub list_elements {
+    my ($channel, $name) = @_;
+    return unless exists $channel->{modes}->{$name};
+    return map { $_->[0] } @{$channel->{modes}->{$name}->{list}}
+}
+
 # adds something to a list mode (such as ban)
 sub add_to_list {
     my ($channel, $name, $parameter, %opts) = @_;
