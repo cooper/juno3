@@ -176,7 +176,6 @@ sub sid {
 }
 
 sub uid {
-print "UID: @{[map { '(' . $_ .'), ' } @_]}\n";
     # server dummy any ts any   any  any   any  any   any :rest
     # :sid   UID   uid ts modes nick ident host cloak ip  :realname
     my ($server, $data, @args) = @_;
@@ -456,7 +455,7 @@ sub cum {
     # revision: use cmode() directly otherwise fake CMODE messages will be forwarded to children.
     if ($newtime == $ts) { # won the time battle
         my $cdata   = ":$$serv{sid} CMODE $$channel{name} $$channel{time} $$serv{sid} :$modestr";
-        cmode($server, $cdata, $channel->{name}, $channel->{time}, $serv->{sid}, $modestr);
+        cmode($server, $cdata, $serv, $channel, $channel->{time}, $serv, $modestr);
     }
 
     # no users

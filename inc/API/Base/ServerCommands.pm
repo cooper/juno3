@@ -55,6 +55,7 @@ sub register_server_command {
                 if (!$source) {
                     log2("could not get source: $id");
                     $server->{conn}->done('Protocol error.');
+                    return
                 }
                 push @final_parameters, $source
             }
@@ -65,6 +66,7 @@ sub register_server_command {
                 if (!$server) {
                     log2("could not get server: $id");
                     $server->{conn}->done('Protocol error.');
+                    return
                 }
                 push @final_parameters, $server
             }
@@ -75,6 +77,7 @@ sub register_server_command {
                 if (!$user) {
                     log2("could not get user: $id");
                     $server->{conn}->done('Protocol error.');
+                    return
                 }
                 push @final_parameters, $user
             }
@@ -85,6 +88,7 @@ sub register_server_command {
                 if (!$channel) {
                     log2("could not get channel: $chname");
                     $server->{conn}->done('Protocol error.');
+                    return
                 }
                 push @final_parameters, $channel
             }
