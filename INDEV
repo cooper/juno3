@@ -831,3 +831,7 @@ CHANGES:
            there are two possible outcomes of this update: many, many bugs in the linking protocol will be fixed
            or (and more likely) nothing will work at all, and trying to link two servers will lead to a crash.
            this update breaks compatibility with ALL existing API modules, as register_server_command()'s 'params' option is now required.
+
+    7. February 11, 2012
+
+        0. I was right about breaking the entire ircd. here's the first of many upcoming bug fixes.

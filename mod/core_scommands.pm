@@ -176,6 +176,7 @@ sub sid {
 }
 
 sub uid {
+print "UID: @{[map { '(' . $_ .'), ' } @_]}\n";
     # server dummy any ts any   any  any   any  any   any :rest
     # :sid   UID   uid ts modes nick ident host cloak ip  :realname
     my ($server, $data, @args) = @_;

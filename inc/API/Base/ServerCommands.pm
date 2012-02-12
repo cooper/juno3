@@ -38,7 +38,7 @@ sub register_server_command {
 
     $CODE = sub {
         my ($server, $data, @args) = @_;
-        my ($i, @final_parameters) = 0;
+        my ($i, @final_parameters) = -1;
 
         # check argument count
         if (scalar @args < scalar @{$opts{parameters}}) {
@@ -47,7 +47,7 @@ sub register_server_command {
             return
         }
 
-        for (@{$opts{parameters}}) {
+        foreach (@{$opts{parameters}}) { $i++;
 
             # global lookup
             when ('source') {
@@ -56,7 +56,7 @@ sub register_server_command {
                     log2("could not get source: $id");
                     $server->{conn}->done('Protocol error.');
                 }
-                push @final_parameters, $source;
+                push @final_parameters, $source
             }
 
             # server lookup
@@ -66,7 +66,7 @@ sub register_server_command {
                     log2("could not get server: $id");
                     $server->{conn}->done('Protocol error.');
                 }
-                push @final_parameters, $server;
+                push @final_parameters, $server
             }
 
             # user lookup
@@ -76,7 +76,7 @@ sub register_server_command {
                     log2("could not get user: $id");
                     $server->{conn}->done('Protocol error.');
                 }
-                push @final_parameters, $user;
+                push @final_parameters, $user
             }
 
             # channel lookup
@@ -86,7 +86,7 @@ sub register_server_command {
                     log2("could not get channel: $chname");
                     $server->{conn}->done('Protocol error.');
                 }
-                push @final_parameters, $channel;
+                push @final_parameters, $channel
             }
 
             # the rest of a message
@@ -108,7 +108,6 @@ sub register_server_command {
             # ignore a parameter
             when ('dummy') { }
 
-            $i++
         }
 
         $opts{code}($server, $data, @final_parameters);
