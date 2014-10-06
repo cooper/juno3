@@ -1,3 +1,4 @@
+# THIS IS AN OLD VERSION
 # juno-ircd version 3
 
 Yes.  
@@ -84,25 +85,6 @@ When juno2 was in development, it was named "juno" where juno1 was named "juno-i
 always had been. When juno3 was born, juno-ircd and juno were renamed to juno1 and juno2
 to avoid confusion. Versions are written as version.major.minor.commit, such as 3.2.1.1
 (juno3 2.1 commit 1.)
-
-## about the author
-
-Mitchell Cooper, mitchell@notroll.net  
-  
-juno1 was my first project in Perl, ever. Since then I have created loads of things. I am
-still learning, but I have gotten to a point now where I know the Perl language well
-enough to stop learning. Most of my creations in Perl are related to IRC in some way,
-though I have other projects as well. I always look back at things I worked on a month ago
-and realize how terrible they are. That is why there are three writes of the same IRCd.
-You will notice in my work that I don't really care about people with machines from the
-'90s. (just kidding, juno is surprisingly resource-friendly.) I use unix-like systems, and
-all of my work is designed specifically for unix-like systems. I would be very, very
-surprised if someone got this IRCd working on Windows. I and many others have formed an
-organized known as NoTrollPlzNet which aims to create safe chatting environments (on IRC,
-in particular.) I like apple pie. I am American. I know a woman who was raised in Africa.
-I live near a house that was on Extreme Makeover Home Edition. I build, sell, and maintain
-computers. I love chicken, but I don't like beer chicken. Dark meet is significantly
-better than white meat. Pepsi is better than coke. I like Perl.
 
 ## more info
 
